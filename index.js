@@ -287,8 +287,17 @@ function ScriptPlayer() {
         this.time_cursor = milliTime;
         setSliderCursor(milliTime);
         setTimeMeter(new Date(milliTime));
-        // todo: fix this
-        this.index_cursor = 0;
+
+
+        // Find the nearest index
+        // Doesn't have to be very accurate
+        var prev = 0;
+        for (var lop = 0;
+             lop < this.raw.length && this.time_cursor >= this.raw[lop].startTime;
+             lop += 20) {
+            prev = lop;
+        }
+        this.index_cursor = prev;
     };
 
     this.scriptAtCursor = function () {
@@ -413,6 +422,9 @@ function main() {
     });
 
     slider.on('input', function (e) {
+        if (player.state == STATES.playing) {
+            player.pause();
+        }
         setTimeMeter(new Date(parseInt(e.currentTarget.value)));
     });
 
