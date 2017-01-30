@@ -1,9 +1,51 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>Wowser</title>
+    <meta charset="UTF-8">
+    <title>Subtitle Player</title>
+    <link rel="stylesheet" type="text/css" href="index.css"/>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="index.js"></script>
 </head>
+
 <body>
-Hella working
+<div id="uploadArea">
+    <div id="draghandler"><span id="filename_display">Drag & Drop file here</span></div>
+    <div class="center-text inline-display controller slider">
+        <!-- Format:
+        hh:mm:ss,mmm / hh:mm:ss,mmm -->
+        <div id="timeMeter">
+            <span id="cur_hour">0</span>:<span id="cur_min">0</span>:<span id="cur_sec">0</span>,<span
+                id="cur_mill">0</span>
+            / <span id="max_hour">0</span>:<span id="max_min">0</span>:<span id="max_sec">0</span>,<span
+                id="max_mill">0</span>
+        </div>
+        <div>
+            <input type="range" min="0" max="100" width="1000" value="0">
+        </div>
+    </div>
+    <div class="center-text inline-display controller">
+        <div id="btnGroup">
+            <button id="btnPlay">
+                Play
+            </button>
+            <button id="btnPause">
+                Pause
+            </button>
+            <button id="btnReplay">
+                Replay
+            </button>
+            <button id="btnReset">
+                Reset
+            </button>
+        </div>
+    </div>
+</div>
+<div id="display controller">
+    <p id="title"></p>
+    <p id="subtitle"></p>
+</div>
 </body>
+
 </html>

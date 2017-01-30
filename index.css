@@ -1,0 +1,46 @@
+.outline {
+    border: 1px solid red;
+}
+
+.center-text {
+    text-align: center;
+}
+
+.inline-display {
+    display: inline;
+    margin: 0 auto;
+    width: auto;
+}
+
+body {
+    min-width: 512px;
+}
+
+.greyOut {
+}
+
+button {
+}
+
+#draghandler {
+    min-height: 80px;
+    max-width: 500px;
+
+    text-align: center;
+    font-size: 40px;
+    width: 80%;
+    background-color: rgba(192, 192, 192, 0.5);
+    border: 2px solid rgba(192, 192, 192, 0.5);
+    margin: 0 auto 20px auto;
+}
+
+.slider input {
+    min-width: 500px;
+    width: 90%;
+}
+
+#btnGroup button {
+    font-size: 20px;
+    width: 75px;
+    margin: 0 5px;
+}
