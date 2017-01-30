@@ -269,7 +269,6 @@ function ScriptPlayer() {
                 }
             };
 
-            //console.log("From: " + from + " To: " + to);
             (dispatchMessage.dispatch[from])();
         }
 
@@ -293,7 +292,6 @@ function ScriptPlayer() {
     };
 
     this.scriptAtCursor = function () {
-        console.log("Index: " + this.index_cursor + " Time: " + this.time_cursor);
         if (this.index_cursor >= this.raw.length) {
             this.changeState(STATES.finished);
 
@@ -411,7 +409,6 @@ function main() {
     });
 
     slider.on('change', function (e) {
-        // console.log("Final: " + e.currentTarget.value);
         player.setCursor(parseInt(e.currentTarget.value));
     });
 
