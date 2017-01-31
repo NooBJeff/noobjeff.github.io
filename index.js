@@ -222,57 +222,60 @@ function ScriptPlayer() {
     this.raw = undefined;
     this.state = STATES.noFileLoaded;
 
+    this.dispatchMessage = {
+        // From noFileLoaded
+        0: function (object, from, to) {
+            if (to == STATES.paused) {
+                // Display the controllers first
+                $('.controller').show();
+                displayButton(displayButton.PLAY);
+            } else {
+                throw new IllegalStateException(from + " -> " + to);
+            }
+        },
+        // From playing
+        1: function (object, from, to) {
+            if (to == STATES.paused) {
+                displayButton(displayButton.PLAY);
+                object.pause();
+            } else if (to == STATES.finished) {
+                displayButton(displayButton.REPLAY | displayButton.RESET);
+                object.pause();
+            } else {
+                throw new IllegalStateException(from + " -> " + to);
+            }
+        },
+        // From paused
+        2: function (object, from, to) {
+            if (to == STATES.playing) {
+                displayButton(displayButton.PAUSE);
+                object.play();
+            } else {
+                throw new IllegalStateException(from + " -> " + to);
+            }
+        },
+        // From finished
+        3: function (object, from, to) {
+            if (to == STATES.playing) {
+                displayButton(displayButton.PAUSE);
+                object.setCursor(0);
+                object.play();
+            } else if (to == STATES.paused) {
+                displayButton(displayButton.PLAY);
+                object.setCursor(0);
+                object.pause();
+            } else {
+                throw new IllegalStateException(from + " -> " + to);
+            }
+        }
+    };
+
     /**
      * State Machine
      * @param {int} newState
      */
     this.changeState = function (newState) {
-        function dispatchMessage(from, to) {
-            dispatchMessage.dispatch = {
-                // From noFileLoaded
-                0: function () {
-                    if (to == STATES.paused) {
-                        // Display the controllers first
-                        $('.controller').show();
-                        displayButton(displayButton.PLAY);
-                    } else {
-                        throw new IllegalStateException(from + " -> " + to);
-                    }
-                },
-                // From playing
-                1: function () {
-                    if (to == STATES.paused) {
-                        displayButton(displayButton.PLAY);
-                    } else if (to == STATES.finished) {
-                        displayButton(displayButton.REPLAY | displayButton.RESET);
-                    } else {
-                        throw new IllegalStateException(from + " -> " + to);
-                    }
-                },
-                // From paused
-                2: function () {
-                    if (to == STATES.playing) {
-                        displayButton(displayButton.PAUSE);
-                    } else {
-                        throw new IllegalStateException(from + " -> " + to);
-                    }
-                },
-                // From finished
-                3: function () {
-                    if (to == STATES.playing) {
-                        displayButton(displayButton.PAUSE);
-                    } else if (to == STATES.paused) {
-                        displayButton(displayButton.PLAY);
-                    } else {
-                        throw new IllegalStateException(from + " -> " + to);
-                    }
-                }
-            };
-
-            (dispatchMessage.dispatch[from])();
-        }
-
-        dispatchMessage(this.state, newState);
+        this.dispatchMessage[this.state](this, this.state, newState);
         this.state = newState;
     };
 
@@ -333,8 +336,7 @@ function ScriptPlayer() {
         this.setCursor(0);
 
         // Set max for slider
-        $('.slider input').attr('max',
-            arrayOfScript[arrayOfScript.length - 1].endTime);
+        $('.slider input').attr('max', arrayOfScript[arrayOfScript.length - 1].endTime);
         // Set max value for time meter
         setMaxTimeMeter(new Date(arrayOfScript[arrayOfScript.length - 1].endTime));
     };
@@ -358,8 +360,6 @@ function ScriptPlayer() {
      * Continue Play the entire script
      */
     this.play = function () {
-        this.changeState(STATES.playing);
-
         // Reset base time based on the time cursor
         this.base_time = new Date() - this.time_cursor;
 
@@ -368,7 +368,6 @@ function ScriptPlayer() {
     };
 
     this.pause = function () {
-        this.changeState(STATES.paused);
         clearInterval(this.loop_id);
     };
 
@@ -379,7 +378,6 @@ function ScriptPlayer() {
 
     this.reset = function () {
         this.setCursor(0);
-        this.changeState(STATES.paused);
     };
 }
 
@@ -422,8 +420,9 @@ function main() {
     });
 
     slider.on('input', function (e) {
-        if (player.state == STATES.playing) {
-            player.pause();
+        if (player.state != STATES.paused) {
+            // player.pause();
+            // todo
         }
         setTimeMeter(new Date(parseInt(e.currentTarget.value)));
     });
@@ -437,19 +436,23 @@ function main() {
      * Buttons callback functions
      */
     $('#btnPlay').click(function () {
-        player.play();
+        // player.play();
+        player.changeState(STATES.playing);
     });
 
     $('#btnPause').click(function () {
-        player.pause();
+        // player.pause();
+        player.changeState(STATES.paused);
     });
 
     $('#btnReplay').click(function () {
-        player.replay();
+        // player.replay();
+        player.changeState(STATES.playing);
     });
 
     $('#btnReset').click(function () {
-        player.reset();
+        // player.reset();
+        player.changeState(STATES.paused);
     });
 
     // Read file from user
