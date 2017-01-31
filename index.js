@@ -120,7 +120,8 @@ var STATES = {
     noFileLoaded: 0,
     playing: 1,
     paused: 2,
-    finished: 3
+    finished: 3,
+    sliding: 4
 };
 
 
@@ -229,6 +230,7 @@ function ScriptPlayer() {
                 // Display the controllers first
                 $('.controller').show();
                 displayButton(displayButton.PLAY);
+                object.setCursor(0);
             } else {
                 throw new IllegalStateException(from + " -> " + to);
             }
@@ -241,6 +243,9 @@ function ScriptPlayer() {
             } else if (to == STATES.finished) {
                 displayButton(displayButton.REPLAY | displayButton.RESET);
                 object.pause();
+            } else if (to == STATES.sliding) {
+                displayButton(displayButton.PLAY);
+                object.pause();
             } else {
                 throw new IllegalStateException(from + " -> " + to);
             }
@@ -250,6 +255,10 @@ function ScriptPlayer() {
             if (to == STATES.playing) {
                 displayButton(displayButton.PAUSE);
                 object.play();
+            } else if (to == STATES.paused) {
+                // Everything is fine
+            } else if (to == STATES.sliding) {
+                displayScript(null);
             } else {
                 throw new IllegalStateException(from + " -> " + to);
             }
@@ -263,7 +272,18 @@ function ScriptPlayer() {
             } else if (to == STATES.paused) {
                 displayButton(displayButton.PLAY);
                 object.setCursor(0);
-                object.pause();
+            } else if (to == STATES.sliding) {
+                displayButton(displayButton.PLAY);
+            } else {
+                throw new IllegalStateException(from + " -> " + to);
+            }
+        },
+        // From sliding
+        4: function (object, from, to) {
+            if (to == STATES.paused) {
+
+            } else if (to == STATES.sliding) {
+                // Everything good
             } else {
                 throw new IllegalStateException(from + " -> " + to);
             }
@@ -306,8 +326,6 @@ function ScriptPlayer() {
     this.scriptAtCursor = function () {
         if (this.index_cursor >= this.raw.length) {
             this.changeState(STATES.finished);
-
-            clearInterval(this.loop_id);
             return;
         }
 
@@ -333,7 +351,6 @@ function ScriptPlayer() {
     this.load = function (arrayOfScript) {
         this.raw = arrayOfScript;
         this.changeState(STATES.paused);
-        this.setCursor(0);
 
         // Set max for slider
         $('.slider input').attr('max', arrayOfScript[arrayOfScript.length - 1].endTime);
@@ -348,8 +365,8 @@ function ScriptPlayer() {
         this.loop_id = setInterval(function (object) {
             return function () {
                 object.time_cursor = new Date() - object.base_time;
-                displayScript(object.scriptAtCursor());
 
+                displayScript(object.scriptAtCursor());
                 setSliderCursor(object.time_cursor);
                 setTimeMeter(new Date(object.time_cursor));
             }
@@ -369,15 +386,7 @@ function ScriptPlayer() {
 
     this.pause = function () {
         clearInterval(this.loop_id);
-    };
-
-    this.replay = function () {
-        this.setCursor(0);
-        this.play();
-    };
-
-    this.reset = function () {
-        this.setCursor(0);
+        this.loop_id = undefined;
     };
 }
 
@@ -415,15 +424,15 @@ function main() {
         fileHandler(file[0]);
     });
 
+    // Trigger on mouse release
     slider.on('change', function (e) {
+        player.changeState(STATES.paused);
         player.setCursor(parseInt(e.currentTarget.value));
     });
 
+    // Trigger on mouse click
     slider.on('input', function (e) {
-        if (player.state != STATES.paused) {
-            // player.pause();
-            // todo
-        }
+        player.changeState(STATES.sliding);
         setTimeMeter(new Date(parseInt(e.currentTarget.value)));
     });
 
@@ -436,22 +445,18 @@ function main() {
      * Buttons callback functions
      */
     $('#btnPlay').click(function () {
-        // player.play();
         player.changeState(STATES.playing);
     });
 
     $('#btnPause').click(function () {
-        // player.pause();
         player.changeState(STATES.paused);
     });
 
     $('#btnReplay').click(function () {
-        // player.replay();
         player.changeState(STATES.playing);
     });
 
     $('#btnReset').click(function () {
-        // player.reset();
         player.changeState(STATES.paused);
     });
 
