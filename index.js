@@ -246,6 +246,7 @@ function ScriptPlayer() {
             } else if (to == STATES.sliding) {
                 displayButton(displayButton.PLAY);
                 object.pause();
+                displayScript(null);
             } else {
                 throw new IllegalStateException(from + " -> " + to);
             }
