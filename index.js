@@ -242,6 +242,7 @@ function ScriptPlayer() {
                 // From playing
                 1: function () {
                     if (to == STATES.paused) {
+                        // this.pause();
                         displayButton(displayButton.PLAY);
                     } else if (to == STATES.finished) {
                         displayButton(displayButton.REPLAY | displayButton.RESET);
@@ -305,6 +306,7 @@ function ScriptPlayer() {
             this.changeState(STATES.finished);
 
             clearInterval(this.loop_id);
+            this.loop_id = undefined;
             return;
         }
 
@@ -370,6 +372,7 @@ function ScriptPlayer() {
     this.pause = function () {
         this.changeState(STATES.paused);
         clearInterval(this.loop_id);
+        this.loop_id = undefined;
     };
 
     this.replay = function () {
@@ -424,7 +427,10 @@ function main() {
     slider.on('input', function (e) {
         if (player.state == STATES.playing) {
             player.pause();
+        } else if (player.state == STATES.finished) {
+            player.changeState(STATES.paused);
         }
+
         setTimeMeter(new Date(parseInt(e.currentTarget.value)));
     });
 
