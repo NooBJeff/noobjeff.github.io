@@ -314,14 +314,23 @@ function ScriptPlayer() {
 
 
         // Find the nearest index
-        // Doesn't have to be very accurate
-        var prev = 0;
-        for (var lop = 0;
-             lop < this.raw.length && this.time_cursor >= this.raw[lop].startTime;
-             lop += 20) {
-            prev = lop;
+        var lop = 0;
+        var step = 20;
+        for (; lop + step < this.raw.length && this.time_cursor >= this.raw[lop + step].startTime; lop += step) {
+            // do nothing
         }
-        this.index_cursor = prev;
+
+        for (; lop + 1 < this.raw.length && this.time_cursor >= this.raw[lop + 1].startTime; lop += 1) {
+            // do nothing
+        }
+
+        this.index_cursor = lop;
+
+        if (this.raw[lop].startTime <= this.time_cursor && this.time_cursor <= this.raw[lop].endTime) {
+            displayScript(this.raw[lop]);
+        } else {
+            displayScript(null);
+        }
     };
 
     this.scriptAtCursor = function () {
@@ -404,6 +413,7 @@ function main() {
     ////////////////////
     $('.controller').hide();
     displayButton();
+    $("#time_input_group").hide();
 
     ////////////////////////
     //Callback functions //
@@ -425,6 +435,24 @@ function main() {
         fileHandler(file[0]);
     });
 
+    /*
+    Change time on user input
+     */
+    $('#time_display_group').click(function () {
+        $("#time_input_group").toggle();
+    });
+
+    $("#btnSubmitTime").click(function (e) {
+        changeTime($("#time_input").val());
+    });
+
+    $("#time_input").keypress(function (e) {
+        if (e.keyCode == 13) {
+            changeTime($("#time_input").val());
+        }
+    });
+
+    // Slider events
     // Trigger on mouse release
     slider.on('change', function (e) {
         player.changeState(STATES.paused);
@@ -495,6 +523,33 @@ function main() {
 
             player.load(arrayOfScript);
         }
+    }
+
+
+    /**
+     * Parse time that user inputed
+     * @param {string} time
+     */
+    function changeTime(time) {
+        // Static re
+        changeTime.reTemplate = /((\d{1,2}):)?(\d{1,2}):(\d{1,2})(,(\d{1,3}))?/;
+
+        var result = changeTime.reTemplate.exec(time);
+        if (result == null) {
+            alert("Please re-input time\n请重新输入");
+            return;
+        }
+        var diff = new Date(0,
+                0,
+                0,
+                result[2] == undefined ? 0 : parseInt(result[2]),
+                parseInt(result[3]),
+                parseInt(result[4]),
+                result[6] == undefined ? 0 : parseInt(result[6]))
+            - new Date(0, 0, 0, 0, 0, 0, 0);
+
+        player.changeState(STATES.paused);
+        player.setCursor(diff);
     }
 }
 
