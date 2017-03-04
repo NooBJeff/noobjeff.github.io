@@ -42,6 +42,8 @@ Board.prototype.reset = function () {
     this.row = undefined;
     this.numMines = undefined;
     this.firstClick = true;
+
+    $("#board").empty();
 };
 
 Board.prototype.init = function (x, y, mines) {
@@ -255,6 +257,13 @@ $(document).ready(function () {
         var row = parseInt($("#input_row").val());
         var mines = parseInt($("#input_mines").val());
         board.init(col, row, mines);
+    });
+
+    $("#btn_restart").click(function () {
+        $("#start_screen").show();
+        $("#game_screen").hide();
+
+        board.reset();
     });
 
     window.oncontextmenu = function () {
