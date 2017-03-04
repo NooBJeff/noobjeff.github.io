@@ -10,20 +10,36 @@
     <script src="lib/sprintf.js"></script>
 
     <script src="controller.js"></script>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 </head>
 <body>
-<div id="start_screen">
-    <input id="input_column" type="number" placeholder="column" value="10">
-    <input id="input_row" type="number" placeholder="row" value="10">
-    <input type="number" id="input_mines" placeholder="Mines" value="10">
-    <button id="btn_start">Start</button>
+<div id="start_screen" class="container">
+    <div class="container">
+        <span class="col-md-2">Column:</span>
+        <input class="col-md-1" id="input_column" type="number" placeholder="column" value="10">
+    </div>
+    <div class="container">
+        <span class="col-md-2">Row:</span>
+        <input class="col-md-1" id="input_row" type="number" placeholder="row" value="10">
+    </div>
+    <div class="container">
+        <span class="col-md-2">Number of mines:</span>
+        <input class="col-md-1" type="number" id="input_mines" placeholder="Mines" value="10">
+    </div>
+    <div class="container">
+        <button class="col-md-2" id="btn_start">Start</button>
+    </div>
 </div>
 
-<div id="game_screen">
+<div id="game_screen" class="container">
     <div id="states"></div>
     <input id="isRightClick" type="checkbox"><span>Right Click</span>
-    <div id="board">
-        <!--<div id="0-0" class="square">E</div>-->
+    <div class="container">
+        <div id="board">
+            <!--<div id="0-0" class="square">E</div>-->
+        </div>
     </div>
 </div>
 </body>
