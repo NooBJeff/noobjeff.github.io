@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Minesweeper</title>
+
+    <link rel="stylesheet" href="index.css">
+
+    <script src="lib/jquery-3.1.1.js"></script>
+    <script src="lib/sprintf.js"></script>
+
+    <script src="controller.js"></script>
+</head>
+<body>
+<div id="start_screen">
+    <input id="input_column" type="number" placeholder="column" value="10">
+    <input id="input_row" type="number" placeholder="row" value="10">
+    <input type="number" id="input_mines" placeholder="Mines" value="10">
+    <button id="btn_start">Start</button>
+</div>
+
+<div id="game_screen">
+    <div id="states"></div>
+    <input id="isRightClick" type="checkbox"><span>Right Click</span>
+    <div id="board">
+        <!--<div id="0-0" class="square">E</div>-->
+    </div>
+</div>
+</body>
+</html>

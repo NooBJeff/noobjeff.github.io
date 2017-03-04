@@ -1,0 +1,48 @@
+/**
+ * Created by jeff on 2017/3/4.
+ */
+
+#game_screen {
+  #board {
+    $sizeSquare: 30px;
+    $colorBorder: blue;
+    border-top: 1px solid $colorBorder;
+    border-left: 1px solid $colorBorder;
+
+    .square {
+      width: $sizeSquare;
+      height: $sizeSquare;
+      font-size: $sizeSquare*0.6;
+
+      white-space: nowrap;
+
+      margin: 0;
+
+      background-color: black;
+      border-right: 1px solid $colorBorder;
+      border-bottom: 1px solid $colorBorder;
+
+      padding: 1px;
+
+      display: inline-block;
+      box-sizing: border-box;
+      text-align: center;
+    }
+
+    .revealed {
+      background-color: white;
+    }
+
+    .flagged {
+      background-color: yellow;
+    }
+
+    .bombed {
+      background-color: red;
+    }
+
+    .numed {
+      background-color: gray;
+    }
+  }
+}

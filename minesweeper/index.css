@@ -1,0 +1,29 @@
+/**
+ * Created by jeff on 2017/3/4.
+ */
+#game_screen #board {
+  border-top: 1px solid blue;
+  border-left: 1px solid blue; }
+  #game_screen #board .square {
+    width: 30px;
+    height: 30px;
+    font-size: 18px;
+    white-space: nowrap;
+    margin: 0;
+    background-color: black;
+    border-right: 1px solid blue;
+    border-bottom: 1px solid blue;
+    padding: 1px;
+    display: inline-block;
+    box-sizing: border-box;
+    text-align: center; }
+  #game_screen #board .revealed {
+    background-color: white; }
+  #game_screen #board .flagged {
+    background-color: yellow; }
+  #game_screen #board .bombed {
+    background-color: red; }
+  #game_screen #board .numed {
+    background-color: gray; }
+
+/*# sourceMappingURL=index.css.map */
