@@ -8,21 +8,13 @@
 
  */
 
-var sizeSquare = 30;
-var template = '<div id="%d-%d" class="square"><span>%s</span></div>';
+var SIZE_SQUARE = 30;
+var TEMPLATE_SQUARE = '<div id="%d-%d" class="square"><span>%s</span></div>';
 
-/**
- *
- * @param {number[]} pos
- * @return {*|jQuery|HTMLElement}
- */
-function select(pos) {
-    return $(sprintf("#%d-%d", pos[0], pos[1]));
-}
 
-function Board() {
+function Game() {
     /**
-     * Board 2D
+     * Game 2D
      * @type {Array[]}
      */
     this.board = undefined;
@@ -35,7 +27,7 @@ function Board() {
     this.firstClick = true;
 }
 
-Board.prototype.reset = function () {
+Game.prototype.reset = function () {
     this.board = undefined;
     this.revealed = undefined;
     this.column = undefined;
@@ -46,7 +38,7 @@ Board.prototype.reset = function () {
     $("#board").empty();
 };
 
-Board.prototype.init = function (x, y, mines) {
+Game.prototype.init = function (x, y, mines) {
     this.column = x;
     this.row = y;
     this.numMines = mines;
@@ -57,7 +49,6 @@ Board.prototype.init = function (x, y, mines) {
     var lop = 0;
     for (lop = 0; lop < this.column; lop++) {
         /**
-         *
          * @type {Array}
          */
         this.board[lop] = new Array(this.row);
@@ -70,12 +61,12 @@ Board.prototype.init = function (x, y, mines) {
     var lop2 = 0;
     for (lop = 0; lop < this.column; lop++) {
         for (lop2 = 0; lop2 < this.row; lop2++) {
-            $(sprintf(template, lop, lop2, '.')).appendTo("#board");
+            $(sprintf(TEMPLATE_SQUARE, lop, lop2, '.')).appendTo("#board");
         }
     }
 
     // Set width
-    $("#board").width(sizeSquare * this.row);
+    $("#board").width(SIZE_SQUARE * this.row);
 
     // Add callback
     $(".square").click(function (me) {
@@ -92,6 +83,17 @@ Board.prototype.init = function (x, y, mines) {
     }(this));
 };
 
+Game.prototype.print = function () {
+    var lop, lop2;
+    for (lop = 0; lop < this.column; lop++) {
+        for (lop2 = 0; lop2 < this.row; lop2++) {
+            if (this.revealed[lop][lop2]) {
+                // todo
+            }
+        }
+    }
+};
+
 /**
  * -1: already revealed
  * 0: Empty
@@ -99,7 +101,7 @@ Board.prototype.init = function (x, y, mines) {
  * @param {number[]} pos
  * @return {number}
  */
-Board.prototype.reveal = function (pos) {
+Game.prototype.reveal = function (pos) {
     if (this.revealed[pos[0]][pos[1]]) {
         return -1;
     }
@@ -118,7 +120,7 @@ Board.prototype.reveal = function (pos) {
     }
 };
 
-Board.prototype.numOfNearbyMines = function (pos) {
+Game.prototype.numOfNearbyMines = function (pos) {
     var x = pos[0];
     var y = pos[1];
     var lop, lop2;
@@ -136,7 +138,7 @@ Board.prototype.numOfNearbyMines = function (pos) {
     return ret;
 };
 
-Board.prototype.startBFS = function (pos) {
+Game.prototype.startBFS = function (pos) {
     var queue = [pos];
 
     while (queue.length !== 0) {
@@ -177,7 +179,7 @@ Board.prototype.startBFS = function (pos) {
     }
 };
 
-Board.prototype.isGameOver = function () {
+Game.prototype.isGameOver = function () {
     var lop, lop2;
     var numUnrevealed = 0;
     for (lop = 0; lop < this.column; lop++) {
@@ -191,7 +193,7 @@ Board.prototype.isGameOver = function () {
     return numUnrevealed === this.numMines;
 };
 
-Board.prototype.click = function (pos, isLeftClick) {
+Game.prototype.click = function (pos, isLeftClick) {
     if (this.firstClick) {
         this.firstClick = false;
         this.generateMines(pos);
@@ -217,7 +219,7 @@ Board.prototype.click = function (pos, isLeftClick) {
     // Send data
 };
 
-Board.prototype.youWin = function () {
+Game.prototype.youWin = function () {
     alert("YOU WIN!");
 
     var lop, lop2;
@@ -230,11 +232,11 @@ Board.prototype.youWin = function () {
     }
 };
 
-Board.prototype.youLose = function () {
+Game.prototype.youLose = function () {
     alert("You LOSE");
 };
 
-Board.prototype.generateMines = function (pos) {
+Game.prototype.generateMines = function (pos) {
     var lop;
     for (lop = 0; lop < this.numMines; lop++) {
         var x = parseInt(Math.random() * this.column);
@@ -271,5 +273,5 @@ $(document).ready(function () {
     };
 
     $("#game_screen").hide();
-    var board = new Board();
+    var board = new Game();
 });
