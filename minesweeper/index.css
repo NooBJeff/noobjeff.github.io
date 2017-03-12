@@ -23,7 +23,13 @@
     background-color: yellow; }
   #game_screen #board .bombed {
     background-color: red; }
+  #game_screen #board .bomb {
+    background-color: brown; }
   #game_screen #board .numed {
     background-color: gray; }
+  #game_screen #board .flag_correct {
+    background-color: green; }
+  #game_screen #board .flag_wrong {
+    background-color: red; }
 
 /*# sourceMappingURL=index.css.map */
