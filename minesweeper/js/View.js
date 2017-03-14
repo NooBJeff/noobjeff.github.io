@@ -156,7 +156,7 @@ View.prototype.click = function (pos, isLeftClick) {
     }
 
     if (isLeftClick) {
-        if (getElementAt(game.mines, pos)) {
+        if (typeof getElementAt(this.revealed, pos) !== "number" && getElementAt(game.mines, pos)) {
             this.reveal(pos);
             select(pos).removeClass().addClass("square bombed");
             this.youLose();
@@ -175,11 +175,11 @@ View.prototype.click = function (pos, isLeftClick) {
         }
     }
 
-    game.print();
-
     if (game.isGameOver()) {
         this.youWin();
     }
+
+    game.print();
 };
 
 View.prototype.youWin = function () {

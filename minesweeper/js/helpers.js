@@ -44,3 +44,25 @@ function create2DArray(x, y, defaultVal) {
 function getElementAt(arr, pos) {
     return arr[pos[0]][pos[1]];
 }
+
+function contains(arr, pos) {
+    var i;
+    for (i = 0; i < arr.length; i++) {
+        if (arr[i][0] === pos[0] && arr[i][1] === pos[1]) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+function append(original, additional) {
+    var front = additional.shift();
+    while (front !== undefined) {
+        if (!contains(original, front)) {
+            original.push(front);
+        }
+
+        front = additional.shift();
+    }
+}

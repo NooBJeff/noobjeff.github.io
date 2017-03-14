@@ -21,10 +21,8 @@ function Game() {
     this.firstClick = true;
 }
 
-// Callback function to send board info
-Game.prototype.callback = function (data) {
-    console.log(data);
-};
+// Callback function to send boardRecv info
+Game.prototype.bot = undefined;
 
 Game.prototype.reset = function () {
     this.mines = undefined;
@@ -60,7 +58,13 @@ Game.prototype.print = function () {
         }
     }
 
-    this.callback(ret);
+    setTimeout(function (me, ret) {
+        return function () {
+            if (me.bot !== undefined) {
+                me.bot.readBoard(ret);
+            }
+        }
+    }(this, ret), 10);
 };
 
 Game.prototype.numOfNearbyMines = function (pos) {
@@ -70,12 +74,13 @@ Game.prototype.numOfNearbyMines = function (pos) {
     var ret = 0;
     for (lop = x - 1; lop <= x + 1; lop++) {
         for (lop2 = y - 1; lop2 <= y + 1; lop2++) {
-            if ((lop === x) && (lop2 === y)) {
-                continue;
-            }
             if (lop < 0 || lop >= this.column || lop2 < 0 || lop2 >= this.row) {
                 continue;
             }
+            if ((lop === x) && (lop2 === y)) {
+                continue;
+            }
+
             if (this.mines[lop][lop2]) {
                 ret += 1;
             }
@@ -124,6 +129,8 @@ $(document).ready(function () {
         var mines = parseInt($("#input_mines").val());
         game.init(col, row, mines);
         view.init(col, row);
+
+        game.print();
     });
 
     $("#btn_restart").click(function () {
@@ -132,6 +139,9 @@ $(document).ready(function () {
 
         game.reset();
         view.reset();
+        if (game.bot !== undefined) {
+            game.bot.reset();
+        }
     });
 
     window.oncontextmenu = function () {
