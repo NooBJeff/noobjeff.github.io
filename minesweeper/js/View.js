@@ -3,21 +3,28 @@
  * Created by jeff on 2017/3/11.
  */
 
+var SQUARE_TYPE = {
+    UNREVEALED: -1,
+    FLAGGED: -2
+};
+
+/**
+ * 存储用户点击的信息
+ * @constructor
+ */
 function View() {
     /**
-     * [][] -> false: not revealed
-     * -> number: number of mines nearby
-     * -> 'F': flagged
-     * @type {undefined}
+     *
+     * @type {SQUARE_TYPE[][]}
      */
-    this.revealed = undefined;
+    this.squareState = undefined;
 }
 
 View.TEMPLATE_SQUARE = '<div id="%d-%d" class="square"><span>%s</span></div>';
 View.SIZE_SQUARE = 30;
 
 View.prototype.init = function (x, y) {
-    this.revealed = create2DArray(x, y, false);
+    this.squareState = create2DArray(x, y, false);
 
     this.createBoard(x, y);
 
@@ -26,7 +33,7 @@ View.prototype.init = function (x, y) {
 };
 
 View.prototype.reset = function () {
-    this.revealed = undefined;
+    this.squareState = undefined;
     $("#board").empty();
 };
 
@@ -60,7 +67,7 @@ View.prototype.createBoard = function (x, y) {
  * @return {boolean|number}: undefined if already revealed, false if its mine, number if its normal square
  */
 View.prototype.reveal = function (pos) {
-    if (typeof getElementAt(this.revealed, pos) === "number") {
+    if (typeof getElementAt(this.squareState, pos) === "number") {
         // Already revealed
         return false;
     }
@@ -74,7 +81,7 @@ View.prototype.reveal = function (pos) {
 
     // Normal square
     var num = game.numOfNearbyMines(pos);
-    this.revealed[pos[0]][pos[1]] = num;
+    this.squareState[pos[0]][pos[1]] = num;
 
     if (num === 0) {
         select(pos).text('.');
@@ -95,7 +102,7 @@ View.prototype.revealAll = function () {
             if (getElementAt(game.mines, pos)) {
                 select(pos).text("M");
                 // Flag correctly
-                if (getElementAt(this.revealed, pos) === 'F') {
+                if (getElementAt(this.squareState, pos) === 'F') {
                     select(pos).removeClass().addClass("square flag_correct");
                 } else {
                     // You missed this one
@@ -103,7 +110,7 @@ View.prototype.revealAll = function () {
                 }
             } else {
                 // Not mine and you flag it
-                if (getElementAt(this.revealed, pos) === 'F') {
+                if (getElementAt(this.squareState, pos) === 'F') {
                     select(pos).text("X");
                     select(pos).removeClass().addClass("square flag_wrong");
                 }
@@ -136,7 +143,7 @@ View.prototype.startBFS = function (pos) {
                     continue;
                 }
                 // Already revealed
-                if (this.revealed[lop][lop2] !== false) {
+                if (this.squareState[lop][lop2] !== false) {
                     continue;
                 }
                 // Is mine
@@ -150,13 +157,13 @@ View.prototype.startBFS = function (pos) {
 };
 
 View.prototype.click = function (pos, isLeftClick) {
-    if (game.firstClick) {
-        game.firstClick = false;
+    if (game.newRound) {
+        game.newRound = false;
         game.generateMines(pos);
     }
 
     if (isLeftClick) {
-        if (typeof getElementAt(this.revealed, pos) !== "number" && getElementAt(game.mines, pos)) {
+        if (typeof getElementAt(this.squareState, pos) !== "number" && getElementAt(game.mines, pos)) {
             this.reveal(pos);
             select(pos).removeClass().addClass("square bombed");
             this.youLose();
@@ -165,12 +172,12 @@ View.prototype.click = function (pos, isLeftClick) {
         }
     } else {
         // Right Click
-        if (typeof getElementAt(this.revealed, pos) !== "number") {
+        if (typeof getElementAt(this.squareState, pos) !== "number") {
             select(pos).toggleClass("flagged");
-            if (getElementAt(this.revealed, pos) === 'F') {
-                this.revealed[pos[0]][pos[1]] = false;
+            if (getElementAt(this.squareState, pos) === 'F') {
+                this.squareState[pos[0]][pos[1]] = false;
             } else {
-                this.revealed[pos[0]][pos[1]] = 'F';
+                this.squareState[pos[0]][pos[1]] = 'F';
             }
         }
     }

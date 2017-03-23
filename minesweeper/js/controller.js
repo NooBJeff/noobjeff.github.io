@@ -3,9 +3,7 @@
  */
 
 /*
- ME
- FE
-
+ Stores the game board
  */
 function Game() {
     /**
@@ -18,7 +16,11 @@ function Game() {
     this.row = undefined;
     this.numMines = undefined;
 
-    this.firstClick = true;
+    /**
+     * is current round a new round?
+     * @type {boolean}
+     */
+    this.newRound = true;
 }
 
 // Callback function to send boardRecv info
@@ -29,7 +31,7 @@ Game.prototype.reset = function () {
     this.column = undefined;
     this.row = undefined;
     this.numMines = undefined;
-    this.firstClick = true;
+    this.newRound = true;
 };
 
 Game.prototype.init = function (x, y, mines) {
@@ -48,9 +50,9 @@ Game.prototype.print = function () {
     for (lop = 0; lop < this.column; lop++) {
         for (lop2 = 0; lop2 < this.row; lop2++) {
             var pos = [lop, lop2];
-            if (typeof getElementAt(view.revealed, pos) === "number") {
+            if (typeof getElementAt(view.squareState, pos) === "number") {
                 // Revealed
-                ret[lop][lop2] = getElementAt(view.revealed, pos);
+                ret[lop][lop2] = getElementAt(view.squareState, pos);
             } else {
                 // Not revealed
                 ret[lop][lop2] = 'X';
@@ -58,13 +60,13 @@ Game.prototype.print = function () {
         }
     }
 
-    setTimeout(function (me, ret) {
-        return function () {
-            if (me.bot !== undefined) {
-                me.bot.readBoard(ret);
+    if (this.bot !== undefined) {
+        setTimeout(function (me, ret) {
+            return function () {
+                me.bot.ctrReceiveBoardFromGame(ret);
             }
-        }
-    }(this, ret), 10);
+        }(this, ret), 10);
+    }
 };
 
 Game.prototype.numOfNearbyMines = function (pos) {
@@ -94,7 +96,8 @@ Game.prototype.isGameOver = function () {
     var numUnrevealed = 0;
     for (lop = 0; lop < this.column; lop++) {
         for (lop2 = 0; lop2 < this.row; lop2++) {
-            if (typeof view.revealed[lop][lop2] !== "number") {
+            // Is square un-revealed? (One of flagged or un-revealed)
+            if (view.squareState[lop][lop2] < 0) {
                 numUnrevealed += 1;
             }
         }
@@ -137,10 +140,11 @@ $(document).ready(function () {
         $("#start_screen").show();
         $("#game_screen").hide();
 
-        game.reset();
+        game.ctrReset();
         view.reset();
+
         if (game.bot !== undefined) {
-            game.bot.reset();
+            game.bot.ctrReset();
         }
     });
 

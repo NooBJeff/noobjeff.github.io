@@ -12,25 +12,25 @@ function AutoSweeper() {
     this.board = undefined;
     this.x = undefined;
     this.y = undefined;
-    this.firstClick = true;
+    this.newRound = true;
 
     this.arrClickPos = [];
 }
 
 
-AutoSweeper.prototype.reset = function () {
+AutoSweeper.prototype.ctrReset = function () {
     this.boardRecv = undefined;
 
     this.board = undefined;
     this.x = undefined;
     this.y = undefined;
-    this.firstClick = true;
+    this.newRound = true;
 
     this.arrClickPos = [];
 };
 
 
-AutoSweeper.prototype.readBoard = function (data) {
+AutoSweeper.prototype.ctrReceiveBoardFromGame = function (data) {
     this.boardRecv = data;
 
     if (this.board === undefined) {
@@ -176,8 +176,8 @@ AutoSweeper.prototype.next = function () {
 };
 
 AutoSweeper.prototype.clickNext = function () {
-    if (this.firstClick) {
-        this.firstClick = false;
+    if (this.newRound) {
+        this.newRound = false;
 
         var x = parseInt(Math.random() * this.boardRecv.length);
         var y = parseInt(Math.random() * this.boardRecv[x].length);
@@ -190,7 +190,8 @@ AutoSweeper.prototype.clickNext = function () {
         this.findSafePos();
     }
 
-    // 经历上面的寻找仍然没有可点的，那就随机一个吧
+    // No safe pos to click
+    // Random one
     if (this.arrClickPos.length === 0) {
         var x = 0;
         var y = 0;
@@ -217,5 +218,5 @@ AutoSweeper.prototype.clickNext = function () {
 var bot = new AutoSweeper();
 
 $(document).ready(function () {
-    // game.bot = bot;
+    game.bot = bot;
 });
