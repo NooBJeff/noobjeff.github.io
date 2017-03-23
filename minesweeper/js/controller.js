@@ -42,7 +42,9 @@ Game.prototype.init = function (x, y, mines) {
     this.mines = create2DArray(this.column, this.row, false);
 };
 
-// todo
+/**
+ * Send the game board in 2D array to bot
+ */
 Game.prototype.print = function () {
     var ret = create2DArray(this.column, this.row, 0);
 
@@ -50,7 +52,7 @@ Game.prototype.print = function () {
     for (lop = 0; lop < this.column; lop++) {
         for (lop2 = 0; lop2 < this.row; lop2++) {
             var pos = [lop, lop2];
-            if (typeof getElementAt(view.squareState, pos) === "number") {
+            if (getElementAt(view.squareState, pos) >= 0) {
                 // Revealed
                 ret[lop][lop2] = getElementAt(view.squareState, pos);
             } else {
@@ -97,7 +99,7 @@ Game.prototype.isGameOver = function () {
     for (lop = 0; lop < this.column; lop++) {
         for (lop2 = 0; lop2 < this.row; lop2++) {
             // Is square un-revealed? (One of flagged or un-revealed)
-            if (view.squareState[lop][lop2] < 0) {
+            if (getElementAt(view.squareState, [lop, lop2]) < 0) {
                 numUnrevealed += 1;
             }
         }
@@ -140,7 +142,7 @@ $(document).ready(function () {
         $("#start_screen").show();
         $("#game_screen").hide();
 
-        game.ctrReset();
+        game.reset();
         view.reset();
 
         if (game.bot !== undefined) {

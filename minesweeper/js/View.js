@@ -24,7 +24,7 @@ View.TEMPLATE_SQUARE = '<div id="%d-%d" class="square"><span>%s</span></div>';
 View.SIZE_SQUARE = 30;
 
 View.prototype.init = function (x, y) {
-    this.squareState = create2DArray(x, y, false);
+    this.squareState = create2DArray(x, y, SQUARE_TYPE.UNREVEALED);
 
     this.createBoard(x, y);
 
@@ -67,7 +67,7 @@ View.prototype.createBoard = function (x, y) {
  * @return {boolean|number}: undefined if already revealed, false if its mine, number if its normal square
  */
 View.prototype.reveal = function (pos) {
-    if (typeof getElementAt(this.squareState, pos) === "number") {
+    if (getElementAt(this.squareState, pos) >= 0) {
         // Already revealed
         return false;
     }
@@ -102,7 +102,7 @@ View.prototype.revealAll = function () {
             if (getElementAt(game.mines, pos)) {
                 select(pos).text("M");
                 // Flag correctly
-                if (getElementAt(this.squareState, pos) === 'F') {
+                if (getElementAt(this.squareState, pos) === SQUARE_TYPE.FLAGGED) {
                     select(pos).removeClass().addClass("square flag_correct");
                 } else {
                     // You missed this one
@@ -110,7 +110,7 @@ View.prototype.revealAll = function () {
                 }
             } else {
                 // Not mine and you flag it
-                if (getElementAt(this.squareState, pos) === 'F') {
+                if (getElementAt(this.squareState, pos) === SQUARE_TYPE.FLAGGED) {
                     select(pos).text("X");
                     select(pos).removeClass().addClass("square flag_wrong");
                 }
@@ -143,7 +143,7 @@ View.prototype.startBFS = function (pos) {
                     continue;
                 }
                 // Already revealed
-                if (this.squareState[lop][lop2] !== false) {
+                if (getElementAt(this.squareState, [lop, lop2]) >= 0) {
                     continue;
                 }
                 // Is mine
@@ -157,27 +157,42 @@ View.prototype.startBFS = function (pos) {
 };
 
 View.prototype.click = function (pos, isLeftClick) {
+    function callOnEnd() {
+        game.print();
+    }
+
     if (game.newRound) {
         game.newRound = false;
         game.generateMines(pos);
     }
 
+    if (getElementAt(this.squareState, pos) >= 0) {
+        // Clicks on number square
+        // Do nothing
+        return;
+    }
+
+    console.log("Here");
+
     if (isLeftClick) {
-        if (typeof getElementAt(this.squareState, pos) !== "number" && getElementAt(game.mines, pos)) {
+        if (getElementAt(game.mines, pos)) {
+            // Is bomb
             this.reveal(pos);
             select(pos).removeClass().addClass("square bombed");
             this.youLose();
         } else {
+            // Normal un-revealed squares
             this.startBFS(pos);
         }
     } else {
         // Right Click
-        if (typeof getElementAt(this.squareState, pos) !== "number") {
+        if (getElementAt(this.squareState, pos) < 0) {
+            // Must not be number squares
             select(pos).toggleClass("flagged");
-            if (getElementAt(this.squareState, pos) === 'F') {
-                this.squareState[pos[0]][pos[1]] = false;
+            if (getElementAt(this.squareState, pos) === SQUARE_TYPE.FLAGGED) {
+                this.squareState[pos[0]][pos[1]] = SQUARE_TYPE.UNREVEALED;
             } else {
-                this.squareState[pos[0]][pos[1]] = 'F';
+                this.squareState[pos[0]][pos[1]] = SQUARE_TYPE.FLAGGED;
             }
         }
     }
@@ -186,11 +201,15 @@ View.prototype.click = function (pos, isLeftClick) {
         this.youWin();
     }
 
-    game.print();
+    callOnEnd();
 };
 
 View.prototype.youWin = function () {
     this.revealAll();
+
+    if (game.bot !== undefined) {
+        game.bot.ctrGameOver();
+    }
 
     setTimeout(function () {
         alert("YOU WIN!");
@@ -199,6 +218,10 @@ View.prototype.youWin = function () {
 
 View.prototype.youLose = function () {
     this.revealAll();
+
+    if (game.bot !== undefined) {
+        game.bot.ctrGameOver();
+    }
 
     setTimeout(function () {
         alert("YOU LOSE!");

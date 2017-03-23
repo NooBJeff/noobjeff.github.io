@@ -13,6 +13,7 @@ function AutoSweeper() {
     this.x = undefined;
     this.y = undefined;
     this.newRound = true;
+    this.roundStarted = false;
 
     this.arrClickPos = [];
 }
@@ -25,12 +26,19 @@ AutoSweeper.prototype.ctrReset = function () {
     this.x = undefined;
     this.y = undefined;
     this.newRound = true;
+    this.roundStarted = false;
 
     this.arrClickPos = [];
 };
 
 
 AutoSweeper.prototype.ctrReceiveBoardFromGame = function (data) {
+    console.log("Recved");
+    // Starts the round if not already
+    if (!this.roundStarted) {
+        this.roundStarted = true;
+    }
+
     this.boardRecv = data;
 
     if (this.board === undefined) {
@@ -53,6 +61,10 @@ AutoSweeper.prototype.ctrReceiveBoardFromGame = function (data) {
     // }
 
     this.clickNext();
+};
+
+AutoSweeper.prototype.ctrGameOver = function () {
+    this.roundStarted = false;
 };
 
 AutoSweeper.prototype.arrUnrevealedNearby = function (pos) {
@@ -210,8 +222,15 @@ AutoSweeper.prototype.clickNext = function () {
         return;
     }
 
+    if (!this.roundStarted) {
+        return;
+    }
+
     console.log("Click", front);
-    view.click(front, true);
+
+    setTimeout(function () {
+        view.click(front, true);
+    });
 };
 
 
