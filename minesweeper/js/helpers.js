@@ -45,6 +45,12 @@ function getElementAt(arr, pos) {
     return arr[pos[0]][pos[1]];
 }
 
+/**
+ * Return true if the given pos is in the array
+ * @param {Array}arr
+ * @param {Array}pos
+ * @returns {boolean}
+ */
 function contains(arr, pos) {
     var i;
     for (i = 0; i < arr.length; i++) {
@@ -56,6 +62,11 @@ function contains(arr, pos) {
     return false;
 }
 
+/**
+ * Merge two list
+ * @param {Array}original
+ * @param {Array}additional
+ */
 function append(original, additional) {
     var front = additional.shift();
     while (front !== undefined) {

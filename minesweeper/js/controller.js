@@ -44,6 +44,7 @@ Game.prototype.init = function (x, y, mines) {
 
 /**
  * Send the game board in 2D array to bot
+ * @return {Array} game board info
  */
 Game.prototype.print = function () {
     var ret = create2DArray(this.column, this.row, 0);
@@ -62,13 +63,7 @@ Game.prototype.print = function () {
         }
     }
 
-    if (this.bot !== undefined) {
-        setTimeout(function (me, ret) {
-            return function () {
-                me.bot.ctrReceiveBoardFromGame(ret);
-            }
-        }(this, ret), 10);
-    }
+    return ret;
 };
 
 Game.prototype.numOfNearbyMines = function (pos) {
@@ -134,8 +129,6 @@ $(document).ready(function () {
         var mines = parseInt($("#input_mines").val());
         game.init(col, row, mines);
         view.init(col, row);
-
-        game.print();
     });
 
     $("#btn_restart").click(function () {

@@ -38,8 +38,8 @@ View.prototype.reset = function () {
 };
 
 View.prototype.createBoard = function (x, y) {
-    var lop = 0;
-    var lop2 = 0;
+    var lop;
+    var lop2;
     for (lop = 0; lop < x; lop++) {
         for (lop2 = 0; lop2 < y; lop2++) {
             $(sprintf(View.TEMPLATE_SQUARE, lop, lop2, '.')).appendTo("#board");
@@ -64,19 +64,19 @@ View.prototype.createBoard = function (x, y) {
 /**
  *
  * @param pos
- * @return {boolean|number}: undefined if already revealed, false if its mine, number if its normal square
+ * @return {number}: -2 if already revealed, -1 if its mine, number if its normal square
  */
 View.prototype.reveal = function (pos) {
     if (getElementAt(this.squareState, pos) >= 0) {
         // Already revealed
-        return false;
+        return -2;
     }
 
     if (getElementAt(game.mines, pos)) {
         // Clicked on a mine, game over
         select(pos).text("M");
         select(pos).removeClass().addClass('square bombed');
-        return true;
+        return -1;
     }
 
     // Normal square
@@ -131,25 +131,29 @@ View.prototype.startBFS = function (pos) {
 
         var result = this.reveal(front);
 
-        if (result === false || result !== 0) {
-            // End of BFS
+        // Only continue the BFS iff result === 0
+        // i.e the num of mines nearby is 0
+        if (result !== 0) {
             continue;
         }
 
+        // Search for nearby squares to reveal
         var lop, lop2;
         for (lop = front[0] - 1; lop <= front[0] + 1; lop++) {
             for (lop2 = front[1] - 1; lop2 <= front[1] + 1; lop2++) {
                 if (lop < 0 || lop >= game.column || lop2 < 0 || lop2 >= game.row) {
+                    // Ignore if goes out of boundary
                     continue;
                 }
-                // Already revealed
+                // Ignore if its already revealed
                 if (getElementAt(this.squareState, [lop, lop2]) >= 0) {
                     continue;
                 }
-                // Is mine
+                // Ignore if there is a mine
                 if (getElementAt(game.mines, front)) {
                     continue;
                 }
+
                 queue.push([lop, lop2]);
             }
         }
@@ -157,22 +161,15 @@ View.prototype.startBFS = function (pos) {
 };
 
 View.prototype.click = function (pos, isLeftClick) {
-    function callOnEnd() {
-        game.print();
-    }
-
     if (game.newRound) {
         game.newRound = false;
         game.generateMines(pos);
     }
 
-    if (getElementAt(this.squareState, pos) >= 0) {
-        // Clicks on number square
-        // Do nothing
+    // Do nothing if not click on unrevealed squares
+    if (getElementAt(this.squareState, pos) !== SQUARE_TYPE.UNREVEALED) {
         return;
     }
-
-    console.log("Here");
 
     if (isLeftClick) {
         if (getElementAt(game.mines, pos)) {
@@ -200,8 +197,6 @@ View.prototype.click = function (pos, isLeftClick) {
     if (game.isGameOver()) {
         this.youWin();
     }
-
-    callOnEnd();
 };
 
 View.prototype.youWin = function () {
@@ -213,7 +208,7 @@ View.prototype.youWin = function () {
 
     setTimeout(function () {
         alert("YOU WIN!");
-    }, 200);
+    }, 50);
 };
 
 View.prototype.youLose = function () {
@@ -225,7 +220,7 @@ View.prototype.youLose = function () {
 
     setTimeout(function () {
         alert("YOU LOSE!");
-    }, 200);
+    }, 50);
 };
 
 var view = new View();

@@ -11,6 +11,7 @@
     white-space: nowrap;
     margin: 0;
     background-color: black;
+    color: black;
     border-right: 1px solid blue;
     border-bottom: 1px solid blue;
     padding: 1px;
@@ -18,9 +19,11 @@
     box-sizing: border-box;
     text-align: center; }
   #game_screen #board .revealed {
-    background-color: white; }
+    background-color: white;
+    color: white; }
   #game_screen #board .flagged {
-    background-color: yellow; }
+    background-color: yellow;
+    color: yellow; }
   #game_screen #board .bombed {
     background-color: red; }
   #game_screen #board .bomb {
