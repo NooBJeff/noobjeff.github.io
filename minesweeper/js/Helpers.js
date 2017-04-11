@@ -77,3 +77,11 @@ function append(original, additional) {
         front = additional.shift();
     }
 }
+
+/**
+ * Clear the click event handler from square class
+ * Only do this after game over
+ */
+function clearCallbackFromSquares() {
+    $(".square").off("click");
+}

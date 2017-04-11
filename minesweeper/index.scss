@@ -10,7 +10,7 @@
     $colorRevealed: white;
     $colorFlagged: yellow;
     $colorBombed: red;
-    $colorBomb: brown;
+    $colorBombMissed: orange;
     $colorNumed: gray;
     $colorFlagCorrect: green;
     $colorFlagWrong: red;
@@ -57,8 +57,8 @@
       background-color: $colorBombed;
     }
 
-    .bomb {
-      background-color: $colorBomb;
+    .bomb_missed {
+      background-color: $colorBombMissed;
     }
 
     .numed {

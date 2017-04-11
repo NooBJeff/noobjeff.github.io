@@ -30,8 +30,8 @@
     color: yellow; }
   #game_screen #board .bombed {
     background-color: red; }
-  #game_screen #board .bomb {
-    background-color: brown; }
+  #game_screen #board .bomb_missed {
+    background-color: orange; }
   #game_screen #board .numed {
     background-color: gray; }
   #game_screen #board .flag_correct {

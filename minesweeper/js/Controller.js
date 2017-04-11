@@ -8,7 +8,7 @@
 function Game() {
     /**
      * Game 2D
-     * @type {Array[]}
+     * @type {Array[]} true if there is a mine
      */
     this.mines = undefined;
 
@@ -88,7 +88,7 @@ Game.prototype.numOfNearbyMines = function (pos) {
     return ret;
 };
 
-Game.prototype.isGameOver = function () {
+Game.prototype.allMinesFlagged = function () {
     var lop, lop2;
     var numUnrevealed = 0;
     for (lop = 0; lop < this.column; lop++) {
@@ -120,6 +120,7 @@ Game.prototype.generateMines = function (pos) {
 var game = new Game();
 
 $(document).ready(function () {
+    // Start Game Button
     $("#btn_start").click(function () {
         $("#start_screen").hide();
         $("#game_screen").show();
@@ -131,6 +132,7 @@ $(document).ready(function () {
         view.init(col, row);
     });
 
+    // Restart Game Button
     $("#btn_restart").click(function () {
         $("#start_screen").show();
         $("#game_screen").hide();
@@ -143,6 +145,7 @@ $(document).ready(function () {
         }
     });
 
+    // Disable Right Click
     window.oncontextmenu = function () {
         return false;
     };

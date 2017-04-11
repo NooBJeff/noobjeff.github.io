@@ -14,13 +14,18 @@ var SQUARE_TYPE = {
  */
 function View() {
     /**
-     *
+     * Stores board info during game
+     * Is this square:
+     * 1. Flagged?
+     * 2. Numbered?
+     * 3. Un-revealed?
      * @type {SQUARE_TYPE[][]}
      */
     this.squareState = undefined;
 }
 
 View.TEMPLATE_SQUARE = '<div id="%d-%d" class="square"><span>%s</span></div>';
+// Size of the square in pixel
 View.SIZE_SQUARE = 30;
 
 View.prototype.init = function (x, y) {
@@ -74,7 +79,7 @@ View.prototype.reveal = function (pos) {
 
     if (getElementAt(game.mines, pos)) {
         // Clicked on a mine, game over
-        select(pos).text("M");
+        select(pos).text("X");
         select(pos).removeClass().addClass('square bombed');
         return -1;
     }
@@ -94,23 +99,38 @@ View.prototype.reveal = function (pos) {
     return num;
 };
 
-View.prototype.revealAll = function () {
+/**
+ * Calls this inside Game Over function
+ * @param {Boolean} isplayerWin
+ * @param {Array} lastPosClicked
+ */
+View.prototype.revealAllSquaresAfterGameOver = function (isplayerWin, lastPosClicked) {
     var lop, lop2;
     for (lop = 0; lop < game.column; lop++) {
         for (lop2 = 0; lop2 < game.row; lop2++) {
             var pos = [lop, lop2];
+            if (lop === lastPosClicked[0] && lop2 === lastPosClicked[1]) {
+                // Skip the last square clicked by user
+                continue;
+            }
+
             if (getElementAt(game.mines, pos)) {
-                select(pos).text("M");
-                // Flag correctly
-                if (getElementAt(this.squareState, pos) === SQUARE_TYPE.FLAGGED) {
+                // There is a bomb
+
+                if (getElementAt(this.squareState, pos) === SQUARE_TYPE.FLAGGED || isplayerWin) {
+                    // Flag correctly
+                    // OR
+                    // You Win, so we mark all the mines here, even player does not explicitly mark them
+                    select(pos).text("✓");
                     select(pos).removeClass().addClass("square flag_correct");
                 } else {
                     // You missed this one
-                    select(pos).removeClass().addClass("square bomb");
+                    select(pos).text("X");
+                    select(pos).removeClass().addClass("square bomb_missed");
                 }
             } else {
-                // Not mine and you flag it
                 if (getElementAt(this.squareState, pos) === SQUARE_TYPE.FLAGGED) {
+                    // There is no mine and you flag it
                     select(pos).text("X");
                     select(pos).removeClass().addClass("square flag_wrong");
                 }
@@ -119,6 +139,10 @@ View.prototype.revealAll = function () {
     }
 };
 
+/**
+ * Start the BFS after an empty square being clicked by user
+ * @param pos
+ */
 View.prototype.startBFS = function (pos) {
     var queue = [pos];
 
@@ -160,67 +184,68 @@ View.prototype.startBFS = function (pos) {
     }
 };
 
+/**
+ * Click on square
+ * @param {Array} pos
+ * @param {Boolean} isLeftClick
+ */
 View.prototype.click = function (pos, isLeftClick) {
     if (game.newRound) {
         game.newRound = false;
         game.generateMines(pos);
     }
 
-    // Do nothing if not click on unrevealed squares
-    if (getElementAt(this.squareState, pos) !== SQUARE_TYPE.UNREVEALED) {
-        return;
-    }
-
     if (isLeftClick) {
+        if (getElementAt(this.squareState, pos) === SQUARE_TYPE.FLAGGED) {
+            // Do nothing if click on flagged square
+            return;
+        }
+
         if (getElementAt(game.mines, pos)) {
             // Is bomb
             this.reveal(pos);
-            select(pos).removeClass().addClass("square bombed");
-            this.youLose();
+            this.gameOver(false, pos);
         } else {
             // Normal un-revealed squares
             this.startBFS(pos);
         }
     } else {
         // Right Click
-        if (getElementAt(this.squareState, pos) < 0) {
-            // Must not be number squares
-            select(pos).toggleClass("flagged");
-            if (getElementAt(this.squareState, pos) === SQUARE_TYPE.FLAGGED) {
-                this.squareState[pos[0]][pos[1]] = SQUARE_TYPE.UNREVEALED;
-            } else {
-                this.squareState[pos[0]][pos[1]] = SQUARE_TYPE.FLAGGED;
-            }
+        if (getElementAt(this.squareState, pos) >= 0) {
+            // Do nothing if click on number square
+            return;
+        }
+
+        select(pos).toggleClass("flagged");
+        if (getElementAt(this.squareState, pos) === SQUARE_TYPE.FLAGGED) {
+            this.squareState[pos[0]][pos[1]] = SQUARE_TYPE.UNREVEALED;
+        } else {
+            this.squareState[pos[0]][pos[1]] = SQUARE_TYPE.FLAGGED;
         }
     }
 
-    if (game.isGameOver()) {
-        this.youWin();
+    if (game.allMinesFlagged()) {
+        this.gameOver(true, pos);
     }
 };
 
-View.prototype.youWin = function () {
-    this.revealAll();
+/**
+ * Calls after Game Over
+ * @param {Boolean} isPlayerWin: Player win or lose?
+ * @param {Array} lastPosClicked
+ */
+View.prototype.gameOver = function (isPlayerWin, lastPosClicked) {
+    this.revealAllSquaresAfterGameOver(isPlayerWin, lastPosClicked);
+    clearCallbackFromSquares();
 
     if (game.bot !== undefined) {
         game.bot.ctrGameOver();
     }
 
     setTimeout(function () {
-        alert("YOU WIN!");
+        alert(isPlayerWin ? "YOU WIN!" : "YOU LOSE!");
     }, 50);
 };
 
-View.prototype.youLose = function () {
-    this.revealAll();
-
-    if (game.bot !== undefined) {
-        game.bot.ctrGameOver();
-    }
-
-    setTimeout(function () {
-        alert("YOU LOSE!");
-    }, 50);
-};
 
 var view = new View();
