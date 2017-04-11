@@ -8,10 +8,14 @@
     width: 30px;
     height: 30px;
     font-size: 18px;
+    color: black;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
     white-space: nowrap;
     margin: 0;
     background-color: black;
-    color: black;
     border-right: 1px solid blue;
     border-bottom: 1px solid blue;
     padding: 1px;
