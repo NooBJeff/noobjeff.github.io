@@ -26,7 +26,7 @@ function View() {
 
 View.TEMPLATE_SQUARE = '<div id="%d-%d" class="square"><span>%s</span></div>';
 // Size of the square in pixel
-View.SIZE_SQUARE = 30;
+View.SIZE_SQUARE = 50;
 
 View.prototype.init = function (x, y) {
     this.squareState = create2DArray(x, y, SQUARE_TYPE.UNREVEALED);

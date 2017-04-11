@@ -4,16 +4,16 @@
 
 #game_screen {
   #board {
-    $sizeSquare: 30px;
+    $sizeSquare: 50px;
     $colorBorder: blue;
     $colorSquare: black;
     $colorRevealed: white;
     $colorFlagged: yellow;
     $colorBombed: red;
-    $colorBombMissed: orange;
+    $colorBombMissed: red;
     $colorNumed: gray;
     $colorFlagCorrect: green;
-    $colorFlagWrong: red;
+    $colorFlagWrong: yellow;
 
     border-top: 1px solid $colorBorder;
     border-left: 1px solid $colorBorder;
