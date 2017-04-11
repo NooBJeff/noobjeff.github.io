@@ -5,9 +5,14 @@
   border-top: 1px solid blue;
   border-left: 1px solid blue; }
   #game_screen #board .square {
-    width: 30px;
-    height: 30px;
-    font-size: 18px;
+    width: 50px;
+    height: 50px;
+    font-size: 30px;
+    color: black;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
     white-space: nowrap;
     margin: 0;
     background-color: black;
@@ -18,18 +23,20 @@
     box-sizing: border-box;
     text-align: center; }
   #game_screen #board .revealed {
-    background-color: white; }
+    background-color: white;
+    color: white; }
   #game_screen #board .flagged {
-    background-color: yellow; }
+    background-color: yellow;
+    color: yellow; }
   #game_screen #board .bombed {
     background-color: red; }
-  #game_screen #board .bomb {
-    background-color: brown; }
+  #game_screen #board .bomb_missed {
+    background-color: red; }
   #game_screen #board .numed {
     background-color: gray; }
   #game_screen #board .flag_correct {
     background-color: green; }
   #game_screen #board .flag_wrong {
-    background-color: red; }
+    background-color: yellow; }
 
 /*# sourceMappingURL=index.css.map */

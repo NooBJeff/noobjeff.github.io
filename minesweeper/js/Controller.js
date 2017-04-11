@@ -3,14 +3,12 @@
  */
 
 /*
- ME
- FE
-
+ Stores the game board
  */
 function Game() {
     /**
      * Game 2D
-     * @type {Array[]}
+     * @type {Array[]} true if there is a mine
      */
     this.mines = undefined;
 
@@ -18,20 +16,22 @@ function Game() {
     this.row = undefined;
     this.numMines = undefined;
 
-    this.firstClick = true;
+    /**
+     * is current round a new round?
+     * @type {boolean}
+     */
+    this.newRound = true;
 }
 
-// Callback function to send board info
-Game.prototype.callback = function (data) {
-    console.log(data);
-};
+// Callback function to send boardRecv info
+Game.prototype.bot = undefined;
 
 Game.prototype.reset = function () {
     this.mines = undefined;
     this.column = undefined;
     this.row = undefined;
     this.numMines = undefined;
-    this.firstClick = true;
+    this.newRound = true;
 };
 
 Game.prototype.init = function (x, y, mines) {
@@ -42,7 +42,10 @@ Game.prototype.init = function (x, y, mines) {
     this.mines = create2DArray(this.column, this.row, false);
 };
 
-// todo
+/**
+ * Send the game board in 2D array to bot
+ * @return {Array} game board info
+ */
 Game.prototype.print = function () {
     var ret = create2DArray(this.column, this.row, 0);
 
@@ -50,9 +53,9 @@ Game.prototype.print = function () {
     for (lop = 0; lop < this.column; lop++) {
         for (lop2 = 0; lop2 < this.row; lop2++) {
             var pos = [lop, lop2];
-            if (typeof getElementAt(view.revealed, pos) === "number") {
+            if (getElementAt(view.squareState, pos) >= 0) {
                 // Revealed
-                ret[lop][lop2] = getElementAt(view.revealed, pos);
+                ret[lop][lop2] = getElementAt(view.squareState, pos);
             } else {
                 // Not revealed
                 ret[lop][lop2] = 'X';
@@ -60,7 +63,7 @@ Game.prototype.print = function () {
         }
     }
 
-    this.callback(ret);
+    return ret;
 };
 
 Game.prototype.numOfNearbyMines = function (pos) {
@@ -70,12 +73,13 @@ Game.prototype.numOfNearbyMines = function (pos) {
     var ret = 0;
     for (lop = x - 1; lop <= x + 1; lop++) {
         for (lop2 = y - 1; lop2 <= y + 1; lop2++) {
-            if ((lop === x) && (lop2 === y)) {
-                continue;
-            }
             if (lop < 0 || lop >= this.column || lop2 < 0 || lop2 >= this.row) {
                 continue;
             }
+            if ((lop === x) && (lop2 === y)) {
+                continue;
+            }
+
             if (this.mines[lop][lop2]) {
                 ret += 1;
             }
@@ -84,12 +88,13 @@ Game.prototype.numOfNearbyMines = function (pos) {
     return ret;
 };
 
-Game.prototype.isGameOver = function () {
+Game.prototype.allMinesFlagged = function () {
     var lop, lop2;
     var numUnrevealed = 0;
     for (lop = 0; lop < this.column; lop++) {
         for (lop2 = 0; lop2 < this.row; lop2++) {
-            if (typeof view.revealed[lop][lop2] !== "number") {
+            // Is square un-revealed? (One of flagged or un-revealed)
+            if (getElementAt(view.squareState, [lop, lop2]) < 0) {
                 numUnrevealed += 1;
             }
         }
@@ -115,6 +120,7 @@ Game.prototype.generateMines = function (pos) {
 var game = new Game();
 
 $(document).ready(function () {
+    // Start Game Button
     $("#btn_start").click(function () {
         $("#start_screen").hide();
         $("#game_screen").show();
@@ -126,14 +132,20 @@ $(document).ready(function () {
         view.init(col, row);
     });
 
+    // Restart Game Button
     $("#btn_restart").click(function () {
         $("#start_screen").show();
         $("#game_screen").hide();
 
         game.reset();
         view.reset();
+
+        if (game.bot !== undefined) {
+            game.bot.ctrReset();
+        }
     });
 
+    // Disable Right Click
     window.oncontextmenu = function () {
         return false;
     };
