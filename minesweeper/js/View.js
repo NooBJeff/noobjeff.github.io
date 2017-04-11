@@ -85,7 +85,7 @@ View.prototype.reveal = function (pos) {
     }
 
     // Normal square
-    var num = game.numOfNearbyMines(pos);
+    var num = game.numMinesNearby(pos);
     this.squareState[pos[0]][pos[1]] = num;
 
     if (num === 0) {
@@ -190,6 +190,12 @@ View.prototype.startBFS = function (pos) {
  * @param {Boolean} isLeftClick
  */
 View.prototype.click = function (pos, isLeftClick) {
+    function callOnExit() {
+        setTimeout(function () {
+            game.onGameReadyFunc();
+        });
+    }
+
     if (game.newRound) {
         game.newRound = false;
         game.generateMines(pos);
@@ -198,13 +204,15 @@ View.prototype.click = function (pos, isLeftClick) {
     if (isLeftClick) {
         if (getElementAt(this.squareState, pos) === SQUARE_TYPE.FLAGGED) {
             // Do nothing if click on flagged square
+            callOnExit();
             return;
         }
 
         if (getElementAt(game.mines, pos)) {
             // Is bomb
             this.reveal(pos);
-            this.gameOver(false, pos);
+            game.gameOver(false, pos);
+            return;
         } else {
             // Normal un-revealed squares
             this.startBFS(pos);
@@ -213,6 +221,7 @@ View.prototype.click = function (pos, isLeftClick) {
         // Right Click
         if (getElementAt(this.squareState, pos) >= 0) {
             // Do nothing if click on number square
+            callOnExit();
             return;
         }
 
@@ -224,28 +233,12 @@ View.prototype.click = function (pos, isLeftClick) {
         }
     }
 
-    if (game.allMinesFlagged()) {
-        this.gameOver(true, pos);
-    }
-};
-
-/**
- * Calls after Game Over
- * @param {Boolean} isPlayerWin: Player win or lose?
- * @param {Array} lastPosClicked
- */
-View.prototype.gameOver = function (isPlayerWin, lastPosClicked) {
-    this.revealAllSquaresAfterGameOver(isPlayerWin, lastPosClicked);
-    clearCallbackFromSquares();
-
-    if (game.bot !== undefined) {
-        game.bot.ctrGameOver();
+    if (game.areAllMinesFlagged()) {
+        game.gameOver(true, pos);
+        return;
     }
 
-    setTimeout(function () {
-        alert(isPlayerWin ? "YOU WIN!" : "YOU LOSE!");
-    }, 50);
+    callOnExit();
 };
-
 
 var view = new View();

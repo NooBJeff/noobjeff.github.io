@@ -2,6 +2,10 @@
  * Created by jeff on 2017/3/11.
  */
 
+function defaultFunc() {
+    // Do nothing
+};
+
 /**
  *
  * @param {number[]} pos

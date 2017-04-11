@@ -29,7 +29,7 @@
     background-color: yellow;
     color: yellow; }
   #game_screen #board .bombed {
-    background-color: red; }
+    background-color: #c70000; }
   #game_screen #board .bomb_missed {
     background-color: red; }
   #game_screen #board .numed {
