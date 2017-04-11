@@ -66,7 +66,7 @@ Game.prototype.print = function () {
     return ret;
 };
 
-Game.prototype.numOfNearbyMines = function (pos) {
+Game.prototype.numMinesNearby = function (pos) {
     var x = pos[0];
     var y = pos[1];
     var lop, lop2;
@@ -88,7 +88,7 @@ Game.prototype.numOfNearbyMines = function (pos) {
     return ret;
 };
 
-Game.prototype.allMinesFlagged = function () {
+Game.prototype.areAllMinesFlagged = function () {
     var lop, lop2;
     var numUnrevealed = 0;
     for (lop = 0; lop < this.column; lop++) {
@@ -117,6 +117,38 @@ Game.prototype.generateMines = function (pos) {
     }
 };
 
+/**
+ * Calls after Game Over
+ * @param {Boolean} isPlayerWin: Player win or lose?
+ * @param {Array} lastPosClicked
+ */
+Game.prototype.gameOver = function (isPlayerWin, lastPosClicked) {
+    view.revealAllSquaresAfterGameOver(isPlayerWin, lastPosClicked);
+    clearCallbackFromSquares();
+
+    wrapper.gameOver();
+
+    setTimeout(function () {
+        alert(isPlayerWin ? "YOU WIN!" : "YOU LOSE!");
+    }, 50);
+};
+
+//////////
+// Event
+//////////
+
+Game.prototype.onGameReady = function (funcCode) {
+    this.onGameReadyFunc = funcCode;
+};
+
+Game.prototype.onGameReadyFunc = defaultFunc;
+
+Game.prototype.onGameOver = function (funcCode) {
+    this.onGameOverFunc = funcCode;
+};
+
+Game.prototype.onGameOverFunc = defaultFunc;
+
 var game = new Game();
 
 $(document).ready(function () {
@@ -130,6 +162,8 @@ $(document).ready(function () {
         var mines = parseInt($("#input_mines").val());
         game.init(col, row, mines);
         view.init(col, row);
+
+        // wrapper.run();
     });
 
     // Restart Game Button
@@ -140,9 +174,7 @@ $(document).ready(function () {
         game.reset();
         view.reset();
 
-        if (game.bot !== undefined) {
-            game.bot.ctrReset();
-        }
+        wrapper.reset();
     });
 
     // Disable Right Click

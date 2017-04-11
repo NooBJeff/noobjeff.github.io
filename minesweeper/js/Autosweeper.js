@@ -13,11 +13,9 @@ function AutoSweeper() {
     this.x = undefined;
     this.y = undefined;
     this.newRound = true;
-    this.roundStarted = false;
 
     this.arrClickPos = [];
 }
-
 
 AutoSweeper.prototype.ctrReset = function () {
     this.boardRecv = undefined;
@@ -26,18 +24,11 @@ AutoSweeper.prototype.ctrReset = function () {
     this.x = undefined;
     this.y = undefined;
     this.newRound = true;
-    this.roundStarted = false;
 
     this.arrClickPos = [];
 };
 
-
 AutoSweeper.prototype.ctrReceiveBoardFromGame = function (data) {
-    // Starts the round if not already
-    if (!this.roundStarted) {
-        this.roundStarted = true;
-    }
-
     this.boardRecv = data;
 
     if (this.board === undefined) {
@@ -58,10 +49,6 @@ AutoSweeper.prototype.ctrReceiveBoardFromGame = function (data) {
     //         }
     //     }
     // }
-};
-
-AutoSweeper.prototype.ctrGameOver = function () {
-    this.roundStarted = false;
 };
 
 AutoSweeper.prototype.arrUnrevealedNearby = function (pos) {
@@ -223,22 +210,53 @@ AutoSweeper.prototype.clickNext = function () {
         return null;
     }
 
-    if (!this.roundStarted) {
-        return null;
-    }
-
     return front;
 };
 
+function Wrapper() {
+    this.nextMoveReady = false;
+
+    this.jobID = undefined;
+}
+
+Wrapper.prototype.addCallbackToOnGameReadyEvent = function () {
+    game.onGameReady(function (me) {
+        return function () {
+            me.nextMoveReady = true;
+        }
+    }(this));
+};
+
+/**
+ * Start the bot
+ */
+Wrapper.prototype.run = function () {
+    this.nextMoveReady = true;
+
+    this.jobID = setInterval(function (me) {
+        return function () {
+            if (me.nextMoveReady) {
+                me.nextMoveReady = false;
+                bot.ctrReceiveBoardFromGame(game.print());
+                view.click(bot.clickNext(), true);
+            }
+        };
+    }(this), 500);
+};
+
+Wrapper.prototype.gameOver = function () {
+    clearInterval(this.jobID);
+    this.jobID = undefined;
+    this.nextMoveReady = false
+};
+
+Wrapper.prototype.reset = function () {
+    bot.ctrReset();
+};
 
 var bot = new AutoSweeper();
+var wrapper = new Wrapper();
 
 $(document).ready(function () {
-    // game.bot = bot;
-
-    // var jobID = setInterval(function () {
-    //     bot.ctrReceiveBoardFromGame(game.print());
-    //
-    //     view.click(bot.clickNext(), true);
-    // }, 10);
+    wrapper.addCallbackToOnGameReadyEvent();
 });
