@@ -163,7 +163,7 @@ $(document).ready(function () {
         game.init(col, row, mines);
         view.init(col, row);
 
-        // wrapper.run();
+        wrapper.run();
     });
 
     // Restart Game Button

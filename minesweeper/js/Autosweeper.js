@@ -3,20 +3,32 @@
  */
 
 function AutoSweeper() {
+    this.board = undefined;
     this.boardRecv = undefined;
 
     /**
-     * 1: mine
-     * @type {undefined}
+     * The size of board
+     * Number of rows
+     * @type {number}
      */
-    this.board = undefined;
     this.x = undefined;
+    /**
+     * The size of board
+     * Number of columns
+     * @type {number}
+     */
     this.y = undefined;
+    /**
+     * Is this round a new round?
+     * (i.e No square being clicked)
+     * @type {boolean}
+     */
     this.newRound = true;
-
-    this.arrClickPos = [];
 }
 
+/**
+ * Reset AutoSweeper
+ */
 AutoSweeper.prototype.ctrReset = function () {
     this.boardRecv = undefined;
 
@@ -24,10 +36,12 @@ AutoSweeper.prototype.ctrReset = function () {
     this.x = undefined;
     this.y = undefined;
     this.newRound = true;
-
-    this.arrClickPos = [];
 };
 
+/**
+ * Receive the game board info from Game
+ * @param data
+ */
 AutoSweeper.prototype.ctrReceiveBoardFromGame = function (data) {
     this.boardRecv = data;
 
@@ -36,21 +50,13 @@ AutoSweeper.prototype.ctrReceiveBoardFromGame = function (data) {
         this.y = data[0].length;
         this.board = create2DArray(this.x, this.y, false);
     }
-
-    // var lop, lop2;
-    // for (lop = 0; lop < this.x; lop++) {
-    //     for (lop2 = 0; lop2 < this.y; lop2++) {
-    //         if (this.board[lop][lop2] === 1) {
-    //             continue;
-    //         }
-    //         if (this.boardRecv[lop][lop2] !== "x") {
-    //             // Numbers
-    //             this.board[lop][lop2] = 0;
-    //         }
-    //     }
-    // }
 };
 
+/**
+ * Find all un-revealed squares nearby
+ * @param pos
+ * @return {Array}
+ */
 AutoSweeper.prototype.arrUnrevealedNearby = function (pos) {
     var ret = [];
     var lop, lop2;
@@ -97,6 +103,11 @@ AutoSweeper.prototype.arrSafePos = function (pos) {
     return ret;
 };
 
+/**
+ * Count how many already-known mines are there nearby
+ * @param pos
+ * @return {number}
+ */
 AutoSweeper.prototype.numMinesNearBy = function (pos) {
     var ret = 0;
     var lop, lop2;
