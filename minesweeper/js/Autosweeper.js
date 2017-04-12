@@ -172,19 +172,19 @@ AutoSweeper.prototype.nextPosToClick = function () {
         var _x = parseInt(Math.random() * this.x);
         var _y = parseInt(Math.random() * this.y);
 
-        console.log("New Round", _x, _y, true);
+        // console.log("New Round", _x, _y, true);
         return [[_x, _y], true];
     }
 
     var posMine = this.findMinePos();
     if (posMine !== undefined) {
-        console.log("Bomb", posMine, false);
+        // console.log("Bomb", posMine, false);
         return [posMine, false];
     }
 
     var posSafe = this.findSafePos();
     if (posSafe !== undefined) {
-        console.log("Safe", posSafe, true);
+        // console.log("Safe", posSafe, true);
         return [posSafe, true];
     }
 
@@ -196,7 +196,7 @@ AutoSweeper.prototype.nextPosToClick = function () {
         y = parseInt(Math.random() * this.y);
     } while (this.board[x][y] !== SQUARE_TYPE.UNREVEALED);
 
-    console.log("Random", x, y, true);
+    // console.log("Random", x, y, true);
     return [[x, y], true];
 };
 

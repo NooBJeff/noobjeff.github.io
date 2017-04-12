@@ -89,3 +89,10 @@ function append(original, additional) {
 function clearCallbackFromSquares() {
     $(".square").off("click");
 }
+
+function updateWinLoseInfo(numWin, numLose) {
+    $("#label_total").text(numWin + numLose);
+    $("#label_win_rate").text((numWin / (numWin + numLose) * 100).toFixed(2));
+    $("#label_win").text(numWin);
+    $("#label_lose").text(numLose);
+}

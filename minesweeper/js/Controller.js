@@ -21,6 +21,9 @@ function Game() {
      * @type {boolean}
      */
     this.newRound = true;
+
+    this.roundWin = 0;
+    this.roundLose = 0;
 }
 
 // Callback function to send board info
@@ -110,14 +113,17 @@ Game.prototype.generateMines = function (pos) {
  * @param {Array} lastPosClicked
  */
 Game.prototype.gameOver = function (isPlayerWin, lastPosClicked) {
+    // Update Win/Lose info
+    isPlayerWin ? this.roundWin += 1 : this.roundLose += 1;
+    updateWinLoseInfo(this.roundWin, this.roundLose);
+
     view.revealAllSquaresAfterGameOver(isPlayerWin, lastPosClicked);
     clearCallbackFromSquares();
 
     wrapper.gameOver();
 
-    setTimeout(function () {
-        alert(isPlayerWin ? "YOU WIN!" : "YOU LOSE!");
-    }, 50);
+    funcBtnReset();
+    funcBtnStart();
 };
 
 //////////
@@ -138,31 +144,35 @@ Game.prototype.onGameOverFunc = defaultFunc;
 
 var game = new Game();
 
+function funcBtnStart() {
+    $("#start_screen").hide();
+    $("#game_screen").show();
+
+    var col = parseInt($("#input_column").val());
+    var row = parseInt($("#input_row").val());
+    var mines = parseInt($("#input_mines").val());
+    game.init(row, col, mines);
+    view.init(row, col);
+
+    wrapper.run();
+}
+
+function funcBtnReset() {
+    $("#start_screen").show();
+    $("#game_screen").hide();
+
+    game.reset();
+    view.reset();
+
+    wrapper.reset();
+}
+
 $(document).ready(function () {
     // Start Game Button
-    $("#btn_start").click(function () {
-        $("#start_screen").hide();
-        $("#game_screen").show();
-
-        var col = parseInt($("#input_column").val());
-        var row = parseInt($("#input_row").val());
-        var mines = parseInt($("#input_mines").val());
-        game.init(row, col, mines);
-        view.init(row, col);
-
-        wrapper.run();
-    });
+    $("#btn_start").click(funcBtnStart);
 
     // Restart Game Button
-    $("#btn_restart").click(function () {
-        $("#start_screen").show();
-        $("#game_screen").hide();
-
-        game.reset();
-        view.reset();
-
-        wrapper.reset();
-    });
+    $("#btn_restart").click(funcBtnReset);
 
     // Disable Right Click
     window.oncontextmenu = function () {
