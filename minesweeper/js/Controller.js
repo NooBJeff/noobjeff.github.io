@@ -24,6 +24,7 @@ function Game() {
 
     this.roundWin = 0;
     this.roundLose = 0;
+    this.maxTest = 0;
 }
 
 // Callback function to send board info
@@ -35,6 +36,7 @@ Game.prototype.reset = function () {
     this.row = undefined;
     this.numMines = undefined;
     this.isNewRound = true;
+    this.maxTest = 0;
 };
 
 Game.prototype.init = function (x, y, mines) {
@@ -117,6 +119,11 @@ Game.prototype.gameOver = function (isPlayerWin, lastPosClicked) {
     isPlayerWin ? this.roundWin += 1 : this.roundLose += 1;
     updateWinLoseInfo(this.roundWin, this.roundLose);
 
+    if ((this.roundWin + this.roundLose) >= this.maxTest) {
+        clearInterval(game.jobID);
+        game.jobID = undefined;
+    }
+
     view.revealAllSquaresAfterGameOver(isPlayerWin, lastPosClicked);
     clearCallbackFromSquares();
 
@@ -126,15 +133,23 @@ Game.prototype.gameOver = function (isPlayerWin, lastPosClicked) {
 
 Game.prototype.runBot = function () {
     var bot = new AutoSweeper();
-    this.jobID = setInterval(
-        function (me) {
-            return function () {
-                bot.ctrReceiveBoardFromGame(me.print());
-                var result = bot.nextPosToClick();
-                view.click(result[0], result[1]);
-            };
-        }(this)
-    );
+    if (1) {
+        this.jobID = setInterval(
+            function (me) {
+                return function () {
+                    bot.ctrReceiveBoardFromGame(me.print());
+                    var result = bot.nextPosToClick();
+                    view.click(result[0], result[1]);
+                };
+            }(this)
+        );
+    } else {
+        while (1) {
+            bot.ctrReceiveBoardFromGame(this.print());
+            var result = bot.nextPosToClick();
+            view.click(result[0], result[1]);
+        }
+    }
 };
 
 
@@ -147,6 +162,8 @@ function funcBtnStart() {
     var col = parseInt($("#input_column").val());
     var row = parseInt($("#input_row").val());
     var mines = parseInt($("#input_mines").val());
+
+    game.maxTest = parseInt($("#input_max_test").val());
     game.init(row, col, mines);
     view.init(row, col);
 }
@@ -165,16 +182,15 @@ $(document).ready(function () {
         function () {
             game.roundWin = 0;
             game.roundLose = 0;
-            game.runBot();
             funcBtnStart();
-        });
 
-    // Restart Game Button
-    $("#btn_restart").click(funcBtnReset);
+            game.runBot();
+        });
 
     $("#btn_stop_bot").click(function () {
         clearInterval(game.jobID);
         game.jobID = undefined;
+        funcBtnReset();
     });
 
     // Disable Right Click
