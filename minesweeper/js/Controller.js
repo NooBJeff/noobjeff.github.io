@@ -20,7 +20,7 @@ function Game() {
      * is current round a new round?
      * @type {boolean}
      */
-    this.newRound = true;
+    this.isNewRound = true;
 
     this.roundWin = 0;
     this.roundLose = 0;
@@ -34,7 +34,7 @@ Game.prototype.reset = function () {
     this.column = undefined;
     this.row = undefined;
     this.numMines = undefined;
-    this.newRound = true;
+    this.isNewRound = true;
 };
 
 Game.prototype.init = function (x, y, mines) {
@@ -120,27 +120,23 @@ Game.prototype.gameOver = function (isPlayerWin, lastPosClicked) {
     view.revealAllSquaresAfterGameOver(isPlayerWin, lastPosClicked);
     clearCallbackFromSquares();
 
-    wrapper.gameOver();
-
     funcBtnReset();
     funcBtnStart();
 };
 
-//////////
-// Event
-//////////
-
-Game.prototype.onGameReady = function (funcCode) {
-    this.onGameReadyFunc = funcCode;
+Game.prototype.runBot = function () {
+    var bot = new AutoSweeper();
+    var jobID = setInterval(
+        function (me) {
+            return function () {
+                bot.ctrReceiveBoardFromGame(me.print());
+                var result = bot.nextPosToClick();
+                view.click(result[0], result[1]);
+            };
+        }(this)
+    );
 };
 
-Game.prototype.onGameReadyFunc = defaultFunc;
-
-Game.prototype.onGameOver = function (funcCode) {
-    this.onGameOverFunc = funcCode;
-};
-
-Game.prototype.onGameOverFunc = defaultFunc;
 
 var game = new Game();
 
@@ -154,7 +150,7 @@ function funcBtnStart() {
     game.init(row, col, mines);
     view.init(row, col);
 
-    wrapper.run();
+    game.runBot();
 }
 
 function funcBtnReset() {
@@ -163,13 +159,16 @@ function funcBtnReset() {
 
     game.reset();
     view.reset();
-
-    wrapper.reset();
 }
 
 $(document).ready(function () {
     // Start Game Button
-    $("#btn_start").click(funcBtnStart);
+    $("#btn_start").click(
+        function () {
+            this.roundWin = 0;
+            this.roundLose = 0;
+            funcBtnStart();
+        });
 
     // Restart Game Button
     $("#btn_restart").click(funcBtnReset);

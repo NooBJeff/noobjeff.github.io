@@ -190,21 +190,14 @@ View.prototype.startBFS = function (pos) {
  * @param {Boolean} isLeftClick
  */
 View.prototype.click = function (pos, isLeftClick) {
-    function callOnExit() {
-        setTimeout(function () {
-            game.onGameReadyFunc();
-        });
-    }
-
-    if (game.newRound) {
-        game.newRound = false;
+    if (game.isNewRound) {
+        game.isNewRound = false;
         game.generateMines(pos);
     }
 
     if (isLeftClick) {
         if (getElementAt(this.squareState, pos) === SQUARE_TYPE.FLAGGED) {
             // Do nothing if click on flagged square
-            callOnExit();
             return;
         }
 
@@ -221,7 +214,6 @@ View.prototype.click = function (pos, isLeftClick) {
         // Right Click
         if (getElementAt(this.squareState, pos) >= 0) {
             // Do nothing if click on number square
-            callOnExit();
             return;
         }
 
@@ -235,10 +227,7 @@ View.prototype.click = function (pos, isLeftClick) {
 
     if (game.areAllMinesFlagged()) {
         game.gameOver(true, pos);
-        return;
     }
-
-    callOnExit();
 };
 
 var view = new View();
