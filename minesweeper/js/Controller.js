@@ -126,7 +126,7 @@ Game.prototype.gameOver = function (isPlayerWin, lastPosClicked) {
 
 Game.prototype.runBot = function () {
     var bot = new AutoSweeper();
-    var jobID = setInterval(
+    this.jobID = setInterval(
         function (me) {
             return function () {
                 bot.ctrReceiveBoardFromGame(me.print());
@@ -149,8 +149,6 @@ function funcBtnStart() {
     var mines = parseInt($("#input_mines").val());
     game.init(row, col, mines);
     view.init(row, col);
-
-    game.runBot();
 }
 
 function funcBtnReset() {
@@ -165,13 +163,19 @@ $(document).ready(function () {
     // Start Game Button
     $("#btn_start").click(
         function () {
-            this.roundWin = 0;
-            this.roundLose = 0;
+            game.roundWin = 0;
+            game.roundLose = 0;
+            game.runBot();
             funcBtnStart();
         });
 
     // Restart Game Button
     $("#btn_restart").click(funcBtnReset);
+
+    $("#btn_stop_bot").click(function () {
+        clearInterval(game.jobID);
+        game.jobID = undefined;
+    });
 
     // Disable Right Click
     window.oncontextmenu = function () {
