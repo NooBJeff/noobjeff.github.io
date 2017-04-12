@@ -4,7 +4,6 @@
 
 function AutoSweeper() {
     this.board = undefined;
-    this.boardRecv = undefined;
 
     /**
      * The size of board
@@ -30,9 +29,8 @@ function AutoSweeper() {
  * Reset AutoSweeper
  */
 AutoSweeper.prototype.ctrReset = function () {
-    this.boardRecv = undefined;
-
     this.board = undefined;
+
     this.x = undefined;
     this.y = undefined;
     this.newRound = true;
@@ -43,13 +41,13 @@ AutoSweeper.prototype.ctrReset = function () {
  * @param data
  */
 AutoSweeper.prototype.ctrReceiveBoardFromGame = function (data) {
-    this.boardRecv = data;
-
     if (this.board === undefined) {
+        // Initilize
         this.x = data.length;
         this.y = data[0].length;
-        this.board = create2DArray(this.x, this.y, false);
     }
+
+    this.board = data;
 };
 
 /**
@@ -66,13 +64,12 @@ AutoSweeper.prototype.arrUnrevealedNearby = function (pos) {
                 continue;
             }
             if ((lop === pos[0]) && (lop2 === pos[1])) {
+                // Skip the square in the middle
                 continue;
             }
 
-            if (this.boardRecv[lop][lop2] === 'X') {
-                if (!contains(ret, [lop, lop2])) {
-                    ret.push([lop, lop2]);
-                }
+            if (this.board[lop][lop2] === SQUARE_TYPE.UNREVEALED) {
+                ret.push([lop, lop2]);
             }
         }
     }
@@ -80,6 +77,11 @@ AutoSweeper.prototype.arrUnrevealedNearby = function (pos) {
     return ret;
 };
 
+/**
+ * Return all un-revealed squares around given pos
+ * @param pos
+ * @return {pos[]}
+ */
 AutoSweeper.prototype.arrSafePos = function (pos) {
     var ret = [];
     var lop, lop2;
@@ -92,10 +94,9 @@ AutoSweeper.prototype.arrSafePos = function (pos) {
                 continue;
             }
 
-            if (this.boardRecv[lop][lop2] === 'X' && this.board[lop][lop2] !== 1) {
-                if (!contains(ret, [lop, lop2])) {
-                    ret.push([lop, lop2]);
-                }
+            if (this.board[lop][lop2] === SQUARE_TYPE.UNREVEALED) {
+                // Un-revealed
+                ret.push([lop, lop2]);
             }
         }
     }
@@ -120,7 +121,7 @@ AutoSweeper.prototype.numMinesNearBy = function (pos) {
                 continue;
             }
 
-            if (this.board[lop][lop2] === 1) {
+            if (this.board[lop][lop2] === SQUARE_TYPE.FLAGGED) {
                 ret += 1;
             }
         }
@@ -129,99 +130,102 @@ AutoSweeper.prototype.numMinesNearBy = function (pos) {
     return ret;
 };
 
-// Flag these squares found
+/**
+ * Find bomb and flag them
+ * @return {undefined|pos} null if there is no mines found for now
+ */
 AutoSweeper.prototype.findMinePos = function () {
     var lop, lop2;
     for (lop = 0; lop < this.x; lop++) {
         for (lop2 = 0; lop2 < this.y; lop2++) {
-            if (this.boardRecv[lop][lop2] === 0 || this.boardRecv[lop][lop2] === 'X') {
-                // Not revealed or no mines nearby
+            // Keep squares with numbers only
+            if (this.board[lop][lop2] <= 0) {
                 continue;
             }
 
-            // Find  un-revealed space nearby
-            var listSpaces = this.arrUnrevealedNearby([lop, lop2]);
+            var list = this.arrUnrevealedNearby([lop, lop2]);
+            if (list.length === 0) {
+                continue;
+            }
 
-            if (listSpaces.length === this.boardRecv[lop][lop2]) {
-                var front = listSpaces.shift();
-                while (front !== undefined) {
-                    if (this.board[front[0]][front[1]] === 1) {
-                        front = listSpaces.shift();
-                        continue;
-                    }
-                    this.board[front[0]][front[1]] = 1;
-
-                    front = listSpaces.shift();
-                }
+            var numMines = this.numMinesNearBy([lop, lop2]);
+            if ((list.length + numMines) === this.board[lop][lop2]) {
+                // Every pos in the list contains a mine
+                return list[0];
             }
         }
     }
+
+    return undefined;
 };
 
+/**
+ * Find a safe pos to click
+ * @return {undefined|pos}
+ */
 AutoSweeper.prototype.findSafePos = function () {
     var lop, lop2;
     for (lop = 0; lop < this.x; lop++) {
         for (lop2 = 0; lop2 < this.y; lop2++) {
-            if (this.boardRecv[lop][lop2] === 0 || this.boardRecv[lop][lop2] === 'X') {
-                // Not revealed or no mines nearby
+            // Keep squares with numbers only
+            if (this.board[lop][lop2] <= 0) {
                 continue;
             }
 
-            // Find  un-revealed space nearby
             var numMines = this.numMinesNearBy([lop, lop2]);
-            if (numMines === this.boardRecv[lop][lop2]) {
-                // Push all the safe space
-                var list = this.arrSafePos([lop, lop2]);
-                append(this.arrClickPos, list);
+            if (numMines === this.board[lop][lop2]) {
+                // All mines near this square are flagged
+                // So whats left is safe pos
+                var result = this.arrSafePos([lop, lop2]);
+                if (result.length === 0) {
+                    continue;
+                }
+
+                return result[0];
             }
         }
     }
-};
 
-AutoSweeper.prototype.next = function () {
-    return this.arrClickPos.shift();
+    return undefined;
 };
 
 /**
  * Return next pos to click
  * @return {Array} Pos to click
  */
-AutoSweeper.prototype.clickNext = function () {
+AutoSweeper.prototype.nextPosToClick = function () {
     if (this.newRound) {
         this.newRound = false;
 
-        var x = parseInt(Math.random() * this.boardRecv.length);
-        var y = parseInt(Math.random() * this.boardRecv[x].length);
+        var _x = parseInt(Math.random() * this.x);
+        var _y = parseInt(Math.random() * this.y);
 
-        this.arrClickPos.push([x, y]);
+        console.log("New Round", _x, _y, true);
+        return [[_x, _y], true];
     }
 
-    if (this.arrClickPos.length === 0) {
-        this.findMinePos();
-        this.findSafePos();
+    var posMine = this.findMinePos();
+    if (posMine !== undefined) {
+        console.log("Bomb", posMine, false);
+        return [posMine, false];
     }
 
-    // No safe pos to click
+    var posSafe = this.findSafePos();
+    if (posSafe !== undefined) {
+        console.log("Safe", posSafe, true);
+        return [posSafe, true];
+    }
+
+    // No safe nor mine
     // Random one
-    if (this.arrClickPos.length === 0) {
-        var x = 0;
-        var y = 0;
+    var x = 0, y = 0;
+    do {
+        x = parseInt(Math.random() * this.x);
+        y = parseInt(Math.random() * this.y);
+    } while (this.board[x][y] !== SQUARE_TYPE.UNREVEALED);
 
-        while (this.board[x][y] === 1 || this.boardRecv[x][y] !== 'X') {
-            x = parseInt(Math.random() * this.boardRecv.length);
-            y = parseInt(Math.random() * this.boardRecv[x].length);
-        }
-
-        this.arrClickPos.push([x, y]);
-    }
-
-    var front = this.arrClickPos.shift();
-
-    if (front === undefined) {
-        return null;
-    }
-
-    return front;
+    console.log("Random", x, y, true);
+    return [[x, y], true];
 };
 
 function Wrapper() {
@@ -249,10 +253,11 @@ Wrapper.prototype.run = function () {
             if (me.nextMoveReady) {
                 me.nextMoveReady = false;
                 bot.ctrReceiveBoardFromGame(game.print());
-                view.click(bot.clickNext(), true);
+                var result = bot.nextPosToClick();
+                view.click(result[0], result[1]);
             }
         };
-    }(this), 500);
+    }(this));
 };
 
 Wrapper.prototype.gameOver = function () {

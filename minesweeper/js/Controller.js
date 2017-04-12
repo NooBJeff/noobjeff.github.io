@@ -23,7 +23,7 @@ function Game() {
     this.newRound = true;
 }
 
-// Callback function to send boardRecv info
+// Callback function to send board info
 Game.prototype.bot = undefined;
 
 Game.prototype.reset = function () {
@@ -44,26 +44,10 @@ Game.prototype.init = function (x, y, mines) {
 
 /**
  * Send the game board in 2D array to bot
- * @return {Array} game board info
+ * @return {SQUARE_TYPE[][]} game board info
  */
 Game.prototype.print = function () {
-    var ret = create2DArray(this.column, this.row, 0);
-
-    var lop, lop2;
-    for (lop = 0; lop < this.column; lop++) {
-        for (lop2 = 0; lop2 < this.row; lop2++) {
-            var pos = [lop, lop2];
-            if (getElementAt(view.squareState, pos) >= 0) {
-                // Revealed
-                ret[lop][lop2] = getElementAt(view.squareState, pos);
-            } else {
-                // Not revealed
-                ret[lop][lop2] = 'X';
-            }
-        }
-    }
-
-    return ret;
+    return view.squareState;
 };
 
 Game.prototype.numMinesNearby = function (pos) {
