@@ -144,8 +144,8 @@ $(document).ready(function () {
         var col = parseInt($("#input_column").val());
         var row = parseInt($("#input_row").val());
         var mines = parseInt($("#input_mines").val());
-        game.init(col, row, mines);
-        view.init(col, row);
+        game.init(row, col, mines);
+        view.init(row, col);
 
         wrapper.run();
     });

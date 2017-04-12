@@ -30,7 +30,6 @@ function AutoSweeper() {
  */
 AutoSweeper.prototype.ctrReset = function () {
     this.board = undefined;
-
     this.x = undefined;
     this.y = undefined;
     this.newRound = true;
@@ -69,33 +68,6 @@ AutoSweeper.prototype.arrUnrevealedNearby = function (pos) {
             }
 
             if (this.board[lop][lop2] === SQUARE_TYPE.UNREVEALED) {
-                ret.push([lop, lop2]);
-            }
-        }
-    }
-
-    return ret;
-};
-
-/**
- * Return all un-revealed squares around given pos
- * @param pos
- * @return {pos[]}
- */
-AutoSweeper.prototype.arrSafePos = function (pos) {
-    var ret = [];
-    var lop, lop2;
-    for (lop = pos[0] - 1; lop <= pos[0] + 1; lop++) {
-        for (lop2 = pos[1] - 1; lop2 <= pos[1] + 1; lop2++) {
-            if (lop < 0 || lop >= this.x || lop2 < 0 || lop2 >= this.y) {
-                continue;
-            }
-            if ((lop === pos[0]) && (lop2 === pos[1])) {
-                continue;
-            }
-
-            if (this.board[lop][lop2] === SQUARE_TYPE.UNREVEALED) {
-                // Un-revealed
                 ret.push([lop, lop2]);
             }
         }
@@ -176,7 +148,7 @@ AutoSweeper.prototype.findSafePos = function () {
             if (numMines === this.board[lop][lop2]) {
                 // All mines near this square are flagged
                 // So whats left is safe pos
-                var result = this.arrSafePos([lop, lop2]);
+                var result = this.arrUnrevealedNearby([lop, lop2]);
                 if (result.length === 0) {
                     continue;
                 }
