@@ -93,11 +93,14 @@ Game.prototype.generateMines = function (pos) {
         var x = parseInt(Math.random() * this.column);
         var y = parseInt(Math.random() * this.row);
 
-        if (this.mines[x][y] || (x === pos[0] && y === pos[1])) {
+        if (this.mines[x][y] || (Math.abs(x - pos[0]) <= 1 && Math.abs(y - pos[1]) <= 1)) {
+            // Skip if
+            // 1. There is a mine already
+            // 2. The pos is around the clicked pos
             lop -= 1;
-        } else {
-            this.mines[x][y] = true;
+            continue;
         }
+        this.mines[x][y] = true;
     }
 };
 
