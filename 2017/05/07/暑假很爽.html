@@ -6,11 +6,11 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>PHP 使用 String</title>
-  <meta name="description" content="本来并不打算做服务器后台方面的事，没想到实习一不小心就被丢了一坨有关网站服务器的工作，PHP变成了天天对着发呆的东西。。。">
+  <title>暑假很爽</title>
+  <meta name="description" content="毕竟还要在北京待4个多月，何不好好度过每一天？">
 
   <link rel="stylesheet" href="/assets/main.css">
-  <link rel="canonical" href="https://thissentenceiswrong.github.io/index/2017/05/05/PHP-%E4%BD%BF%E7%94%A8-String.html">
+  <link rel="canonical" href="https://thissentenceiswrong.github.io/2017/05/07/%E6%9A%91%E5%81%87%E5%BE%88%E7%88%BD.html">
   <link rel="alternate" type="application/rss+xml" title="并学不到东西的博客" href="/feed.xml">
   
   
@@ -67,73 +67,27 @@
         <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
-    <h1 class="post-title" itemprop="name headline">PHP 使用 String</h1>
+    <h1 class="post-title" itemprop="name headline">暑假很爽</h1>
     <p class="post-meta">
-      <time datetime="2017-05-05T00:00:00+08:00" itemprop="datePublished">
+      <time datetime="2017-05-07T00:00:00+08:00" itemprop="datePublished">
         
-        May 5, 2017
+        May 7, 2017
       </time>
       </p>
   </header>
 
   <div class="post-content" itemprop="articleBody">
-    <p>本来并不打算做服务器后台方面的事，没想到实习一不小心就被丢了一坨有关网站服务器的工作，PHP变成了天天对着发呆的东西。。。</p>
+    <p>毕竟还要在北京待4个多月，何不好好度过每一天？</p>
 
-<p>由于并没有系统自学过PHP这门语言，因此很多编程经验我都直接照搬其他语言的，比如字符串。</p>
+<p>周一到周五白天实习，晚上准备GRE，有空再跑跑步。</p>
 
-<p>我一直默认 PHP 中的字符串和 JavaScript 的差不多，即单双引号都可以表示字符串，且这两种表示方法没有区别。比如：</p>
+<p>周末两天上午上课，下午随意。</p>
 
-<div class="language-javascript highlighter-rouge"><pre class="highlight"><code><span class="s2">"Hello World!\nI'm Jeff."</span> <span class="o">===</span> <span class="s1">'Hello World!\nI\'m Jeff.'</span>
-</code></pre>
-</div>
+<p>可惜该死的实习要求，把时间搞得很紧，不然白天那么多时间拿去准备GRE肯定是不慌的。以前准备雅思的时候白天也是有时间的。</p>
 
-<p>为了演示转义字符的使用，结果看起来有点丑。但是表达的东西是一样的。</p>
+<p>讲道理，为什么要实习6个月？我们才大三啊，就凭我们学的那点东西，完全没必要搞这么久。看看隔壁的工程专业只要3个月实习。马德。</p>
 
-<p>结果PHP的字符串并不一样，并且有三种字符串的表达，让人不禁想起孔乙己：“茴字的四种写法你知道么”。不过这三种方式各有使用场景，因此了解一下其实非常有帮助。</p>
-
-<h5 id="1-单引号表示">1. 单引号表示</h5>
-<p>单引号表示下规则最简单，不对字符串中进行任何转义，仅转义<code class="highlighter-rouge">\'</code>转义符。</p>
-
-<h5 id="2-双引号表示">2. 双引号表示</h5>
-<p>双引号表示的规则是我们所熟知的，可以使用转义，可以放 php 变量。</p>
-
-<h5 id="3-heredoc表示">3. HereDoc表示</h5>
-<p>这个我是第一次听说，有点像 Python 中的 String Doc。这个不用给单引号或双引号加转义，需要用PHP处理大段纯文本的使用是很方便的。用来输出HTML应该也会很方便，等会我就去把项目里都换上这个试试。</p>
-
-<hr />
-
-<p>三种方法的样例如下：</p>
-<div class="language-php highlighter-rouge"><pre class="highlight"><code>$var = 233;
-// 单引号，不支持转义
-echo 'Hello\' World! \n $var';
-
-echo "\n------\n";
-
-// 双引号，支持所有转义
-echo "Hello\" World! \n $var";
-
-echo "\n------\n";
-
-// HereDoc
-// 不用转义
-echo <span class="err">&lt;&lt;</span><span class="nt">&lt; DOC</span>
-<span class="na">Hello</span> <span class="err">'"</span> <span class="na">World</span><span class="err">!</span> <span class="err">\</span><span class="na">nVar:</span> <span class="err">$</span><span class="na">var</span>
-<span class="na">DOC</span><span class="err">;</span>
-</code></pre>
-</div>
-
-<p>运行结果为：</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>Hello' World! \n $var
-------
-Hello" World! 
- 233
-------
-Hello '" World! 
-Var: 233
-</code></pre>
-</div>
-
+<p>不过还好上班期间随便划划水就过去了，虽然跟我预期的实习经历有差距，但也不错了。</p>
 
   </div>
 
