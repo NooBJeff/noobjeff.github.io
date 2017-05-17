@@ -6,11 +6,11 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>并学不到东西的博客</title>
-  <meta name="description" content="分享编程经验，生活琐事">
+  <title>说说实习的前端项目</title>
+  <meta name="description" content="​ 昨天说到，我决定重构这个聊天室项目的前端代码。因为我在UCC做大作业的时候干过类似的前端项目，所以我觉得这次应该也会比较简单。 ​ 确实，不就是个聊天室嘛，可以想象最麻烦的地方不过就是处理与服务器间的各种消息通信了。而且这个东西以发送文字为主，图片表情什么的不存在的，页面上不需要太多的其他功能。 ​ 一开始的...">
 
   <link rel="stylesheet" href="/assets/main.css">
-  <link rel="canonical" href="https://thissentenceiswrong.github.io/">
+  <link rel="canonical" href="https://thissentenceiswrong.github.io/2017/05/16/%E5%AE%9E%E4%B9%A0%E5%B0%8F%E7%BB%932.html">
   <link rel="alternate" type="application/rss+xml" title="并学不到东西的博客" href="/feed.xml">
   
   
@@ -64,65 +64,29 @@
 
     <main class="page-content" aria-label="Content">
       <div class="wrapper">
-        <div class="home">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
 
-  <h1 class="page-heading">Posts</h1>
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">说说实习的前端项目</h1>
+    <p class="post-meta">
+      <time datetime="2017-05-16T00:00:00+08:00" itemprop="datePublished">
+        
+        May 16, 2017
+      </time>
+      </p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <p>​	昨天说到，我决定重构这个聊天室项目的前端代码。因为我在UCC做大作业的时候干过类似的前端项目，所以我觉得这次应该也会比较简单。
+​	确实，不就是个聊天室嘛，可以想象最麻烦的地方不过就是处理与服务器间的各种消息通信了。而且这个东西以发送文字为主，图片表情什么的不存在的，页面上不需要太多的其他功能。
+​	一开始的进度是比较快的，很多功能直接从大作业搬来用，代码结构也不要费脑子重新设计。但是渐渐的我发现这代码越写越不优雅了，问题主要出在保持渲染的页面与数据一致这方面。
+​	JavaScript是一门相当灵活的语言，而到处都是的回调函数也是这门语言的特色。我们浏览网页的时候，很多信息的获取都是异步的，你不知道信息什么时候到，因此你没办法傻等着。一般是先创建页面提示载入中，然后在信息获取到后替换掉原先的载入页面。我在做这个聊天室的时候面对这种问题处理的不是很好，几乎还是在用顺序执行的理念来做，根本不考虑异步的特性。
+​	这让我想起以前接触过的一个框架<em>Meteor</em>，当时用的时候没觉得这个全自动同步数据及渲染的东西有多实用，现在才发现他解决的问题是何等重要且常见的。我有空回去读一读他的源代码，看看是如何实现这种同步的。</p>
+
+  </div>
+
   
-  
-
-
-  <ul class="post-list">
-    
-      <li>
-        
-        <span class="post-meta">May 17, 2017</span>
-
-        <h2>
-          <a class="post-link" href="/2017/05/17/%E7%97%9B%E8%8B%A6%E7%9A%84%E9%85%8D%E7%BD%AE%E6%9C%8D%E5%8A%A1%E5%99%A8.html">配置服务器还是这么蛋疼</a>
-        </h2>
-      </li>
-    
-      <li>
-        
-        <span class="post-meta">May 16, 2017</span>
-
-        <h2>
-          <a class="post-link" href="/2017/05/16/%E5%AE%9E%E4%B9%A0%E9%A1%B9%E7%9B%AE%E5%B0%8F%E7%BB%93.html">实习项目小结</a>
-        </h2>
-      </li>
-    
-      <li>
-        
-        <span class="post-meta">May 16, 2017</span>
-
-        <h2>
-          <a class="post-link" href="/2017/05/16/%E5%AE%9E%E4%B9%A0%E5%B0%8F%E7%BB%932.html">说说实习的前端项目</a>
-        </h2>
-      </li>
-    
-      <li>
-        
-        <span class="post-meta">May 5, 2017</span>
-
-        <h2>
-          <a class="post-link" href="/2017/05/05/welcome-to-jekyll.html">Hello World</a>
-        </h2>
-      </li>
-    
-      <li>
-        
-        <span class="post-meta">May 5, 2017</span>
-
-        <h2>
-          <a class="post-link" href="/2017/05/05/PHP-%E4%BD%BF%E7%94%A8-String.html">PHP 使用 String</a>
-        </h2>
-      </li>
-    
-  </ul>
-
-  <p class="rss-subscribe">subscribe <a href="/feed.xml">via RSS</a></p>
-
-</div>
+</article>
 
       </div>
     </main>
