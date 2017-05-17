@@ -6,11 +6,11 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>并学不到东西的博客</title>
-  <meta name="description" content="分享编程经验，生活琐事">
+  <title>配置服务器还是这么蛋疼</title>
+  <meta name="description" content="今天的任务是配好新的服务器环境，并将之前的聊天室项目部署上去。">
 
   <link rel="stylesheet" href="/assets/main.css">
-  <link rel="canonical" href="https://thissentenceiswrong.github.io/">
+  <link rel="canonical" href="https://thissentenceiswrong.github.io/2017/05/17/%E7%97%9B%E8%8B%A6%E7%9A%84%E9%85%8D%E7%BD%AE%E6%9C%8D%E5%8A%A1%E5%99%A8.html">
   <link rel="alternate" type="application/rss+xml" title="并学不到东西的博客" href="/feed.xml">
   
   
@@ -64,65 +64,49 @@
 
     <main class="page-content" aria-label="Content">
       <div class="wrapper">
-        <div class="home">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
 
-  <h1 class="page-heading">Posts</h1>
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">配置服务器还是这么蛋疼</h1>
+    <p class="post-meta">
+      <time datetime="2017-05-17T00:00:00+08:00" itemprop="datePublished">
+        
+        May 17, 2017
+      </time>
+      </p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <p>今天的任务是配好新的服务器环境，并将之前的聊天室项目部署上去。</p>
+
+<p>接触Linux这么久了，每次干这种配环境的事情，仍然要头疼一天。</p>
+
+<p>安装软件源，安装软件及运行环境，配置服务器，PHP，MySQL，添加配置用户及权限。</p>
+
+<p>这次的系统是CentOS7，之前只用过Ubuntu，因此十分不熟悉，不过还好网上的现成教程够多，安装软件配置环境什么的 ctrl C+V 还能坚持。但是安装好nginx开始配置服务器的时候，噩梦开始了。</p>
+
+<h2 id="http-403-forbidden">HTTP 403 Forbidden</h2>
+
+<p><em>Permission Deny,Permission Deny,Permission Deny,Permission Deny…</em></p>
+
+<p>​															— error.log</p>
+
+<p>其实在刚刚设置好nginx的文件root的时候，我是心里有底的：现在访问肯定是各种报错，因为Linux这种东西权限没配置好分分钟就能让你崩溃。</p>
+
+<p>但是当我创建www用户及用户组，设置nginx以www用户运行，chown所有网站文件为www:www，chmod 775（这个当然可以更细致，但是暂时懒得那么做）之后，浏览器依然坚持不懈报错403的时候，我TM就疯了。又是哪里出了错？</p>
+
+<p>遂查看error log，错误信息从没变过，一直是获取index的时候permission denied, 但是我在nginx里设置好了<code class="highlighter-rouge">index index.html index.php</code>这种的，文件root目录下也有index，我看了下PHP，安装也是正确的，能够使用（写这篇文章的时候想起来，我没有测试nginx能不能正常使用php，但是就算不能的话报错也不应该是403吧，明天添加一个 index.html 看看是不是php的问题（应该不是，因为我试过访问root子目录下的资源文件，仍然是403错误））。我TM就绝望了，以我浅薄的经验，我不知道还能哪里有问题。热情的百度谷歌也未能帮我找出问题所在。</p>
+
+<p>于是我把所有设置都调回root账号权限，服务器使用root账号运行，文件权限root:root 777，再打开浏览器，oh hell，403永不为奴。我TM就关电脑打卡下班回宿舍，连每日报告都没心情写了。</p>
+
+<hr />
+
+<p>现在一想到明天还要面对这个问题，心里就一拧。他娘的到底是哪里有问题？哪里的权限设置出了问题？？？</p>
+
+  </div>
+
   
-  
-
-
-  <ul class="post-list">
-    
-      <li>
-        
-        <span class="post-meta">May 17, 2017</span>
-
-        <h2>
-          <a class="post-link" href="/2017/05/17/%E7%97%9B%E8%8B%A6%E7%9A%84%E9%85%8D%E7%BD%AE%E6%9C%8D%E5%8A%A1%E5%99%A8.html">配置服务器还是这么蛋疼</a>
-        </h2>
-      </li>
-    
-      <li>
-        
-        <span class="post-meta">May 16, 2017</span>
-
-        <h2>
-          <a class="post-link" href="/2017/05/16/%E5%AE%9E%E4%B9%A0%E9%A1%B9%E7%9B%AE%E5%B0%8F%E7%BB%93.html">实习项目小结</a>
-        </h2>
-      </li>
-    
-      <li>
-        
-        <span class="post-meta">May 5, 2017</span>
-
-        <h2>
-          <a class="post-link" href="/2017/05/05/%E5%AE%9E%E4%B9%A0%E5%B0%8F%E7%BB%932.html">说说实习的前端项目</a>
-        </h2>
-      </li>
-    
-      <li>
-        
-        <span class="post-meta">May 5, 2017</span>
-
-        <h2>
-          <a class="post-link" href="/2017/05/05/welcome-to-jekyll.html">Hello World</a>
-        </h2>
-      </li>
-    
-      <li>
-        
-        <span class="post-meta">May 5, 2017</span>
-
-        <h2>
-          <a class="post-link" href="/2017/05/05/PHP-%E4%BD%BF%E7%94%A8-String.html">PHP 使用 String</a>
-        </h2>
-      </li>
-    
-  </ul>
-
-  <p class="rss-subscribe">subscribe <a href="/feed.xml">via RSS</a></p>
-
-</div>
+</article>
 
       </div>
     </main>
