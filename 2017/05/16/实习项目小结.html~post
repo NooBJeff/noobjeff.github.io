@@ -6,11 +6,11 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>并学不到东西的博客</title>
-  <meta name="description" content="分享编程经验，生活琐事">
+  <title>实习项目小结</title>
+  <meta name="description" content="已经实习了一个多月了，期间就接触了两个项目：第一个项目是替换一下老旧的API，工作量比较少因此一周内就完成了；第二个项目目前还在做，大概是要完成一个聊天室的东西。">
 
   <link rel="stylesheet" href="/assets/main.css">
-  <link rel="canonical" href="https://thissentenceiswrong.github.io/">
+  <link rel="canonical" href="https://thissentenceiswrong.github.io/2017/05/16/%E5%AE%9E%E4%B9%A0%E9%A1%B9%E7%9B%AE%E5%B0%8F%E7%BB%93.html">
   <link rel="alternate" type="application/rss+xml" title="并学不到东西的博客" href="/feed.xml">
   
   
@@ -64,59 +64,36 @@
 
     <main class="page-content" aria-label="Content">
       <div class="wrapper">
-        <div class="home">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
 
-  <h1 class="page-heading">Posts</h1>
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">实习项目小结</h1>
+    <p class="post-meta">
+      <time datetime="2017-05-16T00:00:00+08:00" itemprop="datePublished">
+        
+        May 16, 2017
+      </time>
+      </p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <p>已经实习了一个多月了，期间就接触了两个项目：第一个项目是替换一下老旧的API，工作量比较少因此一周内就完成了；第二个项目目前还在做，大概是要完成一个聊天室的东西。</p>
+
+<p>其实我这的实习真的没有想象的那么好，我感觉自己就是个接盘侠。。。因为组里其他人不会用PHP，所以头头就把以前的老旧PHP项目丢给我来修整。面对这些没有文档没有完善注释、服役年龄比我学习编程时间还长的项目，我是xx的：光是从零开始读代码理解项目各个功能、工作流程、框架作用就要花上好几天——因为根本没有文档说明，只能去代码堆里找答案。</p>
+
+<p>就拿第二个项目来说吧。这是一个类似网络聊天室的东西，被拿来用作我公司网站的在线客服服务。拿到手上研究后发现，网站部分使用ThinkPHP3.2，实时信息交换部分使用GatewayWorker；前者使用MySQL作为数据库，后者使用Redis作为缓存。</p>
+
+<p>上面的四个框架/应用，我就用过一个MySQL，因此项目进行过程中总是少不了疯狂的查gu阅ge各文档、教程。</p>
+
+<p>理解了项目结构以后，就可以开始修改代码实现要求了。其中由于原来的前端代码过于飘逸，我怕理解的时间还不如重新写一份，因此被我全部推倒进行了重构（现在来看，绝对绝对不要随意重构，特别仅仅是因为你看不太懂以前的代码的时候。。。）。那原来的代码有多飘逸呢，首先，聊天室说大不大说小不小的这么一个程序，从头到尾他只有一个类：IMClient。所有的消息处理，按键响应等等等等全在这里。什么MVC，不存在的。因此代码的高度耦合导致极低的代码可读性，但是仅仅是只有一个类就算了，类中一些关键回调函数，比如消息响应的回调，原作者出于兼容性的考虑（原应用针对手机端、电脑端、普通用户登录、客服用户登录的不同情况均有不同的响应页面），这些回调函数均由各个html页面内的script标签的代码分别传入，也就是说，代码的具体实现各个文件都不同，有点像虚基类和其子类的关系。要同时维护这么多份相似功能的代码显然不太现实，而且由于JS的灵活性，阅读代码的时候也不好找到被传入的回调函数。当时我理解代码的时候很痛苦，为了理解某个功能是如何实现的，只得在不同文件间跳来跳去，希望抓住那回调函数的身影。。。（其实这个时候chrome开发者工具真的超好用，显示信息很详细）</p>
+
+<p>在重构的过程中遇到了不少工程架构上的问题，下期再讲。。先睡了</p>
+
+
+  </div>
+
   
-  
-
-
-  <ul class="post-list">
-    
-      <li>
-        
-        <span class="post-meta">May 16, 2017</span>
-
-        <h2>
-          <a class="post-link" href="/2017/05/16/%E5%AE%9E%E4%B9%A0%E9%A1%B9%E7%9B%AE%E5%B0%8F%E7%BB%93.html">实习项目小结</a>
-        </h2>
-      </li>
-    
-      <li>
-        
-        <span class="post-meta">May 5, 2017</span>
-
-        <h2>
-<<<<<<< HEAD
-          <a class="post-link" href="/2017/05/05/%E5%AE%9E%E4%B9%A0%E5%B0%8F%E7%BB%932.html">说说实习的前端项目</a>
-        </h2>
-      </li>
-    
-      <li>
-        
-        <span class="post-meta">May 5, 2017</span>
-
-        <h2>
-=======
->>>>>>> origin/master
-          <a class="post-link" href="/2017/05/05/welcome-to-jekyll.html">Hello World</a>
-        </h2>
-      </li>
-    
-      <li>
-        
-        <span class="post-meta">May 5, 2017</span>
-
-        <h2>
-          <a class="post-link" href="/2017/05/05/PHP-%E4%BD%BF%E7%94%A8-String.html">PHP 使用 String</a>
-        </h2>
-      </li>
-    
-  </ul>
-
-  <p class="rss-subscribe">subscribe <a href="/feed.xml">via RSS</a></p>
-
-</div>
+</article>
 
       </div>
     </main>
