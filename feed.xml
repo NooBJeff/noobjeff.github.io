@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.4.3">Jekyll</generator><link href="https://thissentenceiswrong.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://thissentenceiswrong.github.io/" rel="alternate" type="text/html" /><updated>2017-05-18T23:06:53+08:00</updated><id>https://thissentenceiswrong.github.io/</id><title type="html">并学不到东西的博客</title><subtitle>分享编程经验，生活琐事
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.4.3">Jekyll</generator><link href="https://thissentenceiswrong.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://thissentenceiswrong.github.io/" rel="alternate" type="text/html" /><updated>2017-05-18T23:09:32+08:00</updated><id>https://thissentenceiswrong.github.io/</id><title type="html">并学不到东西的博客</title><subtitle>分享编程经验，生活琐事
 </subtitle><entry><title type="html">nginx 全家桶配置过程易踩坑的点</title><link href="https://thissentenceiswrong.github.io/2017/05/18/nginx%E5%8F%8Aphp-fpm%E9%85%8D%E7%BD%AE%E6%96%B9%E6%B3%95.html" rel="alternate" type="text/html" title="nginx 全家桶配置过程易踩坑的点" /><published>2017-05-18T00:00:00+08:00</published><updated>2017-05-18T00:00:00+08:00</updated><id>https://thissentenceiswrong.github.io/2017/05/18/nginx%E5%8F%8Aphp-fpm%E9%85%8D%E7%BD%AE%E6%96%B9%E6%B3%95</id><content type="html" xml:base="https://thissentenceiswrong.github.io/2017/05/18/nginx%E5%8F%8Aphp-fpm%E9%85%8D%E7%BD%AE%E6%96%B9%E6%B3%95.html">&lt;h2 id=&quot;linux-我tm错爆&quot;&gt;Linux: 我TM错爆&lt;/h2&gt;
 &lt;p&gt;昨天和今天都花在了配置服务器环境上。为了装个nginx+php+mysql我特么竟然卡了2天（忘了用lnmp全家桶）。&lt;/p&gt;
 
@@ -18,7 +18,9 @@
 
 &lt;p&gt;&lt;img src=&quot;https://thissentenceiswrong.github.io/assets/copy-from-stackoverflow.jpg&quot; alt=&quot;面向搜索引擎编程&quot; /&gt;&lt;/p&gt;
 
-&lt;h4 id=&quot;php-fpm-blank-page&quot;&gt;php-fpm blank page&lt;/h4&gt;
+&lt;h2 id=&quot;php-fpm&quot;&gt;php-fpm&lt;/h2&gt;
+
+&lt;h4 id=&quot;blank-page&quot;&gt;blank page&lt;/h4&gt;
 
 &lt;p&gt;解决完nginx 403 的问题，我心中一阵舒爽，以为前方的道路已经通畅，胜利就在不远方。然而，本该配置好的php又出了问题&lt;/p&gt;
 
@@ -32,9 +34,11 @@
 
 &lt;p&gt;于是又双叒叕配置了 php-fpm 的运行用户为www，重启，进网页，ok，终于能看到内容了：&lt;/p&gt;
 
+&lt;h2 id=&quot;mysql&quot;&gt;MySQL&lt;/h2&gt;
+
 &lt;h4 id=&quot;could-not-found-driver&quot;&gt;Could not found driver&lt;/h4&gt;
 
-&lt;p&gt;这个问题是在使用PDO的时候出现的，问题比较简单：没装PDO，装上php的mysql插件就好了。&lt;/p&gt;
+&lt;p&gt;这个问题是在php代码中使用PDO的时候出现的，问题比较简单：没装PDO，装上php的mysql插件就好了。&lt;/p&gt;
 
 &lt;p&gt;好嘛，都解决到最后一环：数据库了。只要数据库调通，这整个网站也就基本能用了。但是。。。。。&lt;/p&gt;
 
