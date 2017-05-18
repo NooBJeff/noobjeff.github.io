@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.4.3">Jekyll</generator><link href="https://thissentenceiswrong.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://thissentenceiswrong.github.io/" rel="alternate" type="text/html" /><updated>2017-05-18T23:09:32+08:00</updated><id>https://thissentenceiswrong.github.io/</id><title type="html">并学不到东西的博客</title><subtitle>分享编程经验，生活琐事
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.4.3">Jekyll</generator><link href="https://thissentenceiswrong.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://thissentenceiswrong.github.io/" rel="alternate" type="text/html" /><updated>2017-05-18T23:10:37+08:00</updated><id>https://thissentenceiswrong.github.io/</id><title type="html">并学不到东西的博客</title><subtitle>分享编程经验，生活琐事
 </subtitle><entry><title type="html">nginx 全家桶配置过程易踩坑的点</title><link href="https://thissentenceiswrong.github.io/2017/05/18/nginx%E5%8F%8Aphp-fpm%E9%85%8D%E7%BD%AE%E6%96%B9%E6%B3%95.html" rel="alternate" type="text/html" title="nginx 全家桶配置过程易踩坑的点" /><published>2017-05-18T00:00:00+08:00</published><updated>2017-05-18T00:00:00+08:00</updated><id>https://thissentenceiswrong.github.io/2017/05/18/nginx%E5%8F%8Aphp-fpm%E9%85%8D%E7%BD%AE%E6%96%B9%E6%B3%95</id><content type="html" xml:base="https://thissentenceiswrong.github.io/2017/05/18/nginx%E5%8F%8Aphp-fpm%E9%85%8D%E7%BD%AE%E6%96%B9%E6%B3%95.html">&lt;h2 id=&quot;linux-我tm错爆&quot;&gt;Linux: 我TM错爆&lt;/h2&gt;
 &lt;p&gt;昨天和今天都花在了配置服务器环境上。为了装个nginx+php+mysql我特么竟然卡了2天（忘了用lnmp全家桶）。&lt;/p&gt;
 
@@ -7,8 +7,8 @@
 &lt;p&gt;软件都下好了便开始痛苦的配置了。。。&lt;/p&gt;
 
 &lt;h2 id=&quot;nginx&quot;&gt;nginx&lt;/h2&gt;
-&lt;p&gt;以前用的都是Apache，因此这次是第一次配置，很痛苦。&lt;br /&gt;
-首先创建专门的用户及用户组www www，设置好 Document Root 的所属用户及权限，设置好服务器运行的用户。设置完这些应该就差不多了。我便打开浏览器一看：&lt;/p&gt;
+&lt;p&gt;以前用的都是Apache，因此这次是我第一次配置nginx，很痛苦。&lt;br /&gt;
+首先创建专门的用户及用户组www www，设置好 Document Root 的所属用户及权限，设置好 nginx 进程运行的用户。设置完这些应该就差不多了。我便打开浏览器一看：&lt;/p&gt;
 
 &lt;h4 id=&quot;403-forbidden&quot;&gt;403 Forbidden&lt;/h4&gt;
 
