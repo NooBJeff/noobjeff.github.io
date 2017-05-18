@@ -6,11 +6,11 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>并学不到东西的博客</title>
-  <meta name="description" content="分享编程经验，生活琐事">
+  <title>nginx 全家桶配置过程易踩坑的点</title>
+  <meta name="description" content="##Linux: 我TM错爆 昨天和今天都花在了配置服务器环境上。为了装个nginx+php+mysql我特么竟然卡了2天（忘了用lnmp全家桶）。">
 
   <link rel="stylesheet" href="/assets/main.css">
-  <link rel="canonical" href="https://thissentenceiswrong.github.io/">
+  <link rel="canonical" href="https://thissentenceiswrong.github.io/2017/05/18/nginx%E5%8F%8Aphp-fpm%E9%85%8D%E7%BD%AE%E6%96%B9%E6%B3%95.html">
   <link rel="alternate" type="application/rss+xml" title="并学不到东西的博客" href="/feed.xml">
   
   
@@ -64,74 +64,68 @@
 
     <main class="page-content" aria-label="Content">
       <div class="wrapper">
-        <div class="home">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
 
-  <h1 class="page-heading">Posts</h1>
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">nginx 全家桶配置过程易踩坑的点</h1>
+    <p class="post-meta">
+      <time datetime="2017-05-18T00:00:00+08:00" itemprop="datePublished">
+        
+        May 18, 2017
+      </time>
+      </p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <p>##Linux: 我TM错爆
+昨天和今天都花在了配置服务器环境上。为了装个nginx+php+mysql我特么竟然卡了2天（忘了用lnmp全家桶）。</p>
+
+<p>服务器运行的是CentOS7，首先为yum添加remi repo，下载php，nginx等软件。这一步花的时间不多。</p>
+
+<p>软件都下好了便开始痛苦的配置了。。。</p>
+
+<p>##nginx
+以前用的都是Apache，因此这次是第一次配置，很痛苦。
+首先创建专门的用户及用户组www www，设置好 Document Root 的所属用户及权限，设置好服务器运行的用户。设置完这些应该就差不多了。我便打开浏览器一看：</p>
+
+<p>####403 Forbidden</p>
+
+<p>百度谷歌了一下午加一晚上。最后终于发现，是一个叫什么 SELinux 原因。最最讽刺的是，这个解决方法来自于 StackOverflow 上搜索<code class="highlighter-rouge">nginx 403</code><a href="http://stackoverflow.com/questions/6795350/nginx-403-forbidden-for-all-files">第一个提问的第二个回答</a>。所以这本该是一次快速地查找答案并修复的过程，最后花了我两天。</p>
+
+<p>下次有问题一定先查 StackOverflow</p>
+
+<p><img src="https://thissentenceiswrong.github.io/assets/copy-from-stackoverflow.jpg" alt="面向搜索引擎编程" /></p>
+
+<h4 id="php-fpm-blank-page">php-fpm blank page</h4>
+
+<p>解决完nginx 403 的问题，我心中一阵舒爽，以为前方的道路已经通畅，胜利就在不远方。然而，本该配置好的php又出了问题。</p>
+
+<p>似乎现在php运行的工作都用一个叫 php-fpm 的东西来进行类似进程管理的调度。于是我也用了这么个东西，但是运行的时候，在浏览器访问php页面，得到的结果永远是一个空白页面，什么都没有，status code却是正常的200。这就很奇怪。于是又百度谷歌爆栈搜索半天，发现是nginx的配置文件没有<code class="highlighter-rouge">include fastcgi_params</code>，遂加上。果然，不再是空白页面了–是更恼人的</p>
+
+<h4 id="php-permission-denied">php Permission Denied</h4>
+
+<p>既然是权限问题，那我就去查看各个文件的用户及权限是否正确。我发现问题出在php-fpm 进程的运行用户上，似乎php-fpm 的默认运行用户是Apache，于是我打开php-fpm.conf，像nginx.conf里一样加上 <code class="highlighter-rouge">user=www</code>。保存退出，重新运行php-fpm，居然 TMD 报错了，不认 user 这个配置选项。那我要 TM 怎么改你的运行用户？</p>
+
+<p>于是又百度谷歌爆栈搜索了半天，终于发现配置用户需要到另一个文件 <code class="highlighter-rouge">www.conf</code>里去设置，我的天啊，连 php 的官方 manual 上都写的是往 php-fpm.conf 里加 user（<a href="http://php.net/manual/en/install.fpm.configuration.php">点此有真相</a> ）。这解决方法谁能料得到，坑，太坑了。</p>
+
+<p>于是又双叒叕配置了 php-fpm 的运行用户为www，重启，进网页，ok，终于能看到内容了：</p>
+
+<h4 id="could-not-found-driver">Could not found driver</h4>
+
+<p>这个问题是在使用PDO的时候出现的，问题比较简单：没装PDO，装上php的mysql插件就好了。</p>
+
+<p>好嘛，都解决到最后一环：数据库了。只要数据库调通，这整个网站也就基本能用了。但是。。。。。</p>
+
+<h4 id="access-denied-for-user-xxxlocalhost-using-password-yes">Access denied for user ‘xxx’@’localhost’ (using password: YES)</h4>
+
+<p><em>去你妈的权限问题</em></p>
+
+<p>(现在已经23点了，先睡了明天再补)</p>
+
+  </div>
+
   
-  
-
-
-  <ul class="post-list">
-    
-      <li>
-        
-        <span class="post-meta">May 18, 2017</span>
-
-        <h2>
-          <a class="post-link" href="/2017/05/18/nginx%E5%8F%8Aphp-fpm%E9%85%8D%E7%BD%AE%E6%96%B9%E6%B3%95.html">nginx 全家桶配置过程易踩坑的点</a>
-        </h2>
-      </li>
-    
-      <li>
-        
-        <span class="post-meta">May 17, 2017</span>
-
-        <h2>
-          <a class="post-link" href="/2017/05/17/%E7%97%9B%E8%8B%A6%E7%9A%84%E9%85%8D%E7%BD%AE%E6%9C%8D%E5%8A%A1%E5%99%A8.html">配置服务器还是这么蛋疼</a>
-        </h2>
-      </li>
-    
-      <li>
-        
-        <span class="post-meta">May 16, 2017</span>
-
-        <h2>
-          <a class="post-link" href="/2017/05/16/%E5%AE%9E%E4%B9%A0%E9%A1%B9%E7%9B%AE%E5%B0%8F%E7%BB%93.html">实习项目小结</a>
-        </h2>
-      </li>
-    
-      <li>
-        
-        <span class="post-meta">May 16, 2017</span>
-
-        <h2>
-          <a class="post-link" href="/2017/05/16/%E5%AE%9E%E4%B9%A0%E5%B0%8F%E7%BB%932.html">说说实习的前端项目</a>
-        </h2>
-      </li>
-    
-      <li>
-        
-        <span class="post-meta">May 5, 2017</span>
-
-        <h2>
-          <a class="post-link" href="/2017/05/05/welcome-to-jekyll.html">Hello World</a>
-        </h2>
-      </li>
-    
-      <li>
-        
-        <span class="post-meta">May 5, 2017</span>
-
-        <h2>
-          <a class="post-link" href="/2017/05/05/PHP-%E4%BD%BF%E7%94%A8-String.html">PHP 使用 String</a>
-        </h2>
-      </li>
-    
-  </ul>
-
-  <p class="rss-subscribe">subscribe <a href="/feed.xml">via RSS</a></p>
-
-</div>
+</article>
 
       </div>
     </main>
