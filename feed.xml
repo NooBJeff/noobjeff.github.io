@@ -1,16 +1,16 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.4.3">Jekyll</generator><link href="https://thissentenceiswrong.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://thissentenceiswrong.github.io/" rel="alternate" type="text/html" /><updated>2017-05-18T23:02:27+08:00</updated><id>https://thissentenceiswrong.github.io/</id><title type="html">并学不到东西的博客</title><subtitle>分享编程经验，生活琐事
-</subtitle><entry><title type="html">nginx 全家桶配置过程易踩坑的点</title><link href="https://thissentenceiswrong.github.io/2017/05/18/nginx%E5%8F%8Aphp-fpm%E9%85%8D%E7%BD%AE%E6%96%B9%E6%B3%95.html" rel="alternate" type="text/html" title="nginx 全家桶配置过程易踩坑的点" /><published>2017-05-18T00:00:00+08:00</published><updated>2017-05-18T00:00:00+08:00</updated><id>https://thissentenceiswrong.github.io/2017/05/18/nginx%E5%8F%8Aphp-fpm%E9%85%8D%E7%BD%AE%E6%96%B9%E6%B3%95</id><content type="html" xml:base="https://thissentenceiswrong.github.io/2017/05/18/nginx%E5%8F%8Aphp-fpm%E9%85%8D%E7%BD%AE%E6%96%B9%E6%B3%95.html">&lt;p&gt;##Linux: 我TM错爆
-昨天和今天都花在了配置服务器环境上。为了装个nginx+php+mysql我特么竟然卡了2天（忘了用lnmp全家桶）。&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.4.3">Jekyll</generator><link href="https://thissentenceiswrong.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://thissentenceiswrong.github.io/" rel="alternate" type="text/html" /><updated>2017-05-18T23:06:53+08:00</updated><id>https://thissentenceiswrong.github.io/</id><title type="html">并学不到东西的博客</title><subtitle>分享编程经验，生活琐事
+</subtitle><entry><title type="html">nginx 全家桶配置过程易踩坑的点</title><link href="https://thissentenceiswrong.github.io/2017/05/18/nginx%E5%8F%8Aphp-fpm%E9%85%8D%E7%BD%AE%E6%96%B9%E6%B3%95.html" rel="alternate" type="text/html" title="nginx 全家桶配置过程易踩坑的点" /><published>2017-05-18T00:00:00+08:00</published><updated>2017-05-18T00:00:00+08:00</updated><id>https://thissentenceiswrong.github.io/2017/05/18/nginx%E5%8F%8Aphp-fpm%E9%85%8D%E7%BD%AE%E6%96%B9%E6%B3%95</id><content type="html" xml:base="https://thissentenceiswrong.github.io/2017/05/18/nginx%E5%8F%8Aphp-fpm%E9%85%8D%E7%BD%AE%E6%96%B9%E6%B3%95.html">&lt;h2 id=&quot;linux-我tm错爆&quot;&gt;Linux: 我TM错爆&lt;/h2&gt;
+&lt;p&gt;昨天和今天都花在了配置服务器环境上。为了装个nginx+php+mysql我特么竟然卡了2天（忘了用lnmp全家桶）。&lt;/p&gt;
 
 &lt;p&gt;服务器运行的是CentOS7，首先为yum添加remi repo，下载php，nginx等软件。这一步花的时间不多。&lt;/p&gt;
 
 &lt;p&gt;软件都下好了便开始痛苦的配置了。。。&lt;/p&gt;
 
-&lt;p&gt;##nginx
-以前用的都是Apache，因此这次是第一次配置，很痛苦。
+&lt;h2 id=&quot;nginx&quot;&gt;nginx&lt;/h2&gt;
+&lt;p&gt;以前用的都是Apache，因此这次是第一次配置，很痛苦。&lt;br /&gt;
 首先创建专门的用户及用户组www www，设置好 Document Root 的所属用户及权限，设置好服务器运行的用户。设置完这些应该就差不多了。我便打开浏览器一看：&lt;/p&gt;
 
-&lt;p&gt;####403 Forbidden&lt;/p&gt;
+&lt;h4 id=&quot;403-forbidden&quot;&gt;403 Forbidden&lt;/h4&gt;
 
 &lt;p&gt;百度谷歌了一下午加一晚上。最后终于发现，是一个叫什么 SELinux 原因。最最讽刺的是，这个解决方法来自于 StackOverflow 上搜索&lt;code class=&quot;highlighter-rouge&quot;&gt;nginx 403&lt;/code&gt;&lt;a href=&quot;http://stackoverflow.com/questions/6795350/nginx-403-forbidden-for-all-files&quot;&gt;第一个提问的第二个回答&lt;/a&gt;。所以这本该是一次快速地查找答案并修复的过程，最后花了我两天。&lt;/p&gt;
 
@@ -20,7 +20,7 @@
 
 &lt;h4 id=&quot;php-fpm-blank-page&quot;&gt;php-fpm blank page&lt;/h4&gt;
 
-&lt;p&gt;解决完nginx 403 的问题，我心中一阵舒爽，以为前方的道路已经通畅，胜利就在不远方。然而，本该配置好的php又出了问题。&lt;/p&gt;
+&lt;p&gt;解决完nginx 403 的问题，我心中一阵舒爽，以为前方的道路已经通畅，胜利就在不远方。然而，本该配置好的php又出了问题&lt;/p&gt;
 
 &lt;p&gt;似乎现在php运行的工作都用一个叫 php-fpm 的东西来进行类似进程管理的调度。于是我也用了这么个东西，但是运行的时候，在浏览器访问php页面，得到的结果永远是一个空白页面，什么都没有，status code却是正常的200。这就很奇怪。于是又百度谷歌爆栈搜索半天，发现是nginx的配置文件没有&lt;code class=&quot;highlighter-rouge&quot;&gt;include fastcgi_params&lt;/code&gt;，遂加上。果然，不再是空白页面了–是更恼人的&lt;/p&gt;
 
@@ -42,7 +42,7 @@
 
 &lt;p&gt;&lt;em&gt;去你妈的权限问题&lt;/em&gt;&lt;/p&gt;
 
-&lt;p&gt;(现在已经23点了，先睡了明天再补)&lt;/p&gt;</content><author><name></name></author><summary type="html">##Linux: 我TM错爆 昨天和今天都花在了配置服务器环境上。为了装个nginx+php+mysql我特么竟然卡了2天（忘了用lnmp全家桶）。</summary></entry><entry><title type="html">配置服务器还是这么蛋疼</title><link href="https://thissentenceiswrong.github.io/2017/05/17/%E7%97%9B%E8%8B%A6%E7%9A%84%E9%85%8D%E7%BD%AE%E6%9C%8D%E5%8A%A1%E5%99%A8.html" rel="alternate" type="text/html" title="配置服务器还是这么蛋疼" /><published>2017-05-17T00:00:00+08:00</published><updated>2017-05-17T00:00:00+08:00</updated><id>https://thissentenceiswrong.github.io/2017/05/17/%E7%97%9B%E8%8B%A6%E7%9A%84%E9%85%8D%E7%BD%AE%E6%9C%8D%E5%8A%A1%E5%99%A8</id><content type="html" xml:base="https://thissentenceiswrong.github.io/2017/05/17/%E7%97%9B%E8%8B%A6%E7%9A%84%E9%85%8D%E7%BD%AE%E6%9C%8D%E5%8A%A1%E5%99%A8.html">&lt;p&gt;今天的任务是配好新的服务器环境，并将之前的聊天室项目部署上去。&lt;/p&gt;
+&lt;p&gt;(现在已经23点了，先睡了明天再补)&lt;/p&gt;</content><author><name></name></author><summary type="html">Linux: 我TM错爆 昨天和今天都花在了配置服务器环境上。为了装个nginx+php+mysql我特么竟然卡了2天（忘了用lnmp全家桶）。</summary></entry><entry><title type="html">配置服务器还是这么蛋疼</title><link href="https://thissentenceiswrong.github.io/2017/05/17/%E7%97%9B%E8%8B%A6%E7%9A%84%E9%85%8D%E7%BD%AE%E6%9C%8D%E5%8A%A1%E5%99%A8.html" rel="alternate" type="text/html" title="配置服务器还是这么蛋疼" /><published>2017-05-17T00:00:00+08:00</published><updated>2017-05-17T00:00:00+08:00</updated><id>https://thissentenceiswrong.github.io/2017/05/17/%E7%97%9B%E8%8B%A6%E7%9A%84%E9%85%8D%E7%BD%AE%E6%9C%8D%E5%8A%A1%E5%99%A8</id><content type="html" xml:base="https://thissentenceiswrong.github.io/2017/05/17/%E7%97%9B%E8%8B%A6%E7%9A%84%E9%85%8D%E7%BD%AE%E6%9C%8D%E5%8A%A1%E5%99%A8.html">&lt;p&gt;今天的任务是配好新的服务器环境，并将之前的聊天室项目部署上去。&lt;/p&gt;
 
 &lt;p&gt;接触Linux这么久了，每次干这种配环境的事情，仍然要头疼一天。&lt;/p&gt;
 
