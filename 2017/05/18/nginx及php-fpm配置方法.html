@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>nginx 全家桶配置过程易踩坑的点</title>
-  <meta name="description" content="Linux: 我TM错爆 昨天和今天都花在了配置服务器环境上。为了装个nginx+php+mysql我特么竟然卡了2天（忘了用lnmp全家桶）。">
+  <meta name="description" content="本人知识有限，如有错误还请指出，不过Github Page没法留言…">
 
   <link rel="stylesheet" href="/assets/main.css">
   <link rel="canonical" href="https://thissentenceiswrong.github.io/2017/05/18/nginx%E5%8F%8Aphp-fpm%E9%85%8D%E7%BD%AE%E6%96%B9%E6%B3%95.html">
@@ -77,7 +77,10 @@
   </header>
 
   <div class="post-content" itemprop="articleBody">
-    <h2 id="linux-我tm错爆">Linux: 我TM错爆</h2>
+    <p><em>本人知识有限，如有错误还请指出，不过Github Page没法留言…</em></p>
+
+<h2 id="linux-我tm错爆">Linux: 我TM错爆</h2>
+
 <p>昨天和今天都花在了配置服务器环境上。为了装个nginx+php+mysql我特么竟然卡了2天（忘了用lnmp全家桶）。</p>
 
 <p>服务器运行的是CentOS7，首先为yum添加remi repo，下载php，nginx等软件。这一步花的时间不多。</p>
@@ -124,7 +127,43 @@
 
 <p><em>去你妈的权限问题</em></p>
 
-<p>(现在已经23点了，先睡了明天再补)</p>
+<p><del>权限权限权限，我感觉自己遇到的问题中70%都和Linux的权限设置有关。</del></p>
+
+<p>哦等一下，黑错了，这里是MySQL的用户权限问题，这锅Linux不背。。。</p>
+
+<p>还是从头讲一下我认为的MySQL用户权限方面的通常解决方法吧。</p>
+
+<blockquote>
+  <p>select * from mysql.user;</p>
+
+  <p>可查看用户信息及权限</p>
+</blockquote>
+
+<p>首先删掉 mysql.user 表中的无名用户<code class="highlighter-rouge">''</code>，因为在某些情况下这个无名用户可能造成困扰，而且他似乎也没什么用，先删了省得后面出问题。</p>
+
+<p>接下来创建用户，并用 GRANT 语句赋予该用户在某些数据库上的某些权限，GRANT 语句中的 TO 的对象可以是’username’@’localhost’或者@’%’，localhost限定用户只能本地访问数据库，% 可允许外网访问。</p>
+
+<p>但是我这边用 GRANT 加 <code class="highlighter-rouge">FLUSH PRIVILEGES</code> 并不管用，用户的权限并没有更新。所以我选择手动更新 mysql.user 表中的权限，修改完后发现终于一切都正常了（至少表面上是这样）。</p>
+
+<p>至此nginx + php + mysql 终于都配置好了，聊天室应用也得以正常的运行。于是我打开浏览器开始实际测试应用的各个功能是否能够正常的运行。</p>
+
+<p>万万没想到，还是有坑。</p>
+
+<h4 id="permission-denied">Permission Denied</h4>
+
+<p><em>TMD 怎么又是权限问题？</em></p>
+
+<p>这个问题出在图片上传这个功能上。</p>
+
+<p>当我网页上用 uploadify 进行图片上传的时候，服务器一直响应 500 内部错误。但是这个功能代码上肯定是没问题的，因为在测试服务器上运行的时候一切正常。</p>
+
+<p>遂查看 nginx 及 php 的 error log，具体忘了是哪个log了，总之log里写的是“处理post（上传图片）请求时，往xxxx文件夹写入失败”。查了一下，似乎HTTP POST 请求内容较大的时候，服务器会创建缓存保存POST相关内容，但是如果没有创建缓存的文件夹的相应权限，那自然就失败报错 500 了。于是我又 <code class="highlighter-rouge">chown www:www /path/to/cache</code>，再次测试，终于，终于好了。</p>
+
+<hr />
+
+<p>讲道理我们这一行重在总结经验教训，可我从没养成写blog的习惯，从小文字表达能力也不好，因此我的博文可能非常“不堪入目”。但我会尽力把这个工作坚持下去，因为这东西确实有用。其实 MySQL 权限问题我上班第一周就遇到过了，如果那个时候我能写下来，现在说不定还能少点麻烦。</p>
+
+<p>也欢迎大家继续关注我的博客，实习这么久总会学到点什么的，我一定分享。</p>
 
   </div>
 
