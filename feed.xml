@@ -1,5 +1,88 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.4.3">Jekyll</generator><link href="https://thissentenceiswrong.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://thissentenceiswrong.github.io/" rel="alternate" type="text/html" /><updated>2017-05-24T23:39:40+08:00</updated><id>https://thissentenceiswrong.github.io/</id><title type="html">并学不到东西的博客</title><subtitle>分享编程经验，生活琐事
-</subtitle><entry><title type="html">Jeff已经很累了</title><link href="https://thissentenceiswrong.github.io/2017/05/24/Jeff%E5%B7%B2%E7%BB%8F%E5%BE%88%E7%B4%AF%E4%BA%86.html" rel="alternate" type="text/html" title="Jeff已经很累了" /><published>2017-05-24T00:00:00+08:00</published><updated>2017-05-24T00:00:00+08:00</updated><id>https://thissentenceiswrong.github.io/2017/05/24/Jeff%E5%B7%B2%E7%BB%8F%E5%BE%88%E7%B4%AF%E4%BA%86</id><content type="html" xml:base="https://thissentenceiswrong.github.io/2017/05/24/Jeff%E5%B7%B2%E7%BB%8F%E5%BE%88%E7%B4%AF%E4%BA%86.html">&lt;p&gt;和大学同学出去玩，感觉和他们除了与自己相关的话题，其他什么都不想说。这病态的心理。    &lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.4.3">Jekyll</generator><link href="https://thissentenceiswrong.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://thissentenceiswrong.github.io/" rel="alternate" type="text/html" /><updated>2017-05-27T13:13:49+08:00</updated><id>https://thissentenceiswrong.github.io/</id><title type="html">并学不到东西的博客</title><subtitle>分享编程经验，生活琐事
+</subtitle><entry><title type="html">从零编写实时渲染器-0</title><link href="https://thissentenceiswrong.github.io/2017/05/27/%E4%BB%8E%E9%9B%B6%E7%BC%96%E5%86%99%E5%AE%9E%E6%97%B6%E6%B8%B2%E6%9F%93%E5%99%A8-0.html" rel="alternate" type="text/html" title="从零编写实时渲染器-0" /><published>2017-05-27T00:00:00+08:00</published><updated>2017-05-27T00:00:00+08:00</updated><id>https://thissentenceiswrong.github.io/2017/05/27/%E4%BB%8E%E9%9B%B6%E7%BC%96%E5%86%99%E5%AE%9E%E6%97%B6%E6%B8%B2%E6%9F%93%E5%99%A8-0</id><content type="html" xml:base="https://thissentenceiswrong.github.io/2017/05/27/%E4%BB%8E%E9%9B%B6%E7%BC%96%E5%86%99%E5%AE%9E%E6%97%B6%E6%B8%B2%E6%9F%93%E5%99%A8-0.html">&lt;p&gt;为了兴趣爱好，为了提高技术，为了申请大学有目标，为了简历好看。&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;本套博客记录编写计算机图形学下的实时软件渲染器。&lt;/p&gt;
+
+&lt;p&gt;我的编程学习过程谈不上努力刻苦，因此在写代码的过程中肯定会有很多问题，欢迎各位读者到&lt;a href=&quot;https://github.com/thissentenceiswrong/Renderer/&quot;&gt;GitHub的本Repo&lt;/a&gt;中提出Issue什么的 :)&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2 id=&quot;准备工作&quot;&gt;准备工作&lt;/h2&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;下载我们用于学习的教材 &lt;a href=&quot;https://www.dropbox.com/s/u1ordkpm2g4v74l/Fundamentals%20of%20Computer%20Graphics.pdf?dl=0&quot;&gt;《Fundamentals of Computer Graphics》&lt;/a&gt; (第三版， pdf 格式，英文原版)&lt;/p&gt;
+
+    &lt;blockquote&gt;
+      &lt;ul&gt;
+        &lt;li&gt;链接指向 Dropbox，请自备翻墙。&lt;/li&gt;
+        &lt;li&gt;很抱歉这是英文版的，因为我找不到中文版啊啊啊。如果各位谁有中文版的话，一定要贡献出来啊！英文看的咪咪痛&lt;/li&gt;
+        &lt;li&gt;&lt;del&gt;本文件仅用于学习目的，请于下载后24小时内自行删除Blah Blah Blah&lt;/del&gt;&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/blockquote&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;a href=&quot;https://www.visualstudio.com/zh-hans/downloads/&quot;&gt;下载 Visual Studio 2017&lt;/a&gt; 。写渲染器这种大型一点的项目，不用IDE会比较难受。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;获取我的Repo或者用 VS2017 创建 &lt;strong&gt;C++  的 Win32 项目&lt;/strong&gt;（不是Win32 控制台应用程序）&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;项目简介&quot;&gt;项目简介&lt;/h2&gt;
+
+&lt;p&gt;我的目标是在暑假结束前写出简单的，具有基本明暗效果的渲染器，可以用来查看.obj格式的三维模型。这个软件基本的功能为载入模型，围绕模型移动镜头。其他任何功能都先不管，只注重渲染这一部分。&lt;/p&gt;
+
+&lt;p&gt;下面是具体一点的参数&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;操作系统：Windows（因为需要创建GUI而又不想去学跨平台的GUI库，所以就只能Window“独占”了）&lt;/li&gt;
+  &lt;li&gt;编程语言：C++ （然而由于本人的编程水平，恐怕会写成C with Class）&lt;/li&gt;
+  &lt;li&gt;GUI库：Win32 API（最底层的那一套，其实应该用Qt的，但是目前不想去学那个）&lt;/li&gt;
+  &lt;li&gt;线性代数库：由于渲染过程涉及到大量的数学计算，因此需要一个好的数学库。不建议自己造轮子，性能什么的肯定不行。具体用什么第三方库还没找好。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;创建程序入口函数main&quot;&gt;创建程序入口函数main&lt;/h2&gt;
+
+&lt;p&gt;今天时间还有的多，创建好VS2017项目后可以再写点代码，争取把基础框架搭起来。&lt;/p&gt;
+
+&lt;p&gt;创建main.cpp，这就是整个程序的入口函数main所在地了。&lt;/p&gt;
+
+&lt;p&gt;代码如下：&lt;/p&gt;
+
+&lt;p&gt;main.cpp:&lt;/p&gt;
+
+&lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cp&quot;&gt;#include &amp;lt;Windows.h&amp;gt;
+&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;#define WIN32_LEAN_AND_MEAN
+&lt;/span&gt;
+&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;WINAPI&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;WinMain&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;HINSTANCE&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hInstance&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;HINSTANCE&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hPreinstance&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;LPSTR&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;lpCmd&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nShowCmd&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// 尝试 cout 输出到控制台是没有用的，因为根本就没控制台给你输出了= =
+&lt;/span&gt;    &lt;span class=&quot;c1&quot;&gt;// 这算是具有窗口的图形界面程序了
+&lt;/span&gt;    &lt;span class=&quot;c1&quot;&gt;// 不过还没有代码创建窗口，所以程序运行后什么都不会发生
+&lt;/span&gt;    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;和普通的控制台程序看起来是不是有点不太一样？不要慌，代码中那些参数具体是什么意思，我也不懂，反正也用不上(￣、￣)&lt;/p&gt;
+
+&lt;p&gt;有兴趣查看他们的具体意思的话，可以去&lt;a href=&quot;https://msdn.microsoft.com/zh-cn/library/windows/desktop/ff818516(v=vs.85).aspx&quot;&gt;MSDN&lt;/a&gt;搜索。&lt;/p&gt;
+
+&lt;p&gt;由于通过Windows API与操作系统进行交互并非本程序的主要目的，所以完全没有必要浪费太多时间学习这些既底层，又不实用的API。编写过程中需要使用的话，我都会说明一下的。&lt;/p&gt;
+
+&lt;p&gt;如果使用的是较老的VS，那么文件的默认编码一般不是UTF-8。如果代码中有中文处理起来会比较费事，建议在菜单栏的 &lt;code class=&quot;highlighter-rouge&quot;&gt;文件-&amp;gt;高级保存选项&lt;/code&gt;中选择UTF-8不带签名格式保存。而新版的VS 2017似乎会在检测到Unicode字符后提示用户用UTF-8保存，因此应该不用手动设置文件格式。&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;今天就到这吧，搭建程序基本框架什么的，鸽了鸽了，午休午休&lt;/p&gt;
+
+&lt;p&gt;( ´･･)ﾉ(._.`)&lt;/p&gt;
+
+&lt;p&gt;更多信息可查看Repo下的&lt;a href=&quot;README.md&quot;&gt;README.md&lt;/a&gt;&lt;/p&gt;</content><author><name></name></author><summary type="html">为了兴趣爱好，为了提高技术，为了申请大学有目标，为了简历好看。</summary></entry><entry><title type="html">Jeff已经很累了</title><link href="https://thissentenceiswrong.github.io/2017/05/24/Jeff%E5%B7%B2%E7%BB%8F%E5%BE%88%E7%B4%AF%E4%BA%86.html" rel="alternate" type="text/html" title="Jeff已经很累了" /><published>2017-05-24T00:00:00+08:00</published><updated>2017-05-24T00:00:00+08:00</updated><id>https://thissentenceiswrong.github.io/2017/05/24/Jeff%E5%B7%B2%E7%BB%8F%E5%BE%88%E7%B4%AF%E4%BA%86</id><content type="html" xml:base="https://thissentenceiswrong.github.io/2017/05/24/Jeff%E5%B7%B2%E7%BB%8F%E5%BE%88%E7%B4%AF%E4%BA%86.html">&lt;p&gt;和大学同学出去玩，感觉和他们除了与自己相关的话题，其他什么都不想说。这病态的心理。    &lt;/p&gt;
 
 &lt;p&gt;我总感觉我疯狂地想提高自己，不是对自己直接有益的东西都不想讨论。但是这种行为肯定是错误的，我很奇怪自己从哪里搞来的这种心态，实在不利于正常人际关系。&lt;/p&gt;
 
