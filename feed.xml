@@ -1,88 +1,238 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.4.3">Jekyll</generator><link href="https://thissentenceiswrong.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://thissentenceiswrong.github.io/" rel="alternate" type="text/html" /><updated>2017-05-27T13:13:49+08:00</updated><id>https://thissentenceiswrong.github.io/</id><title type="html">并学不到东西的博客</title><subtitle>分享编程经验，生活琐事
-</subtitle><entry><title type="html">从零编写实时渲染器-0</title><link href="https://thissentenceiswrong.github.io/2017/05/27/%E4%BB%8E%E9%9B%B6%E7%BC%96%E5%86%99%E5%AE%9E%E6%97%B6%E6%B8%B2%E6%9F%93%E5%99%A8-0.html" rel="alternate" type="text/html" title="从零编写实时渲染器-0" /><published>2017-05-27T00:00:00+08:00</published><updated>2017-05-27T00:00:00+08:00</updated><id>https://thissentenceiswrong.github.io/2017/05/27/%E4%BB%8E%E9%9B%B6%E7%BC%96%E5%86%99%E5%AE%9E%E6%97%B6%E6%B8%B2%E6%9F%93%E5%99%A8-0</id><content type="html" xml:base="https://thissentenceiswrong.github.io/2017/05/27/%E4%BB%8E%E9%9B%B6%E7%BC%96%E5%86%99%E5%AE%9E%E6%97%B6%E6%B8%B2%E6%9F%93%E5%99%A8-0.html">&lt;p&gt;为了兴趣爱好，为了提高技术，为了申请大学有目标，为了简历好看。&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.4.3">Jekyll</generator><link href="https://thissentenceiswrong.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://thissentenceiswrong.github.io/" rel="alternate" type="text/html" /><updated>2017-06-12T11:46:40+08:00</updated><id>https://thissentenceiswrong.github.io/</id><title type="html">并学不到东西的博客</title><subtitle>分享编程经验，生活琐事
+</subtitle><entry><title type="html">E3 2017 EA 及 XBOX 发布会小结</title><link href="https://thissentenceiswrong.github.io/2017/06/12/E3-EA%E5%8F%8AXBOX-%E5%8F%91%E5%B8%83%E4%BC%9A%E5%B0%8F%E7%BB%93.html" rel="alternate" type="text/html" title="E3 2017 EA 及 XBOX 发布会小结" /><published>2017-06-12T00:00:00+08:00</published><updated>2017-06-12T00:00:00+08:00</updated><id>https://thissentenceiswrong.github.io/2017/06/12/E3%20EA%E5%8F%8AXBOX%20%E5%8F%91%E5%B8%83%E4%BC%9A%E5%B0%8F%E7%BB%93</id><content type="html" xml:base="https://thissentenceiswrong.github.io/2017/06/12/E3-EA%E5%8F%8AXBOX-%E5%8F%91%E5%B8%83%E4%BC%9A%E5%B0%8F%E7%BB%93.html">&lt;p&gt;​	一年一度的E3又开始啦，玩家的盛会呀。下面总结一下所有__我感兴趣__的游戏信息。&lt;/p&gt;
+
+&lt;p&gt;​	这是我收集的大部分E3上出现的游戏宣传片播放列表: &lt;a href=&quot;https://www.youtube.com/playlist?list=PLYYEWLejyvpes_1mVe2lSsxRKyBGXpAu9&quot;&gt;YouTube&lt;/a&gt;&lt;/p&gt;
 
 &lt;hr /&gt;
 
-&lt;p&gt;本套博客记录编写计算机图形学下的实时软件渲染器。&lt;/p&gt;
+&lt;h1 id=&quot;ea-发布会&quot;&gt;EA 发布会&lt;/h1&gt;
 
-&lt;p&gt;我的编程学习过程谈不上努力刻苦，因此在写代码的过程中肯定会有很多问题，欢迎各位读者到&lt;a href=&quot;https://github.com/thissentenceiswrong/Renderer/&quot;&gt;GitHub的本Repo&lt;/a&gt;中提出Issue什么的 :)&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;h2 id=&quot;准备工作&quot;&gt;准备工作&lt;/h2&gt;
+&lt;p&gt;目录：&lt;/p&gt;
 
 &lt;ol&gt;
   &lt;li&gt;
-    &lt;p&gt;下载我们用于学习的教材 &lt;a href=&quot;https://www.dropbox.com/s/u1ordkpm2g4v74l/Fundamentals%20of%20Computer%20Graphics.pdf?dl=0&quot;&gt;《Fundamentals of Computer Graphics》&lt;/a&gt; (第三版， pdf 格式，英文原版)&lt;/p&gt;
-
-    &lt;blockquote&gt;
-      &lt;ul&gt;
-        &lt;li&gt;链接指向 Dropbox，请自备翻墙。&lt;/li&gt;
-        &lt;li&gt;很抱歉这是英文版的，因为我找不到中文版啊啊啊。如果各位谁有中文版的话，一定要贡献出来啊！英文看的咪咪痛&lt;/li&gt;
-        &lt;li&gt;&lt;del&gt;本文件仅用于学习目的，请于下载后24小时内自行删除Blah Blah Blah&lt;/del&gt;&lt;/li&gt;
-      &lt;/ul&gt;
-    &lt;/blockquote&gt;
+    &lt;table&gt;
+      &lt;tbody&gt;
+        &lt;tr&gt;
+          &lt;td&gt;[极品飞车：偿还&lt;/td&gt;
+          &lt;td&gt;Need For Speed: Payback](#1-1)&lt;/td&gt;
+        &lt;/tr&gt;
+      &lt;/tbody&gt;
+    &lt;/table&gt;
   &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;&lt;a href=&quot;https://www.visualstudio.com/zh-hans/downloads/&quot;&gt;下载 Visual Studio 2017&lt;/a&gt; 。写渲染器这种大型一点的项目，不用IDE会比较难受。&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;获取我的Repo或者用 VS2017 创建 &lt;strong&gt;C++  的 Win32 项目&lt;/strong&gt;（不是Win32 控制台应用程序）&lt;/p&gt;
-  &lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#1-1&quot;&gt;A way out&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;h2 id=&quot;项目简介&quot;&gt;项目简介&lt;/h2&gt;
+&lt;h2 id=&quot;1-need-for-speed-payback&quot;&gt;&lt;span name=&quot;1-1&quot;&gt;1. Need For Speed: Payback&lt;/span&gt;&lt;/h2&gt;
 
-&lt;p&gt;我的目标是在暑假结束前写出简单的，具有基本明暗效果的渲染器，可以用来查看.obj格式的三维模型。这个软件基本的功能为载入模型，围绕模型移动镜头。其他任何功能都先不管，只注重渲染这一部分。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://thissentenceiswrong.github.io/assets/nfspayback.jpg&quot; alt=&quot;NFS: Payback&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;下面是具体一点的参数&lt;/p&gt;
+&lt;p&gt;发售日期：2017年11月10号&lt;/p&gt;
 
-&lt;ul&gt;
-  &lt;li&gt;操作系统：Windows（因为需要创建GUI而又不想去学跨平台的GUI库，所以就只能Window“独占”了）&lt;/li&gt;
-  &lt;li&gt;编程语言：C++ （然而由于本人的编程水平，恐怕会写成C with Class）&lt;/li&gt;
-  &lt;li&gt;GUI库：Win32 API（最底层的那一套，其实应该用Qt的，但是目前不想去学那个）&lt;/li&gt;
-  &lt;li&gt;线性代数库：由于渲染过程涉及到大量的数学计算，因此需要一个好的数学库。不建议自己造轮子，性能什么的肯定不行。具体用什么第三方库还没找好。&lt;/li&gt;
-&lt;/ul&gt;
+&lt;table&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;发布宣传片(Reveal Trailer): &lt;a href=&quot;https://www.youtube.com/watch?v=kc-OcOduEx0&quot;&gt;YouTube&lt;/a&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;a href=&quot;http://www.bilibili.com/video/av11058639/&quot;&gt;Bilibili&lt;/a&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
 
-&lt;h2 id=&quot;创建程序入口函数main&quot;&gt;创建程序入口函数main&lt;/h2&gt;
+&lt;table&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;游戏宣传片(Gameplay Trailer): &lt;a href=&quot;https://www.youtube.com/watch?v=K-5EdHZ0hBs&quot;&gt;YouTube&lt;/a&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;a href=&quot;http://www.bilibili.com/video/av11242045&quot;&gt;Bilibili&lt;/a&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
 
-&lt;p&gt;今天时间还有的多，创建好VS2017项目后可以再写点代码，争取把基础框架搭起来。&lt;/p&gt;
+&lt;p&gt;​	目前知道的是，游戏当然还在使用寒霜引擎，与极品飞车19一样，有外观/性能改装内容。这一代似乎依然注重剧情，而且依然是老套的复仇向剧情。地图部分有城市有野外，且大概可以像GTA V那样越野驾驶。&lt;/p&gt;
 
-&lt;p&gt;创建main.cpp，这就是整个程序的入口函数main所在地了。&lt;/p&gt;
+&lt;p&gt;​	其他的也没什么好说的，现在信息不多，而且依据这种年货的尿性，也就那样了。大概所有极品飞车玩家都在想，为什么他们就是不能做出一个让所有人都满意的极品飞车续作，因为玩家的要求似乎是非常明确且确定的，为什么他们制作者总是能设法在某几个方面让玩家失望？大概这也是一种能力吧，希望这一作能挽回点颜面。&lt;/p&gt;
 
-&lt;p&gt;代码如下：&lt;/p&gt;
+&lt;p&gt;​	反正我要买GT Sport去了。&lt;/p&gt;
 
-&lt;p&gt;main.cpp:&lt;/p&gt;
+&lt;h2 id=&quot;2-a-way-out&quot;&gt;&lt;span name=&quot;1-2&quot;&gt;2. A way out&lt;/span&gt;&lt;/h2&gt;
 
-&lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cp&quot;&gt;#include &amp;lt;Windows.h&amp;gt;
-&lt;/span&gt;
-&lt;span class=&quot;cp&quot;&gt;#define WIN32_LEAN_AND_MEAN
-&lt;/span&gt;
-&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;WINAPI&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;WinMain&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;HINSTANCE&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hInstance&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;HINSTANCE&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hPreinstance&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;LPSTR&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;lpCmd&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nShowCmd&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;// 尝试 cout 输出到控制台是没有用的，因为根本就没控制台给你输出了= =
-&lt;/span&gt;    &lt;span class=&quot;c1&quot;&gt;// 这算是具有窗口的图形界面程序了
-&lt;/span&gt;    &lt;span class=&quot;c1&quot;&gt;// 不过还没有代码创建窗口，所以程序运行后什么都不会发生
-&lt;/span&gt;    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;p&gt;&lt;img src=&quot;https://thissentenceiswrong.github.io/assets/awayout.jpg&quot; alt=&quot;A way out&quot; /&gt;&lt;/p&gt;
 
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;p&gt;发售日期：2018年早期&lt;/p&gt;
 
-&lt;p&gt;和普通的控制台程序看起来是不是有点不太一样？不要慌，代码中那些参数具体是什么意思，我也不懂，反正也用不上(￣、￣)&lt;/p&gt;
+&lt;table&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;发布宣传片(Reveal Trailer): &lt;a href=&quot;https://www.youtube.com/watch?v=yGZGSdgJVPM&quot;&gt;YouTube&lt;/a&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;a href=&quot;http://www.bilibili.com/video/av11234807/&quot;&gt;Bilibili&lt;/a&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
 
-&lt;p&gt;有兴趣查看他们的具体意思的话，可以去&lt;a href=&quot;https://msdn.microsoft.com/zh-cn/library/windows/desktop/ff818516(v=vs.85).aspx&quot;&gt;MSDN&lt;/a&gt;搜索。&lt;/p&gt;
+&lt;table&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;游戏宣传片(Gameplay Trailer): &lt;a href=&quot;https://www.youtube.com/watch?v=_ApSmPvxz1o&quot;&gt;YouTube&lt;/a&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;a href=&quot;http://www.bilibili.com/video/av11234010/&quot;&gt;Bilibili&lt;/a&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
 
-&lt;p&gt;由于通过Windows API与操作系统进行交互并非本程序的主要目的，所以完全没有必要浪费太多时间学习这些既底层，又不实用的API。编写过程中需要使用的话，我都会说明一下的。&lt;/p&gt;
+&lt;p&gt;​	这个游戏大概是我整个E3里最感兴趣的一个了：可本地分屏的双人合作，画面好，解谜，剧情/故事向，且不依赖玩家操作水平。&lt;/p&gt;
 
-&lt;p&gt;如果使用的是较老的VS，那么文件的默认编码一般不是UTF-8。如果代码中有中文处理起来会比较费事，建议在菜单栏的 &lt;code class=&quot;highlighter-rouge&quot;&gt;文件-&amp;gt;高级保存选项&lt;/code&gt;中选择UTF-8不带签名格式保存。而新版的VS 2017似乎会在检测到Unicode字符后提示用户用UTF-8保存，因此应该不用手动设置文件格式。&lt;/p&gt;
+&lt;p&gt;​	上一个做到以上几个元素的游戏，是2011年发布的 Portal 2。所以我相当看好这游戏，说实话，我已经很久没有见到这种类型的游戏了。在满是车枪球的3A大作里面，这种竟然还有本地分屏的合作类游戏，真的是“一股清流”。已经沦为休闲玩家的我决定买买买。&lt;/p&gt;
 
 &lt;hr /&gt;
 
-&lt;p&gt;今天就到这吧，搭建程序基本框架什么的，鸽了鸽了，午休午休&lt;/p&gt;
+&lt;h1 id=&quot;xbox-发布会&quot;&gt;XBOX 发布会&lt;/h1&gt;
 
-&lt;p&gt;( ´･･)ﾉ(._.`)&lt;/p&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;Xbox One Console Exclusive&lt;/p&gt;
 
-&lt;p&gt;更多信息可查看Repo下的&lt;a href=&quot;README.md&quot;&gt;README.md&lt;/a&gt;&lt;/p&gt;</content><author><name></name></author><summary type="html">为了兴趣爱好，为了提高技术，为了申请大学有目标，为了简历好看。</summary></entry><entry><title type="html">Jeff已经很累了</title><link href="https://thissentenceiswrong.github.io/2017/05/24/Jeff%E5%B7%B2%E7%BB%8F%E5%BE%88%E7%B4%AF%E4%BA%86.html" rel="alternate" type="text/html" title="Jeff已经很累了" /><published>2017-05-24T00:00:00+08:00</published><updated>2017-05-24T00:00:00+08:00</updated><id>https://thissentenceiswrong.github.io/2017/05/24/Jeff%E5%B7%B2%E7%BB%8F%E5%BE%88%E7%B4%AF%E4%BA%86</id><content type="html" xml:base="https://thissentenceiswrong.github.io/2017/05/24/Jeff%E5%B7%B2%E7%BB%8F%E5%BE%88%E7%B4%AF%E4%BA%86.html">&lt;p&gt;和大学同学出去玩，感觉和他们除了与自己相关的话题，其他什么都不想说。这病态的心理。    &lt;/p&gt;
+  &lt;p&gt;World Premiere&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;由于这次XBOX发布会上露面的大小游戏太多了（42个！），所以我只选我感兴趣的游戏，抱歉刺客信条什么的我并不感兴趣。&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;看了XBOX 发布会的录播，讲道理这一下发布42个游戏的策略挺尴尬的，游戏的宣传片走马灯一样在大屏幕播放，但是观众的反应却平平淡淡，尴尬的不行。&lt;/p&gt;
+
+  &lt;p&gt;微软不行呀，游戏这种事情，还是得看明天的索尼大法好发布会！&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;strong&gt;目录：&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;a href=&quot;#2-1&quot;&gt;XBOX ONE X&lt;/a&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;table&gt;
+      &lt;tbody&gt;
+        &lt;tr&gt;
+          &lt;td&gt;[Forza Motorsport 7&lt;/td&gt;
+          &lt;td&gt;极限竞速 7](#2-2)&lt;/td&gt;
+        &lt;/tr&gt;
+      &lt;/tbody&gt;
+    &lt;/table&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#2-3&quot;&gt;Anthem&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#2-4&quot;&gt;&lt;strong&gt;Life is Strange Before the Strom&lt;/strong&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;1-xbox-one-x&quot;&gt;&lt;span name=&quot;2-1&quot;&gt;1. XBOX ONE X&lt;/span&gt;&lt;/h2&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://thissentenceiswrong.github.io/assets/xboxonex.jpg&quot; alt=&quot;XBOX ONE X&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;发售日期：2017年11月7号&lt;/p&gt;
+
+&lt;p&gt;官网：&lt;a href=&quot;http://www.xbox.com/en-US/xbox-one-x&quot;&gt;Microsoft&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;宣传片：&lt;a href=&quot;https://www.youtube.com/watch?v=g-gp-Voq6MQ&quot;&gt;YouTube&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;售价：499美元&lt;/p&gt;
+
+&lt;p&gt;​	大概是为了弥补XBOX ONE初代性能被PS4“吊打”的局面，微软便推出这款号称“True 4K“的XBOX ONE X，力图提前占据4K游戏市场。该主机的具体配置在此就不放出来了，这玩意放图片太不方便= =&lt;/p&gt;
+
+&lt;p&gt;​	4K毫无疑问将会是游戏史的下一个发展阶段，但是运行4K所需要的计算能力实在是太大了，索尼为了4K娱乐以及VR而发布的 PS4 Pro 都不能在所有游戏上达到 4K@60FPS。而这次根据宣传片来看，微软的 XBOX ONE X 有可能在所有游戏上率先达到 4K@60FPS 的目标，如果事情果真有宣传片里那般美好的话，那绝对对玩家来说是个大好消息：仅500美元便可以迈入4K游戏时代。&lt;/p&gt;
+
+&lt;h2 id=&quot;2-forza-7&quot;&gt;&lt;span name=&quot;2-2&quot;&gt;2. Forza 7&lt;/span&gt;&lt;/h2&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://thissentenceiswrong.github.io/assets/forza7.jpg&quot; alt=&quot;Forza 7&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;发售日期: 2017年10月3日&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;发布宣传片：&lt;a href=&quot;https://www.youtube.com/watch?v=Dokpy_KIuyA&quot;&gt;YouTube&lt;/a&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;a href=&quot;http://www.bilibili.com/video/av11264494/&quot;&gt;Bilibili&lt;/a&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;​	微软家与索尼家的GT系列抗衡的赛车游戏。略微玩过win10上的 Forza 6之后，我觉得这个系列是相当不错的。画面很好，操控也很真实。&lt;/p&gt;
+
+&lt;p&gt;​	然而我并没有xbox，所以。。。出门左转GT Sport。但是我看好这个游戏。&lt;/p&gt;
+
+&lt;h2 id=&quot;3-anthem&quot;&gt;&lt;span name=&quot;2-3&quot;&gt;3. Anthem&lt;/span&gt;&lt;/h2&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://thissentenceiswrong.github.io/assets/anthem.jpg&quot; alt=&quot;Anthem&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;发售日期：不详&lt;/p&gt;
+
+&lt;p&gt;发布宣传片：&lt;a href=&quot;https://www.youtube.com/watch?v=wi0Uq7QmKm4&quot;&gt;YouTube&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;游戏宣传片：&lt;a href=&quot;https://www.youtube.com/watch?v=EL5GSfs9fi4&quot;&gt;YouTube&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;​	其实我对这个游戏并不是很感兴趣，我放上来只是想看这游戏会不会缩水。&lt;/p&gt;
+
+&lt;p&gt;​	(ಥ _ ಥ)&lt;/p&gt;
+
+&lt;h2 id=&quot;4-life-is-strange-before-the-strom&quot;&gt;&lt;span name=&quot;2-4&quot;&gt;4. Life is Strange Before the Strom&lt;/span&gt;&lt;/h2&gt;
+
+&lt;p&gt;&lt;strong&gt;THIS IS WHAT I AM TALKING ABOUT!&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://thissentenceiswrong.github.io/assets/lis.jpg&quot; alt=&quot;LiS&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;发售日期（第一章/共三章）：2017年8月31日&lt;/p&gt;
+
+&lt;p&gt;发布宣传片：&lt;a href=&quot;https://www.youtube.com/watch?v=AvwDNGjEp7A&quot;&gt;YouTube&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;开发人员采访：&lt;a href=&quot;https://www.youtube.com/watch?v=GONk9c3MLjA&quot;&gt;YouTube&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;​	(✿◕‿◕✿)&lt;/p&gt;
+
+&lt;p&gt;​	下午补上&lt;/p&gt;</content><author><name></name></author><summary type="html">​ 一年一度的E3又开始啦，玩家的盛会呀。下面总结一下所有__我感兴趣__的游戏信息。</summary></entry><entry><title type="html">经验技术小小小结</title><link href="https://thissentenceiswrong.github.io/2017/06/08/%E7%BB%8F%E9%AA%8C%E6%8A%80%E6%9C%AF%E5%B0%8F%E5%B0%8F%E5%B0%8F%E7%BB%93.html" rel="alternate" type="text/html" title="经验技术小小小结" /><published>2017-06-08T00:00:00+08:00</published><updated>2017-06-08T00:00:00+08:00</updated><id>https://thissentenceiswrong.github.io/2017/06/08/%E7%BB%8F%E9%AA%8C%E6%8A%80%E6%9C%AF%E5%B0%8F%E5%B0%8F%E5%B0%8F%E7%BB%93</id><content type="html" xml:base="https://thissentenceiswrong.github.io/2017/06/08/%E7%BB%8F%E9%AA%8C%E6%8A%80%E6%9C%AF%E5%B0%8F%E5%B0%8F%E5%B0%8F%E7%BB%93.html">&lt;p&gt;我特么上班都干了些什么屁事啊。。。一点技术含量也没有，全是业务逻辑。要想提高还是得靠自己。不能陷入工作的满足心陷阱啊，你感觉自己做了一天的事，其实这些事对自己没什么提高&lt;/p&gt;
+
+&lt;h2 id=&quot;用户登录&quot;&gt;用户登录&lt;/h2&gt;
+&lt;p&gt;使用PHP的SESSION来记录用户登录信息；可在不同页面间保存信息。&lt;/p&gt;
+
+&lt;h2 id=&quot;javascript的单例模式&quot;&gt;JavaScript的单例模式&lt;/h2&gt;
+&lt;p&gt;ECMA 5&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-JavaScript&quot;&gt;function Foo() {
+    if (this.constructor.instance) {
+        return this.constructor.instance;
+    } else {
+        this.constructor.instance = this;
+    }
+ 
+    // ...
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;ECMA 6&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-JavaScript&quot;&gt;class Foo {
+    constructor() {
+        //...
+    }
+
+    static getInstance() {
+        // 这里的this指向应该是这个函数而不是类了
+        if (empty(this.instance)) {
+            this.instance = new Foo();
+        }
+        return this.instance;
+    }
+
+    // ...
+} 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;centos的一些ge使用经验&quot;&gt;CentOS的一些(ge)使用经验&lt;/h2&gt;
+&lt;p&gt;公司的服务器运行CentOS 7，因为有些命令我也不知道是不是Linux通用的，所以标题不敢写成 Linux， 只好放个 CentOS。&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;强制结束进程：&lt;code class=&quot;highlighter-rouge&quot;&gt;ctrl + \&lt;/code&gt;
+   一般用 &lt;code class=&quot;highlighter-rouge&quot;&gt;ctrl + c&lt;/code&gt; 就能终止大部分程序的运行，但是有些程序，比如CentOS的yum，就会忽略这个信号。
+    &lt;blockquote&gt;
+      &lt;p&gt;按下 &lt;code class=&quot;highlighter-rouge&quot;&gt;ctrl + c&lt;/code&gt; 后会有一个 “Keyboard Interrupt” signal 发送到当前程序。但是程序如何响应该信号，是终止自己还是忽略，操作系统管不了。&lt;br /&gt;
+同样的，按下&lt;code class=&quot;highlighter-rouge&quot;&gt;ctrl + \&lt;/code&gt; 或者&lt;code class=&quot;highlighter-rouge&quot;&gt;ctrl+4&lt;/code&gt; 后会有一个 “Quit” signal，这个通常意味着当前程序需要尽快退出，甚至跳过保存。大概相当于非常紧急的信息，应该没有程序会选择忽略。&lt;/p&gt;
+    &lt;/blockquote&gt;
+  &lt;/li&gt;
+  &lt;li&gt;没了。。想不出来&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;我TM写的什么玩意啊。。。。。我靠实习这么久没学什么东西呐？&lt;/p&gt;</content><author><name></name></author><summary type="html">我特么上班都干了些什么屁事啊。。。一点技术含量也没有，全是业务逻辑。要想提高还是得靠自己。不能陷入工作的满足心陷阱啊，你感觉自己做了一天的事，其实这些事对自己没什么提高</summary></entry><entry><title type="html">Jeff已经很累了</title><link href="https://thissentenceiswrong.github.io/2017/05/24/Jeff%E5%B7%B2%E7%BB%8F%E5%BE%88%E7%B4%AF%E4%BA%86.html" rel="alternate" type="text/html" title="Jeff已经很累了" /><published>2017-05-24T00:00:00+08:00</published><updated>2017-05-24T00:00:00+08:00</updated><id>https://thissentenceiswrong.github.io/2017/05/24/Jeff%E5%B7%B2%E7%BB%8F%E5%BE%88%E7%B4%AF%E4%BA%86</id><content type="html" xml:base="https://thissentenceiswrong.github.io/2017/05/24/Jeff%E5%B7%B2%E7%BB%8F%E5%BE%88%E7%B4%AF%E4%BA%86.html">&lt;p&gt;和大学同学出去玩，感觉和他们除了与自己相关的话题，其他什么都不想说。这病态的心理。    &lt;/p&gt;
 
 &lt;p&gt;我总感觉我疯狂地想提高自己，不是对自己直接有益的东西都不想讨论。但是这种行为肯定是错误的，我很奇怪自己从哪里搞来的这种心态，实在不利于正常人际关系。&lt;/p&gt;
 

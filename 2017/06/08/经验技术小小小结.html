@@ -6,11 +6,11 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>并学不到东西的博客</title>
-  <meta name="description" content="分享编程经验，生活琐事">
+  <title>经验技术小小小结</title>
+  <meta name="description" content="我特么上班都干了些什么屁事啊。。。一点技术含量也没有，全是业务逻辑。要想提高还是得靠自己。不能陷入工作的满足心陷阱啊，你感觉自己做了一天的事，其实这些事对自己没什么提高">
 
   <link rel="stylesheet" href="/assets/main.css">
-  <link rel="canonical" href="https://thissentenceiswrong.github.io/">
+  <link rel="canonical" href="https://thissentenceiswrong.github.io/2017/06/08/%E7%BB%8F%E9%AA%8C%E6%8A%80%E6%9C%AF%E5%B0%8F%E5%B0%8F%E5%B0%8F%E7%BB%93.html">
   <link rel="alternate" type="application/rss+xml" title="并学不到东西的博客" href="/feed.xml">
   
   
@@ -64,101 +64,75 @@
 
     <main class="page-content" aria-label="Content">
       <div class="wrapper">
-        <div class="home">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
 
-  <h1 class="page-heading">Posts</h1>
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">经验技术小小小结</h1>
+    <p class="post-meta">
+      <time datetime="2017-06-08T00:00:00+08:00" itemprop="datePublished">
+        
+        Jun 8, 2017
+      </time>
+      </p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <p>我特么上班都干了些什么屁事啊。。。一点技术含量也没有，全是业务逻辑。要想提高还是得靠自己。不能陷入工作的满足心陷阱啊，你感觉自己做了一天的事，其实这些事对自己没什么提高</p>
+
+<h2 id="用户登录">用户登录</h2>
+<p>使用PHP的SESSION来记录用户登录信息；可在不同页面间保存信息。</p>
+
+<h2 id="javascript的单例模式">JavaScript的单例模式</h2>
+<p>ECMA 5</p>
+<pre><code class="language-JavaScript">function Foo() {
+    if (this.constructor.instance) {
+        return this.constructor.instance;
+    } else {
+        this.constructor.instance = this;
+    }
+ 
+    // ...
+}
+</code></pre>
+
+<p>ECMA 6</p>
+<pre><code class="language-JavaScript">class Foo {
+    constructor() {
+        //...
+    }
+
+    static getInstance() {
+        // 这里的this指向应该是这个函数而不是类了
+        if (empty(this.instance)) {
+            this.instance = new Foo();
+        }
+        return this.instance;
+    }
+
+    // ...
+} 
+</code></pre>
+
+<h2 id="centos的一些ge使用经验">CentOS的一些(ge)使用经验</h2>
+<p>公司的服务器运行CentOS 7，因为有些命令我也不知道是不是Linux通用的，所以标题不敢写成 Linux， 只好放个 CentOS。</p>
+
+<ol>
+  <li>强制结束进程：<code class="highlighter-rouge">ctrl + \</code>
+   一般用 <code class="highlighter-rouge">ctrl + c</code> 就能终止大部分程序的运行，但是有些程序，比如CentOS的yum，就会忽略这个信号。
+    <blockquote>
+      <p>按下 <code class="highlighter-rouge">ctrl + c</code> 后会有一个 “Keyboard Interrupt” signal 发送到当前程序。但是程序如何响应该信号，是终止自己还是忽略，操作系统管不了。<br />
+同样的，按下<code class="highlighter-rouge">ctrl + \</code> 或者<code class="highlighter-rouge">ctrl+4</code> 后会有一个 “Quit” signal，这个通常意味着当前程序需要尽快退出，甚至跳过保存。大概相当于非常紧急的信息，应该没有程序会选择忽略。</p>
+    </blockquote>
+  </li>
+  <li>没了。。想不出来</li>
+</ol>
+
+<p>我TM写的什么玩意啊。。。。。我靠实习这么久没学什么东西呐？</p>
+
+  </div>
+
   
-  
-
-
-  <ul class="post-list">
-    
-      <li>
-        
-        <span class="post-meta">Jun 12, 2017</span>
-
-        <h2>
-          <a class="post-link" href="/2017/06/12/E3-EA%E5%8F%8AXBOX-%E5%8F%91%E5%B8%83%E4%BC%9A%E5%B0%8F%E7%BB%93.html">E3 2017 EA 及 XBOX 发布会小结</a>
-        </h2>
-      </li>
-    
-      <li>
-        
-        <span class="post-meta">Jun 8, 2017</span>
-
-        <h2>
-          <a class="post-link" href="/2017/06/08/%E7%BB%8F%E9%AA%8C%E6%8A%80%E6%9C%AF%E5%B0%8F%E5%B0%8F%E5%B0%8F%E7%BB%93.html">经验技术小小小结</a>
-        </h2>
-      </li>
-    
-      <li>
-        
-        <span class="post-meta">May 24, 2017</span>
-
-        <h2>
-          <a class="post-link" href="/2017/05/24/Jeff%E5%B7%B2%E7%BB%8F%E5%BE%88%E7%B4%AF%E4%BA%86.html">Jeff已经很累了</a>
-        </h2>
-      </li>
-    
-      <li>
-        
-        <span class="post-meta">May 18, 2017</span>
-
-        <h2>
-          <a class="post-link" href="/2017/05/18/nginx%E5%8F%8Aphp-fpm%E9%85%8D%E7%BD%AE%E6%96%B9%E6%B3%95.html">nginx 全家桶配置过程易踩坑的点</a>
-        </h2>
-      </li>
-    
-      <li>
-        
-        <span class="post-meta">May 17, 2017</span>
-
-        <h2>
-          <a class="post-link" href="/2017/05/17/%E7%97%9B%E8%8B%A6%E7%9A%84%E9%85%8D%E7%BD%AE%E6%9C%8D%E5%8A%A1%E5%99%A8.html">配置服务器还是这么蛋疼</a>
-        </h2>
-      </li>
-    
-      <li>
-        
-        <span class="post-meta">May 16, 2017</span>
-
-        <h2>
-          <a class="post-link" href="/2017/05/16/%E5%AE%9E%E4%B9%A0%E9%A1%B9%E7%9B%AE%E5%B0%8F%E7%BB%93.html">实习项目小结</a>
-        </h2>
-      </li>
-    
-      <li>
-        
-        <span class="post-meta">May 16, 2017</span>
-
-        <h2>
-          <a class="post-link" href="/2017/05/16/%E5%AE%9E%E4%B9%A0%E5%B0%8F%E7%BB%932.html">说说实习的前端项目</a>
-        </h2>
-      </li>
-    
-      <li>
-        
-        <span class="post-meta">May 5, 2017</span>
-
-        <h2>
-          <a class="post-link" href="/2017/05/05/welcome-to-jekyll.html">Hello World</a>
-        </h2>
-      </li>
-    
-      <li>
-        
-        <span class="post-meta">May 5, 2017</span>
-
-        <h2>
-          <a class="post-link" href="/2017/05/05/PHP-%E4%BD%BF%E7%94%A8-String.html">PHP 使用 String</a>
-        </h2>
-      </li>
-    
-  </ul>
-
-  <p class="rss-subscribe">subscribe <a href="/feed.xml">via RSS</a></p>
-
-</div>
+</article>
 
       </div>
     </main>
