@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>ECharts</title>
+    <!-- 引入 echarts.js -->
+    <script src="js/libs/echarts.js"></script>
+    <script src="js/data.js"></script>
+</head>
+<body>
+<!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+<div id="main1" style="width: 800px;height:600px;"></div>
+<div id="main2" style="width: 800px;height:600px;"></div>
+<script>
+    function get_data_num_movies_year() {
+        // 年份
+        var data_xAxis = [];
+        // 每年电影数量
+        var data_series = [];
+        // 10个柱形
+        var division = 10;
+
+        var dict_year_number = {};
+        var list_movies = DATA_MOVIES["data"];
+
+        var min_year = 9999;
+        var max_year = 0;
+
+        var lop;
+        for (lop = 0; lop < list_movies.length; lop++) {
+            var year = list_movies[lop]["year"];
+
+            if (year < min_year) {
+                min_year = year;
+            }
+
+            if (year > max_year) {
+                max_year = year;
+            }
+
+            if (!(year in dict_year_number)) {
+                dict_year_number[year] = 0;
+            }
+
+            dict_year_number[year] += 1;
+        }
+
+        var span = (max_year - min_year) / division;
+
+        for (lop = min_year; lop <= max_year; lop += span) {
+            // Math.round()
+            // 年份 string
+            var lop_int = Math.round(lop);
+            var str = lop_int + " - " + Math.round(lop_int + span);
+
+            // 数据
+            var count = 0;
+            for (var lop2 = lop_int; lop2 < lop_int + span; lop2++) {
+                if (lop2 in dict_year_number) {
+                    count += dict_year_number[lop2];
+                }
+            }
+
+            data_xAxis.push(str);
+            data_series.push(count);
+        }
+
+        return [data_xAxis, data_series]
+    }
+
+    function get_data_year_movie() {
+        var list_movies = DATA_MOVIES["data"];
+
+        var data = [];
+
+        var lop;
+        for (lop = 0; lop < list_movies.length; lop++) {
+            var cur = list_movies[lop];
+
+            // get year and rank, and title
+            var year = cur["year"];
+            var imdb_rank = cur["imdb_rank"];
+            var title = cur["title"];
+
+            data.push([year, imdb_rank, title]);
+        }
+
+        return data;
+    }
+
+    var data1 = get_data_num_movies_year();
+    var data2 = get_data_year_movie();
+
+    // 基于准备好的dom，初始化echarts实例
+    var myChart1 = echarts.init(document.getElementById('main1'));
+    var myChart2 = echarts.init(document.getElementById('main2'));
+
+    // 指定图表的配置项和数据
+    var option1 = {
+        title: {
+            text: 'TOP250 电影年份分布'
+        },
+        tooltip: {},
+        legend: {
+            data: ['TOP250数量']
+        },
+        xAxis: {
+            data: data1[0]
+        },
+        yAxis: {},
+        series: [{
+            name: 'TOP250数量',
+            type: 'bar',
+            data: data1[1]
+        }]
+    };
+
+    var option2 = {
+        backgroundColor: new echarts.graphic.RadialGradient(0.3, 0.3, 0.8, [{
+            offset: 0,
+            color: '#f7f8fa'
+        }, {
+            offset: 1,
+            color: '#cdd0d5'
+        }]),
+        title: {
+            text: '电影年份及排名, 面积越大排名越高'
+        },
+        legend: {
+            right: 10,
+            data: ['#排名 电影名']
+        },
+        xAxis: {
+            splitLine: {
+                lineStyle: {
+                    type: 'dashed'
+                }
+            },
+            scale: true
+        },
+        yAxis: {
+            splitLine: {
+                lineStyle: {
+                    type: 'dashed'
+                }
+            },
+            scale: true
+        },
+        series: [{
+            name: '#排名 电影名',
+            data: data2,
+            type: 'scatter',
+            symbolSize: function (data) {
+                return 10 + (250 - data[1]) / 20;
+            },
+            label: {
+                emphasis: {
+                    show: true,
+                    formatter: function (param) {
+                        return "#" + param.data[1] + " " + param.data[2];
+                    },
+                    position: 'top'
+                }
+            },
+            itemStyle: {
+                normal: {
+                    shadowBlur: 10,
+                    shadowColor: 'rgba(120, 36, 50, 0.5)',
+                    shadowOffsetY: 5,
+                    color: new echarts.graphic.RadialGradient(0.4, 0.3, 1, [{
+                        offset: 0,
+                        color: 'rgb(251, 118, 123)'
+                    }, {
+                        offset: 1,
+                        color: 'rgb(204, 46, 72)'
+                    }])
+                }
+            }
+        }]
+    };
+
+    // 使用刚指定的配置项和数据显示图表。
+    myChart1.setOption(option1);
+    myChart2.setOption(option2);
+</script>
+</body>
+</html>
