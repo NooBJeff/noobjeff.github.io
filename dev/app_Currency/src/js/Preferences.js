@@ -6,7 +6,7 @@ class Preferences {
 
         // 显示的国家
         // 每一项为国家三个英文字母的缩写
-        this.rows = ['USD', 'CNY'];
+        this.rows = ['USD', 'CNY', 'CCC'];
         this.topRow = {
             abbr: 'USD',
             amount: 999

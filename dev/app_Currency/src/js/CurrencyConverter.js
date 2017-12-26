@@ -17,6 +17,13 @@ class CurrencyConverter {
                 abbrNation: 'CNY',
                 moneyUnit: "元",
                 rate: 6
+            },
+            'CCC': {
+                imgNation: "",
+                nameNation: 'CCC',
+                abbrNation: 'CCC',
+                moneyUnit: "R",
+                rate: 6
             }
         }
     }

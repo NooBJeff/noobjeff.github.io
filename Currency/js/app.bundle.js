@@ -105,10 +105,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 
-__WEBPACK_IMPORTED_MODULE_0_vue_dist_vue_js___default.a.component('row', {
-    template: '#templateRow',
-    props: ["data"]
-});
+// Vue.component('row', {
+//     template: '#templateRow',
+//     props: ["data"]
+// });
 
 const app = new __WEBPACK_IMPORTED_MODULE_0_vue_dist_vue_js___default.a({
     el: "#app",
@@ -124,26 +124,22 @@ const app = new __WEBPACK_IMPORTED_MODULE_0_vue_dist_vue_js___default.a({
         }
     },
     computed: {
-        dataTopRow: function () {
-            let tmp = {
-                cache: this.converter.table[this.preferences.topRow['abbr']],
-                amount: this.converter.convert(null, null, null)
-            };
-
-            return tmp;
-        },
-        dataOtherRows: function () {
-            let ret = [];
-
+        dataRows: function () {
             const table = this.converter.table;
             const rows = this.preferences.rows;
 
             const topRowAbbr = this.preferences.topRow.abbr;
 
+            let ret = [];
+            // 先把Top的放进来
+            ret.push({
+                cache: table[topRowAbbr],
+                amount: this.converter.convert(null, null, null)
+            });
+
             for (let each in rows) {
                 // Dont forget that for-in for arrays returns index
                 each = rows[each];
-
                 if (each === topRowAbbr) {
                     continue;
                 }
@@ -11428,7 +11424,7 @@ class Preferences {
 
         // 显示的国家
         // 每一项为国家三个英文字母的缩写
-        this.rows = ['USD', 'CNY'];
+        this.rows = ['USD', 'CNY', 'CCC'];
         this.topRow = {
             abbr: 'USD',
             amount: 999
@@ -11462,6 +11458,13 @@ class CurrencyConverter {
                 nameNation: 'China',
                 abbrNation: 'CNY',
                 moneyUnit: "元",
+                rate: 6
+            },
+            'CCC': {
+                imgNation: "",
+                nameNation: 'CCC',
+                abbrNation: 'CCC',
+                moneyUnit: "R",
                 rate: 6
             }
         }

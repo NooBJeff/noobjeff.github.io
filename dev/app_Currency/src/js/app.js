@@ -3,10 +3,10 @@ import Vue from 'vue/dist/vue.js';
 import {Preferences} from './Preferences.js';
 import {CurrencyConverter} from './CurrencyConverter';
 
-Vue.component('row', {
-    template: '#templateRow',
-    props: ["data"]
-});
+// Vue.component('row', {
+//     template: '#templateRow',
+//     props: ["data"]
+// });
 
 const app = new Vue({
     el: "#app",
@@ -22,26 +22,22 @@ const app = new Vue({
         }
     },
     computed: {
-        dataTopRow: function () {
-            let tmp = {
-                cache: this.converter.table[this.preferences.topRow['abbr']],
-                amount: this.converter.convert(null, null, null)
-            };
-
-            return tmp;
-        },
-        dataOtherRows: function () {
-            let ret = [];
-
+        dataRows: function () {
             const table = this.converter.table;
             const rows = this.preferences.rows;
 
             const topRowAbbr = this.preferences.topRow.abbr;
 
+            let ret = [];
+            // 先把Top的放进来
+            ret.push({
+                cache: table[topRowAbbr],
+                amount: this.converter.convert(null, null, null)
+            });
+
             for (let each in rows) {
                 // Dont forget that for-in for arrays returns index
                 each = rows[each];
-
                 if (each === topRowAbbr) {
                     continue;
                 }
