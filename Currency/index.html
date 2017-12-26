@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Currency Converter</title>
+</head>
+<body>
+
+<div id="app">
+    <div id="debug">
+        {{ preferences }}
+        <br>
+        {{ converter }}
+    </div>
+
+    <div id="wrapper">
+        <table id="tableView">
+            <row v-bind:data="dataTopRow"></row>
+            <row v-bind:data="row" v-for="row in dataOtherRows" :key="row.abbrNation"></row>
+        </table>
+    </div>
+
+</div>
+
+<script type="text/x-template" id="templateRow">
+    <tr class="table-row" @click="test()">
+        <td class="table-cell1">
+            <div class="table-cell1-wrapper">
+                <img class="table-img" v-bind:src="data.cache.imgNation" alt="">
+                <span class="table-abbr-nation">{{ data.cache.abbrNation }}</span>
+                <span class="table-name-nation">{{ data.cache.nameNation }}</span>
+            </div>
+        </td>
+        <td class="table-cell2">
+            <div class="table-cell2-wrapper">
+                <span class="table-amount">{{ data.amount }}</span>
+                <input class="table-input" type="number">
+                <span class="table-money-unit">{{ data.cache.moneyUnit }}</span>
+            </div>
+        </td>
+    </tr>
+</script>
+<script src="js/app.bundle.js"></script>
+
+
+</body>
+</html>
