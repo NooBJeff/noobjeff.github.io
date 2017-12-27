@@ -7,12 +7,6 @@
 <body>
 
 <div id="app">
-    <div id="debug">
-        {{ dataAmount }}
-        <br>
-        {{ preferences.topRow }}
-    </div>
-
     <div id="wrapper">
         <table id="tableView">
             <tr class="table-row" :class="{top: data.cache.abbrNation == preferences.topRow.abbr, editing: isEditing && data.cache.abbrNation === editing}"
