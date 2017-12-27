@@ -102,6 +102,9 @@ const app = new Vue({
             // Save
             this.preferences.save();
             this.converter.save();
+        },
+        onNewButtonClicked: function () {
+            // todo
         }
     },
     beforeMount: function () {

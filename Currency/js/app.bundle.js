@@ -1075,6 +1075,9 @@ const app = new __WEBPACK_IMPORTED_MODULE_0_vue_dist_vue_js___default.a({
             // Save
             this.preferences.save();
             this.converter.save();
+        },
+        onNewButtonClicked: function () {
+            // todo
         }
     },
     beforeMount: function () {
@@ -12181,7 +12184,7 @@ class Preferences {
 
         // 显示的国家
         // 每一项为国家三个英文字母的缩写
-        this.rows = ['CNY', 'EUR', 'JPY', 'HKD'];
+        this.rows = ['USD', 'CNY', 'EUR', 'JPY', 'HKD', 'KRW', 'AUD', 'GBP'];
         /**
          * abbr: 仅当以下情况时修改
          *       0.新建时
@@ -12193,7 +12196,7 @@ class Preferences {
          * @type {{abbr: string, amount: number}}
          */
         this.topRow = {
-            abbr: 'CNY',
+            abbr: 'USD',
             amount: 1000
         };
     }
@@ -13458,7 +13461,7 @@ exports = module.exports = __webpack_require__(36)(undefined);
 
 
 // module
-exports.push([module.i, "body {\n  background: #eeeeee; }\n\n#tableView input {\n  display: none; }\n\n#tableView .top {\n  background: #ffcdd2; }\n\n#tableView .editing input {\n  display: block;\n  height: 1.5em;\n  margin-bottom: 0; }\n\n#tableView .editing .table-amount {\n  display: none; }\n", ""]);
+exports.push([module.i, "body {\n  background: #eeeeee; }\n\n#tableView {\n  line-height: 2;\n  font-size: 18px; }\n  #tableView .table-abbr-nation {\n    font-weight: bold; }\n  #tableView .table-input {\n    display: none; }\n  #tableView .table-amount {\n    font-size: 20px; }\n  #tableView .table-money-unit {\n    font-weight: lighter; }\n  #tableView .top {\n    background: #ffcdd2; }\n  #tableView .editing .table-input {\n    display: block; }\n  #tableView .editing .table-amount {\n    display: none; }\n", ""]);
 
 // exports
 

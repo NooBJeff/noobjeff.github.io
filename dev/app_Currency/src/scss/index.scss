@@ -3,11 +3,26 @@ body {
 }
 
 #tableView {
+  line-height: 2;
+  font-size: 18px;
+
   .table-row {
   }
 
-  input {
+  .table-abbr-nation {
+    font-weight: bold;
+  }
+
+  .table-input {
     display: none;
+  }
+
+  .table-amount {
+    font-size: 20px;
+  }
+
+  .table-money-unit {
+    font-weight: lighter;
   }
 
   .top {
@@ -15,10 +30,8 @@ body {
   }
 
   .editing {
-    input {
+    .table-input {
       display: block;
-      height: 1.5em;
-      margin-bottom: 0;
     }
 
     .table-amount {

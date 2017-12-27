@@ -15,7 +15,7 @@ class Preferences {
 
         // 显示的国家
         // 每一项为国家三个英文字母的缩写
-        this.rows = ['CNY', 'EUR', 'JPY', 'HKD'];
+        this.rows = ['USD', 'CNY', 'EUR', 'JPY', 'HKD', 'KRW', 'AUD', 'GBP'];
         /**
          * abbr: 仅当以下情况时修改
          *       0.新建时
@@ -27,7 +27,7 @@ class Preferences {
          * @type {{abbr: string, amount: number}}
          */
         this.topRow = {
-            abbr: 'CNY',
+            abbr: 'USD',
             amount: 1000
         };
     }
