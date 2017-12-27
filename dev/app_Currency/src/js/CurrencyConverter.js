@@ -243,19 +243,22 @@ class CurrencyConverter {
             };
 
             for (let each in data) {
+                if (!data.hasOwnProperty(each)) {
+                    continue;
+                }
+
                 const abbr = each.substring(3);
-                that.table[abbr] = {
-                    imgNation: "",
-                    nameNation: that.currencies[abbr],
-                    abbrNation: abbr,
-                    moneyUnit: ".",
-                    rate: data[each]
-                };
+                that.table[abbr]["nameNation"] = that.currencies[abbr];
+                that.table[abbr]["abbrNation"] = abbr;
+                that.table[abbr]["rate"] = data[each];
             }
         });
     }
 
     isLocalStorageOutdate() {
+        if (this.timestamp === null) {
+            return true;
+        }
         // todo
         return false;
     }
