@@ -29,6 +29,7 @@
                 <div class="col s12">
                     <span class="table-amount col s12 right-align">{{ data.amount }}</span>
                     <input class="table-input col s6 offset-s6" type="number"
+                           ref="inputField"
                            v-model="editingAmount"
                            v-input-focus="editing == data.cache.abbrNation"
                            @keyup.enter="doneEdit(data.cache.abbrNation)">

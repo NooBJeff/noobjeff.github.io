@@ -91,6 +91,9 @@ const app = new Vue({
             this.editing = abbr;
 
             this.isEditing = true;
+            // console.log(this.$refs);
+            // 得到了数组...
+            // this.$refs.select();
         },
         doneEdit: function (abbr) {
             this.isEditing = false;

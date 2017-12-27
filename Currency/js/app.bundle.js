@@ -1064,6 +1064,8 @@ const app = new __WEBPACK_IMPORTED_MODULE_0_vue_dist_vue_js___default.a({
             this.editing = abbr;
 
             this.isEditing = true;
+            console.log(this.$refs);
+            this.$refs.select();
         },
         doneEdit: function (abbr) {
             this.isEditing = false;
@@ -13461,7 +13463,7 @@ exports = module.exports = __webpack_require__(36)(undefined);
 
 
 // module
-exports.push([module.i, "body {\n  background: #eeeeee; }\n\n#tableView {\n  line-height: 2;\n  font-size: 18px; }\n  #tableView .table-abbr-nation {\n    font-weight: bold; }\n  #tableView .table-input {\n    display: none; }\n  #tableView .table-amount {\n    font-size: 20px; }\n  #tableView .table-money-unit {\n    font-weight: lighter; }\n  #tableView .top {\n    background: #ffcdd2; }\n  #tableView .editing .table-input {\n    display: block; }\n  #tableView .editing .table-amount {\n    display: none; }\n", ""]);
+exports.push([module.i, "body {\n  background: #eeeeee; }\n\n#tableView {\n  line-height: 2;\n  font-size: 1.5em; }\n  #tableView input {\n    font-size: 1.6em; }\n  #tableView .table-abbr-nation {\n    font-weight: bold; }\n  #tableView .table-input {\n    display: none; }\n  #tableView .table-amount {\n    font-size: 1.6em; }\n  #tableView .table-money-unit {\n    font-weight: lighter; }\n  #tableView .top {\n    background: #ffcdd2; }\n  #tableView .editing .table-input {\n    display: block; }\n  #tableView .editing .table-amount {\n    display: none; }\n", ""]);
 
 // exports
 
