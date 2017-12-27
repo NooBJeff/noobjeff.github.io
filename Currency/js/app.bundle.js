@@ -1001,8 +1001,8 @@ const app = new __WEBPACK_IMPORTED_MODULE_0_vue_dist_vue_js___default.a({
                 each = rows[each];
 
                 ret[each] = (each === this.editing)
-                        ? this.editingAmount
-                        : this.converter.convert(this.editing, this.editingAmount, each)
+                    ? this.editingAmount
+                    : this.converter.convert(this.editing, this.editingAmount, each)
             }
 
             return ret;
@@ -1043,6 +1043,9 @@ const app = new __WEBPACK_IMPORTED_MODULE_0_vue_dist_vue_js___default.a({
             return Math.round(num * 10) / 10;
         },
         changeTopRow: function (abbr) {
+            // 取消editing状态
+            this.isEditing = false;
+
             // 改变top的row，但是保留当前金额
             const prevAmount = this.dataAmount[this.preferences.topRow["abbr"]];
             this.preferences.topRow["abbr"] = abbr;
@@ -1052,6 +1055,11 @@ const app = new __WEBPACK_IMPORTED_MODULE_0_vue_dist_vue_js___default.a({
             this.editingAmount = this.round(prevAmount);
         },
         editRow: function (abbr) {
+            if (this.isEditing) {
+                this.isEditing = false;
+                return;
+            }
+
             this.editingAmount = this.round(this.dataAmount[abbr]);
             this.editing = abbr;
 
@@ -1077,7 +1085,13 @@ const app = new __WEBPACK_IMPORTED_MODULE_0_vue_dist_vue_js___default.a({
         this.editing = this.preferences.topRow["abbr"];
         this.editingAmount = this.preferences.topRow["amount"];
     },
-
+    directives: {
+        'input-focus': function (el, binding) {
+            if (binding.value) {
+                el.focus();
+            }
+        }
+    }
 });
 
 window.onbeforeunload = function () {
@@ -13444,7 +13458,7 @@ exports = module.exports = __webpack_require__(36)(undefined);
 
 
 // module
-exports.push([module.i, "#tableView input {\n  display: none; }\n\n#tableView .editing input {\n  display: block; }\n\n#tableView .editing .table-amount {\n  display: none; }\n", ""]);
+exports.push([module.i, "body {\n  background: #eeeeee; }\n\n#tableView input {\n  display: none; }\n\n#tableView .top {\n  background: #ffcdd2; }\n\n#tableView .editing input {\n  display: block;\n  height: 1.5em;\n  margin-bottom: 0; }\n\n#tableView .editing .table-amount {\n  display: none; }\n", ""]);
 
 // exports
 

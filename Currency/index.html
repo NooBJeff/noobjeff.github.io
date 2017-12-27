@@ -6,56 +6,70 @@
 
     <!--Bootstrap 4-->
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css"
-          integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+    <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css"-->
+    <!--integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">-->
+
+    <!--Materialize-->
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
 </head>
 <body>
 
-<div id="app">
-    <div id="wrapper">
-        <table id="tableView" class="container">
-            <tr class="table-row row"
-                :class="{top: data.cache.abbrNation == preferences.topRow.abbr, editing: isEditing && data.cache.abbrNation === editing}"
-                v-for="data in dataRows" :key="data.cache.abbrNation">
-                <td class="table-cell1 col-4" @click="changeTopRow(data.cache.abbrNation)">
-                    <img class="table-img" v-bind:src="data.cache.imgNation" alt="">
-                    <span class="table-abbr-nation">{{ data.cache.abbrNation }}</span>
-                </td>
-                <td class="table-cell2 col-8" @click="editRow(data.cache.abbrNation)">
-                    <div class="row">
-                        <span class="table-amount">{{ data.amount }}</span>
-                        <input class="table-input" type="number"
-                               v-model="editingAmount"
-                               @keyup.enter="doneEdit(data.cache.abbrNation)">
-                    </div>
-                    <div class="row">
-                        <span class="table-money-unit offset-2">{{ data.cache.moneyUnit }}</span>
-                    </div>
-                </td>
-            </tr>
-        </table>
+<div id="app" class="container">
+    <div id="tableView" class="">
+        <div class="table-row card row"
+             :class="{top: data.cache.abbrNation == preferences.topRow.abbr, editing: isEditing && data.cache.abbrNation === editing}"
+             v-for="data in dataRows" :key="data.cache.abbrNation">
+
+            <div class="table-cell1 col s4" @click="changeTopRow(data.cache.abbrNation)">
+                <img class="table-img" v-bind:src="data.cache.imgNation" alt="">
+                <span class="table-abbr-nation">{{ data.cache.abbrNation }}</span>
+            </div>
+            <div class="table-cell2 col s8" @click="editRow(data.cache.abbrNation)">
+                <div class="col s12">
+                    <span class="table-amount col s12 right-align">{{ data.amount }}</span>
+                    <input class="table-input col s6 offset-s6" type="number"
+                           v-model="editingAmount"
+                           v-input-focus="editing == data.cache.abbrNation"
+                           @keyup.enter="doneEdit(data.cache.abbrNation)">
+                </div>
+                <div class="col s12">
+                    <span class="table-money-unit col s12 right-align">{{ data.cache.moneyUnit }}</span>
+                </div>
+            </div>
+        </div>
     </div>
 
+    <div class="fixed-action-btn">
+        <a class="btn-floating btn-large red">
+            <i class="large material-icons">+</i>
+        </a>
+    </div>
+</div>
+</div>
 </div>
 
-<script src="js/app.bundle.js"></script>
-
-<script>
-    var FLAG_SAVE = true;
-</script>
+</div>
 
 <!--bootstrap-->
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-        crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js"
-        integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh"
-        crossorigin="anonymous"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"
-        integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ"
-        crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js"-->
+<!--integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh"-->
+<!--crossorigin="anonymous"></script>-->
+<!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"-->
+<!--integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ"-->
+<!--crossorigin="anonymous"></script>-->
+<!--Materialize-->
+<!-- Compiled and minified JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+
+<script>
+    var FLAG_SAVE = false;
+</script>
+
+<script src="js/app.bundle.js"></script>
 
 </body>
 </html>

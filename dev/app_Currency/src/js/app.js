@@ -28,8 +28,8 @@ const app = new Vue({
                 each = rows[each];
 
                 ret[each] = (each === this.editing)
-                        ? this.editingAmount
-                        : this.converter.convert(this.editing, this.editingAmount, each)
+                    ? this.editingAmount
+                    : this.converter.convert(this.editing, this.editingAmount, each)
             }
 
             return ret;
@@ -70,6 +70,9 @@ const app = new Vue({
             return Math.round(num * 10) / 10;
         },
         changeTopRow: function (abbr) {
+            // 取消editing状态
+            this.isEditing = false;
+
             // 改变top的row，但是保留当前金额
             const prevAmount = this.dataAmount[this.preferences.topRow["abbr"]];
             this.preferences.topRow["abbr"] = abbr;
@@ -79,6 +82,11 @@ const app = new Vue({
             this.editingAmount = this.round(prevAmount);
         },
         editRow: function (abbr) {
+            if (this.isEditing) {
+                this.isEditing = false;
+                return;
+            }
+
             this.editingAmount = this.round(this.dataAmount[abbr]);
             this.editing = abbr;
 
@@ -104,7 +112,13 @@ const app = new Vue({
         this.editing = this.preferences.topRow["abbr"];
         this.editingAmount = this.preferences.topRow["amount"];
     },
-
+    directives: {
+        'input-focus': function (el, binding) {
+            if (binding.value) {
+                el.focus();
+            }
+        }
+    }
 });
 
 window.onbeforeunload = function () {
