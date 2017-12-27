@@ -5,7 +5,6 @@ import {CurrencyConverter} from './CurrencyConverter';
 
 import './../scss/index.scss';
 
-
 const app = new Vue({
     el: "#app",
     data: {
@@ -28,8 +27,7 @@ const app = new Vue({
             for (let each in rows) {
                 each = rows[each];
 
-                ret[each] =
-                    (each === this.editing)
+                ret[each] = (each === this.editing)
                         ? this.editingAmount
                         : this.converter.convert(this.editing, this.editingAmount, each)
             }
@@ -46,7 +44,7 @@ const app = new Vue({
             // 先把Top的放进来
             ret.push({
                 cache: table[topRowAbbr],
-                amount: this.dataAmount[topRowAbbr]
+                amount: this.round(this.dataAmount[topRowAbbr])
             });
 
             for (let each in rows) {
@@ -58,7 +56,7 @@ const app = new Vue({
 
                 let tmp = {
                     cache: table[each],
-                    amount: this.dataAmount[each]
+                    amount: this.round(this.dataAmount[each])
                 };
 
                 ret.push(tmp);
@@ -68,6 +66,9 @@ const app = new Vue({
         }
     },
     methods: {
+        round: function (num) {
+            return Math.round(num * 10) / 10;
+        },
         changeTopRow: function (abbr) {
             // 改变top的row，但是保留当前金额
             const prevAmount = this.dataAmount[this.preferences.topRow["abbr"]];
@@ -75,10 +76,10 @@ const app = new Vue({
 
             // 触发dataAmount重算
             this.editing = abbr;
-            this.editingAmount = prevAmount;
+            this.editingAmount = this.round(prevAmount);
         },
         editRow: function (abbr) {
-            this.editingAmount = this.dataAmount[abbr];
+            this.editingAmount = this.round(this.dataAmount[abbr]);
             this.editing = abbr;
 
             this.isEditing = true;
@@ -107,5 +108,7 @@ const app = new Vue({
 });
 
 window.onbeforeunload = function () {
-    app.beforeDestroy();
+    if (FLAG_SAVE) {
+        app.beforeDestroy();
+    }
 };

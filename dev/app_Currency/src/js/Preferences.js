@@ -1,12 +1,21 @@
 export {Preferences};
 
+let instance = null;
+
 class Preferences {
     constructor() {
+        // Singleton
+        if (instance) {
+            return instance;
+        }
+
+        instance = this;
+
         this.STORAGE_KEY = 'jeff-currency-converter';
 
         // 显示的国家
         // 每一项为国家三个英文字母的缩写
-        this.rows = ['CNY', 'USD', 'EUR', 'JPY', 'HKD'];
+        this.rows = ['CNY', 'EUR', 'JPY', 'HKD'];
         /**
          * abbr: 仅当以下情况时修改
          *       0.新建时
@@ -18,7 +27,7 @@ class Preferences {
          * @type {{abbr: string, amount: number}}
          */
         this.topRow = {
-            abbr: 'USD',
+            abbr: 'CNY',
             amount: 1000
         };
     }
