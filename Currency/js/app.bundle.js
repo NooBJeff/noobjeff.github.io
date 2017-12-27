@@ -60,11 +60,611 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 1);
+/******/ 	return __webpack_require__(__webpack_require__.s = 9);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var bind = __webpack_require__(4);
+var isBuffer = __webpack_require__(17);
+
+/*global toString:true*/
+
+// utils is a library of generic helper functions non-specific to axios
+
+var toString = Object.prototype.toString;
+
+/**
+ * Determine if a value is an Array
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is an Array, otherwise false
+ */
+function isArray(val) {
+  return toString.call(val) === '[object Array]';
+}
+
+/**
+ * Determine if a value is an ArrayBuffer
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is an ArrayBuffer, otherwise false
+ */
+function isArrayBuffer(val) {
+  return toString.call(val) === '[object ArrayBuffer]';
+}
+
+/**
+ * Determine if a value is a FormData
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is an FormData, otherwise false
+ */
+function isFormData(val) {
+  return (typeof FormData !== 'undefined') && (val instanceof FormData);
+}
+
+/**
+ * Determine if a value is a view on an ArrayBuffer
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a view on an ArrayBuffer, otherwise false
+ */
+function isArrayBufferView(val) {
+  var result;
+  if ((typeof ArrayBuffer !== 'undefined') && (ArrayBuffer.isView)) {
+    result = ArrayBuffer.isView(val);
+  } else {
+    result = (val) && (val.buffer) && (val.buffer instanceof ArrayBuffer);
+  }
+  return result;
+}
+
+/**
+ * Determine if a value is a String
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a String, otherwise false
+ */
+function isString(val) {
+  return typeof val === 'string';
+}
+
+/**
+ * Determine if a value is a Number
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Number, otherwise false
+ */
+function isNumber(val) {
+  return typeof val === 'number';
+}
+
+/**
+ * Determine if a value is undefined
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if the value is undefined, otherwise false
+ */
+function isUndefined(val) {
+  return typeof val === 'undefined';
+}
+
+/**
+ * Determine if a value is an Object
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is an Object, otherwise false
+ */
+function isObject(val) {
+  return val !== null && typeof val === 'object';
+}
+
+/**
+ * Determine if a value is a Date
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Date, otherwise false
+ */
+function isDate(val) {
+  return toString.call(val) === '[object Date]';
+}
+
+/**
+ * Determine if a value is a File
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a File, otherwise false
+ */
+function isFile(val) {
+  return toString.call(val) === '[object File]';
+}
+
+/**
+ * Determine if a value is a Blob
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Blob, otherwise false
+ */
+function isBlob(val) {
+  return toString.call(val) === '[object Blob]';
+}
+
+/**
+ * Determine if a value is a Function
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Function, otherwise false
+ */
+function isFunction(val) {
+  return toString.call(val) === '[object Function]';
+}
+
+/**
+ * Determine if a value is a Stream
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Stream, otherwise false
+ */
+function isStream(val) {
+  return isObject(val) && isFunction(val.pipe);
+}
+
+/**
+ * Determine if a value is a URLSearchParams object
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a URLSearchParams object, otherwise false
+ */
+function isURLSearchParams(val) {
+  return typeof URLSearchParams !== 'undefined' && val instanceof URLSearchParams;
+}
+
+/**
+ * Trim excess whitespace off the beginning and end of a string
+ *
+ * @param {String} str The String to trim
+ * @returns {String} The String freed of excess whitespace
+ */
+function trim(str) {
+  return str.replace(/^\s*/, '').replace(/\s*$/, '');
+}
+
+/**
+ * Determine if we're running in a standard browser environment
+ *
+ * This allows axios to run in a web worker, and react-native.
+ * Both environments support XMLHttpRequest, but not fully standard globals.
+ *
+ * web workers:
+ *  typeof window -> undefined
+ *  typeof document -> undefined
+ *
+ * react-native:
+ *  navigator.product -> 'ReactNative'
+ */
+function isStandardBrowserEnv() {
+  if (typeof navigator !== 'undefined' && navigator.product === 'ReactNative') {
+    return false;
+  }
+  return (
+    typeof window !== 'undefined' &&
+    typeof document !== 'undefined'
+  );
+}
+
+/**
+ * Iterate over an Array or an Object invoking a function for each item.
+ *
+ * If `obj` is an Array callback will be called passing
+ * the value, index, and complete array for each item.
+ *
+ * If 'obj' is an Object callback will be called passing
+ * the value, key, and complete object for each property.
+ *
+ * @param {Object|Array} obj The object to iterate
+ * @param {Function} fn The callback to invoke for each item
+ */
+function forEach(obj, fn) {
+  // Don't bother if no value provided
+  if (obj === null || typeof obj === 'undefined') {
+    return;
+  }
+
+  // Force an array if not already something iterable
+  if (typeof obj !== 'object') {
+    /*eslint no-param-reassign:0*/
+    obj = [obj];
+  }
+
+  if (isArray(obj)) {
+    // Iterate over array values
+    for (var i = 0, l = obj.length; i < l; i++) {
+      fn.call(null, obj[i], i, obj);
+    }
+  } else {
+    // Iterate over object keys
+    for (var key in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        fn.call(null, obj[key], key, obj);
+      }
+    }
+  }
+}
+
+/**
+ * Accepts varargs expecting each argument to be an object, then
+ * immutably merges the properties of each object and returns result.
+ *
+ * When multiple objects contain the same key the later object in
+ * the arguments list will take precedence.
+ *
+ * Example:
+ *
+ * ```js
+ * var result = merge({foo: 123}, {foo: 456});
+ * console.log(result.foo); // outputs 456
+ * ```
+ *
+ * @param {Object} obj1 Object to merge
+ * @returns {Object} Result of all merge properties
+ */
+function merge(/* obj1, obj2, obj3, ... */) {
+  var result = {};
+  function assignValue(val, key) {
+    if (typeof result[key] === 'object' && typeof val === 'object') {
+      result[key] = merge(result[key], val);
+    } else {
+      result[key] = val;
+    }
+  }
+
+  for (var i = 0, l = arguments.length; i < l; i++) {
+    forEach(arguments[i], assignValue);
+  }
+  return result;
+}
+
+/**
+ * Extends object a by mutably adding to it the properties of object b.
+ *
+ * @param {Object} a The object to be extended
+ * @param {Object} b The object to copy properties from
+ * @param {Object} thisArg The object to bind function to
+ * @return {Object} The resulting value of object a
+ */
+function extend(a, b, thisArg) {
+  forEach(b, function assignValue(val, key) {
+    if (thisArg && typeof val === 'function') {
+      a[key] = bind(val, thisArg);
+    } else {
+      a[key] = val;
+    }
+  });
+  return a;
+}
+
+module.exports = {
+  isArray: isArray,
+  isArrayBuffer: isArrayBuffer,
+  isBuffer: isBuffer,
+  isFormData: isFormData,
+  isArrayBufferView: isArrayBufferView,
+  isString: isString,
+  isNumber: isNumber,
+  isObject: isObject,
+  isUndefined: isUndefined,
+  isDate: isDate,
+  isFile: isFile,
+  isBlob: isBlob,
+  isFunction: isFunction,
+  isStream: isStream,
+  isURLSearchParams: isURLSearchParams,
+  isStandardBrowserEnv: isStandardBrowserEnv,
+  forEach: forEach,
+  merge: merge,
+  extend: extend,
+  trim: trim
+};
+
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports) {
+
+// shim for using process in browser
+var process = module.exports = {};
+
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
+(function () {
+    try {
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
+        }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
+    }
+    try {
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
+        }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
+    }
+} ())
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
+        return setTimeout(fun, 0);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedSetTimeout(fun, 0);
+    } catch(e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+            return cachedSetTimeout.call(null, fun, 0);
+        } catch(e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+            return cachedSetTimeout.call(this, fun, 0);
+        }
+    }
+
+
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
+        return clearTimeout(marker);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedClearTimeout(marker);
+    } catch (e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+            return cachedClearTimeout.call(null, marker);
+        } catch (e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+            return cachedClearTimeout.call(this, marker);
+        }
+    }
+
+
+
+}
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
+
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = runTimeout(cleanUpNextTick);
+    draining = true;
+
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
+        }
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    runClearTimeout(timeout);
+}
+
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        runTimeout(drainQueue);
+    }
+};
+
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+process.prependListener = noop;
+process.prependOnceListener = noop;
+
+process.listeners = function (name) { return [] }
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+process.umask = function() { return 0; };
+
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(process) {
+
+var utils = __webpack_require__(0);
+var normalizeHeaderName = __webpack_require__(19);
+
+var DEFAULT_CONTENT_TYPE = {
+  'Content-Type': 'application/x-www-form-urlencoded'
+};
+
+function setContentTypeIfUnset(headers, value) {
+  if (!utils.isUndefined(headers) && utils.isUndefined(headers['Content-Type'])) {
+    headers['Content-Type'] = value;
+  }
+}
+
+function getDefaultAdapter() {
+  var adapter;
+  if (typeof XMLHttpRequest !== 'undefined') {
+    // For browsers use XHR adapter
+    adapter = __webpack_require__(5);
+  } else if (typeof process !== 'undefined') {
+    // For node use HTTP adapter
+    adapter = __webpack_require__(5);
+  }
+  return adapter;
+}
+
+var defaults = {
+  adapter: getDefaultAdapter(),
+
+  transformRequest: [function transformRequest(data, headers) {
+    normalizeHeaderName(headers, 'Content-Type');
+    if (utils.isFormData(data) ||
+      utils.isArrayBuffer(data) ||
+      utils.isBuffer(data) ||
+      utils.isStream(data) ||
+      utils.isFile(data) ||
+      utils.isBlob(data)
+    ) {
+      return data;
+    }
+    if (utils.isArrayBufferView(data)) {
+      return data.buffer;
+    }
+    if (utils.isURLSearchParams(data)) {
+      setContentTypeIfUnset(headers, 'application/x-www-form-urlencoded;charset=utf-8');
+      return data.toString();
+    }
+    if (utils.isObject(data)) {
+      setContentTypeIfUnset(headers, 'application/json;charset=utf-8');
+      return JSON.stringify(data);
+    }
+    return data;
+  }],
+
+  transformResponse: [function transformResponse(data) {
+    /*eslint no-param-reassign:0*/
+    if (typeof data === 'string') {
+      try {
+        data = JSON.parse(data);
+      } catch (e) { /* Ignore */ }
+    }
+    return data;
+  }],
+
+  timeout: 0,
+
+  xsrfCookieName: 'XSRF-TOKEN',
+  xsrfHeaderName: 'X-XSRF-TOKEN',
+
+  maxContentLength: -1,
+
+  validateStatus: function validateStatus(status) {
+    return status >= 200 && status < 300;
+  }
+};
+
+defaults.headers = {
+  common: {
+    'Accept': 'application/json, text/plain, */*'
+  }
+};
+
+utils.forEach(['delete', 'get', 'head'], function forEachMethodNoData(method) {
+  defaults.headers[method] = {};
+});
+
+utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
+  defaults.headers[method] = utils.merge(DEFAULT_CONTENT_TYPE);
+});
+
+module.exports = defaults;
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ }),
+/* 3 */
 /***/ (function(module, exports) {
 
 var g;
@@ -91,39 +691,324 @@ module.exports = g;
 
 
 /***/ }),
-/* 1 */
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = function bind(fn, thisArg) {
+  return function wrap() {
+    var args = new Array(arguments.length);
+    for (var i = 0; i < args.length; i++) {
+      args[i] = arguments[i];
+    }
+    return fn.apply(thisArg, args);
+  };
+};
+
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(process) {
+
+var utils = __webpack_require__(0);
+var settle = __webpack_require__(20);
+var buildURL = __webpack_require__(22);
+var parseHeaders = __webpack_require__(23);
+var isURLSameOrigin = __webpack_require__(24);
+var createError = __webpack_require__(6);
+var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(25);
+
+module.exports = function xhrAdapter(config) {
+  return new Promise(function dispatchXhrRequest(resolve, reject) {
+    var requestData = config.data;
+    var requestHeaders = config.headers;
+
+    if (utils.isFormData(requestData)) {
+      delete requestHeaders['Content-Type']; // Let the browser set it
+    }
+
+    var request = new XMLHttpRequest();
+    var loadEvent = 'onreadystatechange';
+    var xDomain = false;
+
+    // For IE 8/9 CORS support
+    // Only supports POST and GET calls and doesn't returns the response headers.
+    // DON'T do this for testing b/c XMLHttpRequest is mocked, not XDomainRequest.
+    if (process.env.NODE_ENV !== 'test' &&
+        typeof window !== 'undefined' &&
+        window.XDomainRequest && !('withCredentials' in request) &&
+        !isURLSameOrigin(config.url)) {
+      request = new window.XDomainRequest();
+      loadEvent = 'onload';
+      xDomain = true;
+      request.onprogress = function handleProgress() {};
+      request.ontimeout = function handleTimeout() {};
+    }
+
+    // HTTP basic authentication
+    if (config.auth) {
+      var username = config.auth.username || '';
+      var password = config.auth.password || '';
+      requestHeaders.Authorization = 'Basic ' + btoa(username + ':' + password);
+    }
+
+    request.open(config.method.toUpperCase(), buildURL(config.url, config.params, config.paramsSerializer), true);
+
+    // Set the request timeout in MS
+    request.timeout = config.timeout;
+
+    // Listen for ready state
+    request[loadEvent] = function handleLoad() {
+      if (!request || (request.readyState !== 4 && !xDomain)) {
+        return;
+      }
+
+      // The request errored out and we didn't get a response, this will be
+      // handled by onerror instead
+      // With one exception: request that using file: protocol, most browsers
+      // will return status as 0 even though it's a successful request
+      if (request.status === 0 && !(request.responseURL && request.responseURL.indexOf('file:') === 0)) {
+        return;
+      }
+
+      // Prepare the response
+      var responseHeaders = 'getAllResponseHeaders' in request ? parseHeaders(request.getAllResponseHeaders()) : null;
+      var responseData = !config.responseType || config.responseType === 'text' ? request.responseText : request.response;
+      var response = {
+        data: responseData,
+        // IE sends 1223 instead of 204 (https://github.com/axios/axios/issues/201)
+        status: request.status === 1223 ? 204 : request.status,
+        statusText: request.status === 1223 ? 'No Content' : request.statusText,
+        headers: responseHeaders,
+        config: config,
+        request: request
+      };
+
+      settle(resolve, reject, response);
+
+      // Clean up request
+      request = null;
+    };
+
+    // Handle low level network errors
+    request.onerror = function handleError() {
+      // Real errors are hidden from us by the browser
+      // onerror should only fire if it's a network error
+      reject(createError('Network Error', config, null, request));
+
+      // Clean up request
+      request = null;
+    };
+
+    // Handle timeout
+    request.ontimeout = function handleTimeout() {
+      reject(createError('timeout of ' + config.timeout + 'ms exceeded', config, 'ECONNABORTED',
+        request));
+
+      // Clean up request
+      request = null;
+    };
+
+    // Add xsrf header
+    // This is only done if running in a standard browser environment.
+    // Specifically not if we're in a web worker, or react-native.
+    if (utils.isStandardBrowserEnv()) {
+      var cookies = __webpack_require__(26);
+
+      // Add xsrf header
+      var xsrfValue = (config.withCredentials || isURLSameOrigin(config.url)) && config.xsrfCookieName ?
+          cookies.read(config.xsrfCookieName) :
+          undefined;
+
+      if (xsrfValue) {
+        requestHeaders[config.xsrfHeaderName] = xsrfValue;
+      }
+    }
+
+    // Add headers to the request
+    if ('setRequestHeader' in request) {
+      utils.forEach(requestHeaders, function setRequestHeader(val, key) {
+        if (typeof requestData === 'undefined' && key.toLowerCase() === 'content-type') {
+          // Remove Content-Type if data is undefined
+          delete requestHeaders[key];
+        } else {
+          // Otherwise add header to the request
+          request.setRequestHeader(key, val);
+        }
+      });
+    }
+
+    // Add withCredentials to request if needed
+    if (config.withCredentials) {
+      request.withCredentials = true;
+    }
+
+    // Add responseType to request if needed
+    if (config.responseType) {
+      try {
+        request.responseType = config.responseType;
+      } catch (e) {
+        // Expected DOMException thrown by browsers not compatible XMLHttpRequest Level 2.
+        // But, this can be suppressed for 'json' type as it can be parsed by default 'transformResponse' function.
+        if (config.responseType !== 'json') {
+          throw e;
+        }
+      }
+    }
+
+    // Handle progress if needed
+    if (typeof config.onDownloadProgress === 'function') {
+      request.addEventListener('progress', config.onDownloadProgress);
+    }
+
+    // Not all browsers support upload events
+    if (typeof config.onUploadProgress === 'function' && request.upload) {
+      request.upload.addEventListener('progress', config.onUploadProgress);
+    }
+
+    if (config.cancelToken) {
+      // Handle cancellation
+      config.cancelToken.promise.then(function onCanceled(cancel) {
+        if (!request) {
+          return;
+        }
+
+        request.abort();
+        reject(cancel);
+        // Clean up request
+        request = null;
+      });
+    }
+
+    if (requestData === undefined) {
+      requestData = null;
+    }
+
+    // Send the request
+    request.send(requestData);
+  });
+};
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var enhanceError = __webpack_require__(21);
+
+/**
+ * Create an Error with the specified message, config, error code, request and response.
+ *
+ * @param {string} message The error message.
+ * @param {Object} config The config.
+ * @param {string} [code] The error code (for example, 'ECONNABORTED').
+ * @param {Object} [request] The request.
+ * @param {Object} [response] The response.
+ * @returns {Error} The created error.
+ */
+module.exports = function createError(message, config, code, request, response) {
+  var error = new Error(message);
+  return enhanceError(error, config, code, request, response);
+};
+
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = function isCancel(value) {
+  return !!(value && value.__CANCEL__);
+};
+
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+/**
+ * A `Cancel` is an object that is thrown when an operation is canceled.
+ *
+ * @class
+ * @param {string=} message The message.
+ */
+function Cancel(message) {
+  this.message = message;
+}
+
+Cancel.prototype.toString = function toString() {
+  return 'Cancel' + (this.message ? ': ' + this.message : '');
+};
+
+Cancel.prototype.__CANCEL__ = true;
+
+module.exports = Cancel;
+
+
+/***/ }),
+/* 9 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue_dist_vue_js__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue_dist_vue_js__ = __webpack_require__(10);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue_dist_vue_js___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vue_dist_vue_js__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Preferences_js__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__CurrencyConverter__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Preferences_js__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__CurrencyConverter__ = __webpack_require__(14);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__scss_index_scss__ = __webpack_require__(34);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__scss_index_scss___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__scss_index_scss__);
 
 
 
 
 
-// Vue.component('row', {
-//     template: '#templateRow',
-//     props: ["data"]
-// });
+
+
 
 const app = new __WEBPACK_IMPORTED_MODULE_0_vue_dist_vue_js___default.a({
     el: "#app",
     data: {
         preferences: new __WEBPACK_IMPORTED_MODULE_1__Preferences_js__["a" /* Preferences */](),
         converter: new __WEBPACK_IMPORTED_MODULE_2__CurrencyConverter__["a" /* CurrencyConverter */](),
-        USD: {
-            imgNation: "",
-            nameNation: 'U.S.A',
-            abbrNation: 'USD',
-            moneyUnit: "dollar",
-            rate: 1
-        }
+        // 以下3项需要onload初始化
+        // 当前正在编辑的国家的abbr
+        editing: null,
+        editingAmount: null,
+        isEditing: false
     },
     computed: {
+        dataAmount: function () {
+            // 返回dict
+            // abbr -> money
+            const rows = this.preferences.rows;
+
+            let ret = {};
+
+            for (let each in rows) {
+                each = rows[each];
+
+                ret[each] =
+                    (each === this.editing)
+                        ? this.editingAmount
+                        : this.converter.convert(this.editing, this.editingAmount, each)
+            }
+
+            return ret;
+        },
         dataRows: function () {
             const table = this.converter.table;
             const rows = this.preferences.rows;
@@ -134,7 +1019,7 @@ const app = new __WEBPACK_IMPORTED_MODULE_0_vue_dist_vue_js___default.a({
             // 先把Top的放进来
             ret.push({
                 cache: table[topRowAbbr],
-                amount: this.converter.convert(null, null, null)
+                amount: this.dataAmount[topRowAbbr]
             });
 
             for (let each in rows) {
@@ -146,7 +1031,7 @@ const app = new __WEBPACK_IMPORTED_MODULE_0_vue_dist_vue_js___default.a({
 
                 let tmp = {
                     cache: table[each],
-                    amount: this.converter.convert(null, null, null)
+                    amount: this.dataAmount[each]
                 };
 
                 ret.push(tmp);
@@ -157,14 +1042,50 @@ const app = new __WEBPACK_IMPORTED_MODULE_0_vue_dist_vue_js___default.a({
     },
     methods: {
         changeTopRow: function (abbr) {
+            // 改变top的row，但是保留当前金额
+            const prevAmount = this.dataAmount[this.preferences.topRow["abbr"]];
             this.preferences.topRow["abbr"] = abbr;
+
+            // 触发dataAmount重算
+            this.editing = abbr;
+            this.editingAmount = prevAmount;
+        },
+        editRow: function (abbr) {
+            this.editingAmount = this.dataAmount[abbr];
+            this.editing = abbr;
+
+            this.isEditing = true;
+        },
+        doneEdit: function (abbr) {
+            this.isEditing = false;
+        },
+        beforeDestroy: function () {
+            // update topRow.amount
+            this.preferences.topRow["amount"] = this.dataAmount[this.preferences.topRow["abbr"]];
+
+            // Save
+            this.preferences.save();
+            this.converter.save();
         }
-    }
+    },
+    beforeMount: function () {
+        // 读取
+        this.preferences.load();
+        this.converter.load();
+
+        this.editing = this.preferences.topRow["abbr"];
+        this.editingAmount = this.preferences.topRow["amount"];
+    },
+
 });
+
+window.onbeforeunload = function () {
+    app.beforeDestroy();
+};
 
 
 /***/ }),
-/* 2 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, setImmediate) {/*!
@@ -10966,10 +11887,10 @@ return Vue$3;
 
 })));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0), __webpack_require__(3).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3), __webpack_require__(11).setImmediate))
 
 /***/ }),
-/* 3 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var apply = Function.prototype.apply;
@@ -11022,13 +11943,13 @@ exports._unrefActive = exports.active = function(item) {
 };
 
 // setimmediate attaches itself to the global object
-__webpack_require__(4);
+__webpack_require__(12);
 exports.setImmediate = setImmediate;
 exports.clearImmediate = clearImmediate;
 
 
 /***/ }),
-/* 4 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
@@ -11218,200 +12139,10 @@ exports.clearImmediate = clearImmediate;
     attachTo.clearImmediate = clearImmediate;
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0), __webpack_require__(5)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3), __webpack_require__(1)))
 
 /***/ }),
-/* 5 */
-/***/ (function(module, exports) {
-
-// shim for using process in browser
-var process = module.exports = {};
-
-// cached from whatever global is present so that test runners that stub it
-// don't break things.  But we need to wrap it in a try catch in case it is
-// wrapped in strict mode code which doesn't define any globals.  It's inside a
-// function because try/catches deoptimize in certain engines.
-
-var cachedSetTimeout;
-var cachedClearTimeout;
-
-function defaultSetTimout() {
-    throw new Error('setTimeout has not been defined');
-}
-function defaultClearTimeout () {
-    throw new Error('clearTimeout has not been defined');
-}
-(function () {
-    try {
-        if (typeof setTimeout === 'function') {
-            cachedSetTimeout = setTimeout;
-        } else {
-            cachedSetTimeout = defaultSetTimout;
-        }
-    } catch (e) {
-        cachedSetTimeout = defaultSetTimout;
-    }
-    try {
-        if (typeof clearTimeout === 'function') {
-            cachedClearTimeout = clearTimeout;
-        } else {
-            cachedClearTimeout = defaultClearTimeout;
-        }
-    } catch (e) {
-        cachedClearTimeout = defaultClearTimeout;
-    }
-} ())
-function runTimeout(fun) {
-    if (cachedSetTimeout === setTimeout) {
-        //normal enviroments in sane situations
-        return setTimeout(fun, 0);
-    }
-    // if setTimeout wasn't available but was latter defined
-    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
-        cachedSetTimeout = setTimeout;
-        return setTimeout(fun, 0);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedSetTimeout(fun, 0);
-    } catch(e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
-            return cachedSetTimeout.call(null, fun, 0);
-        } catch(e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
-            return cachedSetTimeout.call(this, fun, 0);
-        }
-    }
-
-
-}
-function runClearTimeout(marker) {
-    if (cachedClearTimeout === clearTimeout) {
-        //normal enviroments in sane situations
-        return clearTimeout(marker);
-    }
-    // if clearTimeout wasn't available but was latter defined
-    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
-        cachedClearTimeout = clearTimeout;
-        return clearTimeout(marker);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedClearTimeout(marker);
-    } catch (e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
-            return cachedClearTimeout.call(null, marker);
-        } catch (e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
-            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
-            return cachedClearTimeout.call(this, marker);
-        }
-    }
-
-
-
-}
-var queue = [];
-var draining = false;
-var currentQueue;
-var queueIndex = -1;
-
-function cleanUpNextTick() {
-    if (!draining || !currentQueue) {
-        return;
-    }
-    draining = false;
-    if (currentQueue.length) {
-        queue = currentQueue.concat(queue);
-    } else {
-        queueIndex = -1;
-    }
-    if (queue.length) {
-        drainQueue();
-    }
-}
-
-function drainQueue() {
-    if (draining) {
-        return;
-    }
-    var timeout = runTimeout(cleanUpNextTick);
-    draining = true;
-
-    var len = queue.length;
-    while(len) {
-        currentQueue = queue;
-        queue = [];
-        while (++queueIndex < len) {
-            if (currentQueue) {
-                currentQueue[queueIndex].run();
-            }
-        }
-        queueIndex = -1;
-        len = queue.length;
-    }
-    currentQueue = null;
-    draining = false;
-    runClearTimeout(timeout);
-}
-
-process.nextTick = function (fun) {
-    var args = new Array(arguments.length - 1);
-    if (arguments.length > 1) {
-        for (var i = 1; i < arguments.length; i++) {
-            args[i - 1] = arguments[i];
-        }
-    }
-    queue.push(new Item(fun, args));
-    if (queue.length === 1 && !draining) {
-        runTimeout(drainQueue);
-    }
-};
-
-// v8 likes predictible objects
-function Item(fun, array) {
-    this.fun = fun;
-    this.array = array;
-}
-Item.prototype.run = function () {
-    this.fun.apply(null, this.array);
-};
-process.title = 'browser';
-process.browser = true;
-process.env = {};
-process.argv = [];
-process.version = ''; // empty string to avoid regexp issues
-process.versions = {};
-
-function noop() {}
-
-process.on = noop;
-process.addListener = noop;
-process.once = noop;
-process.off = noop;
-process.removeListener = noop;
-process.removeAllListeners = noop;
-process.emit = noop;
-process.prependListener = noop;
-process.prependOnceListener = noop;
-
-process.listeners = function (name) { return [] }
-
-process.binding = function (name) {
-    throw new Error('process.binding is not supported');
-};
-
-process.cwd = function () { return '/' };
-process.chdir = function (dir) {
-    throw new Error('process.chdir is not supported');
-};
-process.umask = function() { return 0; };
-
-
-/***/ }),
-/* 6 */
+/* 13 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -11420,60 +12151,1849 @@ process.umask = function() { return 0; };
 
 class Preferences {
     constructor() {
-        // todo: 从内存读取或者新建
+        this.STORAGE_KEY = 'jeff-currency-converter';
 
         // 显示的国家
         // 每一项为国家三个英文字母的缩写
-        this.rows = ['USD', 'CNY', 'CCC'];
+        this.rows = ['CNY', 'USD', 'EUR', 'JPY', 'HKD'];
+        /**
+         * abbr: 仅当以下情况时修改
+         *       0.新建时
+         *       1.用户点击其他行，导致changeTopRow触发
+         *       2.用户退出，保存当前topRow的abbr
+         * amount：仅当以下情况时修改
+         *       1.新建时
+         *       2.用户退出，保存当前topRow的amount
+         * @type {{abbr: string, amount: number}}
+         */
         this.topRow = {
             abbr: 'USD',
-            amount: 999
+            amount: 1000
         };
+    }
+
+    load() {
+        // beforeMount 时调用
+        let storage = localStorage.getItem(this.STORAGE_KEY);
+
+        if (storage === null) {
+            console.log("No local storage found, using default");
+            return;
+        }
+
+        // 本地储存非空，则覆盖默认值
+        try {
+            storage = JSON.parse(storage);
+            const rows = storage["rows"];
+            const topRow = storage["topRow"];
+            this.rows = rows;
+            this.topRow = topRow;
+        } catch (e){
+            // 本地储存格式不对，使用默认值
+            console.log("Bad local storage, using default");
+        }
+    }
+
+    save() {
+        localStorage.setItem(this.STORAGE_KEY, JSON.stringify({
+            rows: this.rows,
+            topRow: this.topRow
+        }));
     }
 }
 
 
 
 /***/ }),
-/* 7 */
+/* 14 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return CurrencyConverter; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_axios__);
+
+
 
 
 class CurrencyConverter {
     constructor() {
+        this.STORAGE_KEY = "jeff-currency-rate";
+
+        // 所有国家
+        this.currencies = {
+            "AED": "United Arab Emirates Dirham",
+            "AFN": "Afghan Afghani",
+            "ALL": "Albanian Lek",
+            "AMD": "Armenian Dram",
+            "ANG": "Netherlands Antillean Guilder",
+            "AOA": "Angolan Kwanza",
+            "ARS": "Argentine Peso",
+            "AUD": "Australian Dollar",
+            "AWG": "Aruban Florin",
+            "AZN": "Azerbaijani Manat",
+            "BAM": "Bosnia-Herzegovina Convertible Mark",
+            "BBD": "Barbadian Dollar",
+            "BDT": "Bangladeshi Taka",
+            "BGN": "Bulgarian Lev",
+            "BHD": "Bahraini Dinar",
+            "BIF": "Burundian Franc",
+            "BMD": "Bermudan Dollar",
+            "BND": "Brunei Dollar",
+            "BOB": "Bolivian Boliviano",
+            "BRL": "Brazilian Real",
+            "BSD": "Bahamian Dollar",
+            "BTC": "Bitcoin",
+            "BTN": "Bhutanese Ngultrum",
+            "BWP": "Botswanan Pula",
+            "BYN": "New Belarusian Ruble",
+            "BYR": "Belarusian Ruble",
+            "BZD": "Belize Dollar",
+            "CAD": "Canadian Dollar",
+            "CDF": "Congolese Franc",
+            "CHF": "Swiss Franc",
+            "CLF": "Chilean Unit of Account (UF)",
+            "CLP": "Chilean Peso",
+            "CNY": "Chinese Yuan",
+            "COP": "Colombian Peso",
+            "CRC": "Costa Rican Colón",
+            "CUC": "Cuban Convertible Peso",
+            "CUP": "Cuban Peso",
+            "CVE": "Cape Verdean Escudo",
+            "CZK": "Czech Republic Koruna",
+            "DJF": "Djiboutian Franc",
+            "DKK": "Danish Krone",
+            "DOP": "Dominican Peso",
+            "DZD": "Algerian Dinar",
+            "EGP": "Egyptian Pound",
+            "ERN": "Eritrean Nakfa",
+            "ETB": "Ethiopian Birr",
+            "EUR": "Euro",
+            "FJD": "Fijian Dollar",
+            "FKP": "Falkland Islands Pound",
+            "GBP": "British Pound Sterling",
+            "GEL": "Georgian Lari",
+            "GGP": "Guernsey Pound",
+            "GHS": "Ghanaian Cedi",
+            "GIP": "Gibraltar Pound",
+            "GMD": "Gambian Dalasi",
+            "GNF": "Guinean Franc",
+            "GTQ": "Guatemalan Quetzal",
+            "GYD": "Guyanaese Dollar",
+            "HKD": "Hong Kong Dollar",
+            "HNL": "Honduran Lempira",
+            "HRK": "Croatian Kuna",
+            "HTG": "Haitian Gourde",
+            "HUF": "Hungarian Forint",
+            "IDR": "Indonesian Rupiah",
+            "ILS": "Israeli New Sheqel",
+            "IMP": "Manx pound",
+            "INR": "Indian Rupee",
+            "IQD": "Iraqi Dinar",
+            "IRR": "Iranian Rial",
+            "ISK": "Icelandic Króna",
+            "JEP": "Jersey Pound",
+            "JMD": "Jamaican Dollar",
+            "JOD": "Jordanian Dinar",
+            "JPY": "Japanese Yen",
+            "KES": "Kenyan Shilling",
+            "KGS": "Kyrgystani Som",
+            "KHR": "Cambodian Riel",
+            "KMF": "Comorian Franc",
+            "KPW": "North Korean Won",
+            "KRW": "South Korean Won",
+            "KWD": "Kuwaiti Dinar",
+            "KYD": "Cayman Islands Dollar",
+            "KZT": "Kazakhstani Tenge",
+            "LAK": "Laotian Kip",
+            "LBP": "Lebanese Pound",
+            "LKR": "Sri Lankan Rupee",
+            "LRD": "Liberian Dollar",
+            "LSL": "Lesotho Loti",
+            "LTL": "Lithuanian Litas",
+            "LVL": "Latvian Lats",
+            "LYD": "Libyan Dinar",
+            "MAD": "Moroccan Dirham",
+            "MDL": "Moldovan Leu",
+            "MGA": "Malagasy Ariary",
+            "MKD": "Macedonian Denar",
+            "MMK": "Myanma Kyat",
+            "MNT": "Mongolian Tugrik",
+            "MOP": "Macanese Pataca",
+            "MRO": "Mauritanian Ouguiya",
+            "MUR": "Mauritian Rupee",
+            "MVR": "Maldivian Rufiyaa",
+            "MWK": "Malawian Kwacha",
+            "MXN": "Mexican Peso",
+            "MYR": "Malaysian Ringgit",
+            "MZN": "Mozambican Metical",
+            "NAD": "Namibian Dollar",
+            "NGN": "Nigerian Naira",
+            "NIO": "Nicaraguan Córdoba",
+            "NOK": "Norwegian Krone",
+            "NPR": "Nepalese Rupee",
+            "NZD": "New Zealand Dollar",
+            "OMR": "Omani Rial",
+            "PAB": "Panamanian Balboa",
+            "PEN": "Peruvian Nuevo Sol",
+            "PGK": "Papua New Guinean Kina",
+            "PHP": "Philippine Peso",
+            "PKR": "Pakistani Rupee",
+            "PLN": "Polish Zloty",
+            "PYG": "Paraguayan Guarani",
+            "QAR": "Qatari Rial",
+            "RON": "Romanian Leu",
+            "RSD": "Serbian Dinar",
+            "RUB": "Russian Ruble",
+            "RWF": "Rwandan Franc",
+            "SAR": "Saudi Riyal",
+            "SBD": "Solomon Islands Dollar",
+            "SCR": "Seychellois Rupee",
+            "SDG": "Sudanese Pound",
+            "SEK": "Swedish Krona",
+            "SGD": "Singapore Dollar",
+            "SHP": "Saint Helena Pound",
+            "SLL": "Sierra Leonean Leone",
+            "SOS": "Somali Shilling",
+            "SRD": "Surinamese Dollar",
+            "STD": "São Tomé and Príncipe Dobra",
+            "SVC": "Salvadoran Colón",
+            "SYP": "Syrian Pound",
+            "SZL": "Swazi Lilangeni",
+            "THB": "Thai Baht",
+            "TJS": "Tajikistani Somoni",
+            "TMT": "Turkmenistani Manat",
+            "TND": "Tunisian Dinar",
+            "TOP": "Tongan Paʻanga",
+            "TRY": "Turkish Lira",
+            "TTD": "Trinidad and Tobago Dollar",
+            "TWD": "New Taiwan Dollar",
+            "TZS": "Tanzanian Shilling",
+            "UAH": "Ukrainian Hryvnia",
+            "UGX": "Ugandan Shilling",
+            "USD": "United States Dollar",
+            "UYU": "Uruguayan Peso",
+            "UZS": "Uzbekistan Som",
+            "VEF": "Venezuelan Bolívar Fuerte",
+            "VND": "Vietnamese Dong",
+            "VUV": "Vanuatu Vatu",
+            "WST": "Samoan Tala",
+            "XAF": "CFA Franc BEAC",
+            "XAG": "Silver (troy ounce)",
+            "XAU": "Gold (troy ounce)",
+            "XCD": "East Caribbean Dollar",
+            "XDR": "Special Drawing Rights",
+            "XOF": "CFA Franc BCEAO",
+            "XPF": "CFP Franc",
+            "YER": "Yemeni Rial",
+            "ZAR": "South African Rand",
+            "ZMK": "Zambian Kwacha (pre-2013)",
+            "ZMW": "Zambian Kwacha",
+            "ZWL": "Zimbabwean Dollar"
+        };
+
         // 从网络或者本地缓存获取汇率
-        this.table = {
-            'USD': {
+        // 其中的rate为相对美元的汇率
+        // 即 rate = 1美元对应该币种数量
+        // this.table = {
+        //     'USD': {
+        //         imgNation: "",
+        //         nameNation: 'U.S.A',
+        //         abbrNation: 'USD',
+        //         moneyUnit: "dollar",
+        //         rate: 1.0
+        //     },
+        //     'CNY': {
+        //         imgNation: "",
+        //         nameNation: 'China',
+        //         abbrNation: 'CNY',
+        //         moneyUnit: "元",
+        //         rate: 6.5
+        //     },
+        //     'CCC': {
+        //         imgNation: "",
+        //         nameNation: 'CCC',
+        //         abbrNation: 'CCC',
+        //         moneyUnit: "R",
+        //         rate: 0.8
+        //     }
+        // };
+        this.table = JSON.parse("{\"USD\":{\"imgNation\":\"\",\"nameNation\":\"United States Dollar\",\"abbrNation\":\"USD\",\"moneyUnit\":\".\",\"rate\":1},\"AED\":{\"imgNation\":\"\",\"nameNation\":\"United Arab Emirates Dirham\",\"abbrNation\":\"AED\",\"moneyUnit\":\".\",\"rate\":3.672104},\"AFN\":{\"imgNation\":\"\",\"nameNation\":\"Afghan Afghani\",\"abbrNation\":\"AFN\",\"moneyUnit\":\".\",\"rate\":69.250327},\"ALL\":{\"imgNation\":\"\",\"nameNation\":\"Albanian Lek\",\"abbrNation\":\"ALL\",\"moneyUnit\":\".\",\"rate\":111.300003},\"AMD\":{\"imgNation\":\"\",\"nameNation\":\"Armenian Dram\",\"abbrNation\":\"AMD\",\"moneyUnit\":\".\",\"rate\":481.470001},\"ANG\":{\"imgNation\":\"\",\"nameNation\":\"Netherlands Antillean Guilder\",\"abbrNation\":\"ANG\",\"moneyUnit\":\".\",\"rate\":1.779671},\"AOA\":{\"imgNation\":\"\",\"nameNation\":\"Angolan Kwanza\",\"abbrNation\":\"AOA\",\"moneyUnit\":\".\",\"rate\":165.098007},\"ARS\":{\"imgNation\":\"\",\"nameNation\":\"Argentine Peso\",\"abbrNation\":\"ARS\",\"moneyUnit\":\".\",\"rate\":18.309999},\"AUD\":{\"imgNation\":\"\",\"nameNation\":\"Australian Dollar\",\"abbrNation\":\"AUD\",\"moneyUnit\":\".\",\"rate\":1.292095},\"AWG\":{\"imgNation\":\"\",\"nameNation\":\"Aruban Florin\",\"abbrNation\":\"AWG\",\"moneyUnit\":\".\",\"rate\":1.78},\"AZN\":{\"imgNation\":\"\",\"nameNation\":\"Azerbaijani Manat\",\"abbrNation\":\"AZN\",\"moneyUnit\":\".\",\"rate\":1.699598},\"BAM\":{\"imgNation\":\"\",\"nameNation\":\"Bosnia-Herzegovina Convertible Mark\",\"abbrNation\":\"BAM\",\"moneyUnit\":\".\",\"rate\":1.651041},\"BBD\":{\"imgNation\":\"\",\"nameNation\":\"Barbadian Dollar\",\"abbrNation\":\"BBD\",\"moneyUnit\":\".\",\"rate\":2},\"BDT\":{\"imgNation\":\"\",\"nameNation\":\"Bangladeshi Taka\",\"abbrNation\":\"BDT\",\"moneyUnit\":\".\",\"rate\":82.919998},\"BGN\":{\"imgNation\":\"\",\"nameNation\":\"Bulgarian Lev\",\"abbrNation\":\"BGN\",\"moneyUnit\":\".\",\"rate\":1.650098},\"BHD\":{\"imgNation\":\"\",\"nameNation\":\"Bahraini Dinar\",\"abbrNation\":\"BHD\",\"moneyUnit\":\".\",\"rate\":0.377197},\"BIF\":{\"imgNation\":\"\",\"nameNation\":\"Burundian Franc\",\"abbrNation\":\"BIF\",\"moneyUnit\":\".\",\"rate\":1750.97998},\"BMD\":{\"imgNation\":\"\",\"nameNation\":\"Bermudan Dollar\",\"abbrNation\":\"BMD\",\"moneyUnit\":\".\",\"rate\":1},\"BND\":{\"imgNation\":\"\",\"nameNation\":\"Brunei Dollar\",\"abbrNation\":\"BND\",\"moneyUnit\":\".\",\"rate\":1.341903},\"BOB\":{\"imgNation\":\"\",\"nameNation\":\"Bolivian Boliviano\",\"abbrNation\":\"BOB\",\"moneyUnit\":\".\",\"rate\":6.859631},\"BRL\":{\"imgNation\":\"\",\"nameNation\":\"Brazilian Real\",\"abbrNation\":\"BRL\",\"moneyUnit\":\".\",\"rate\":3.310796},\"BSD\":{\"imgNation\":\"\",\"nameNation\":\"Bahamian Dollar\",\"abbrNation\":\"BSD\",\"moneyUnit\":\".\",\"rate\":1},\"BTC\":{\"imgNation\":\"\",\"nameNation\":\"Bitcoin\",\"abbrNation\":\"BTC\",\"moneyUnit\":\".\",\"rate\":0.000063},\"BTN\":{\"imgNation\":\"\",\"nameNation\":\"Bhutanese Ngultrum\",\"abbrNation\":\"BTN\",\"moneyUnit\":\".\",\"rate\":64.000094},\"BWP\":{\"imgNation\":\"\",\"nameNation\":\"Botswanan Pula\",\"abbrNation\":\"BWP\",\"moneyUnit\":\".\",\"rate\":10.014974},\"BYN\":{\"imgNation\":\"\",\"nameNation\":\"New Belarusian Ruble\",\"abbrNation\":\"BYN\",\"moneyUnit\":\".\",\"rate\":2.019852},\"BYR\":{\"imgNation\":\"\",\"nameNation\":\"Belarusian Ruble\",\"abbrNation\":\"BYR\",\"moneyUnit\":\".\",\"rate\":19600},\"BZD\":{\"imgNation\":\"\",\"nameNation\":\"Belize Dollar\",\"abbrNation\":\"BZD\",\"moneyUnit\":\".\",\"rate\":1.997801},\"CAD\":{\"imgNation\":\"\",\"nameNation\":\"Canadian Dollar\",\"abbrNation\":\"CAD\",\"moneyUnit\":\".\",\"rate\":1.26877},\"CDF\":{\"imgNation\":\"\",\"nameNation\":\"Congolese Franc\",\"abbrNation\":\"CDF\",\"moneyUnit\":\".\",\"rate\":1565.50349},\"CHF\":{\"imgNation\":\"\",\"nameNation\":\"Swiss Franc\",\"abbrNation\":\"CHF\",\"moneyUnit\":\".\",\"rate\":0.98924},\"CLF\":{\"imgNation\":\"\",\"nameNation\":\"Chilean Unit of Account (UF)\",\"abbrNation\":\"CLF\",\"moneyUnit\":\".\",\"rate\":0.02285},\"CLP\":{\"imgNation\":\"\",\"nameNation\":\"Chilean Peso\",\"abbrNation\":\"CLP\",\"moneyUnit\":\".\",\"rate\":618.719971},\"CNY\":{\"imgNation\":\"\",\"nameNation\":\"Chinese Yuan\",\"abbrNation\":\"CNY\",\"moneyUnit\":\".\",\"rate\":6.555398},\"COP\":{\"imgNation\":\"\",\"nameNation\":\"Colombian Peso\",\"abbrNation\":\"COP\",\"moneyUnit\":\".\",\"rate\":2957.399902},\"CRC\":{\"imgNation\":\"\",\"nameNation\":\"Costa Rican Colón\",\"abbrNation\":\"CRC\",\"moneyUnit\":\".\",\"rate\":561.999978},\"CUC\":{\"imgNation\":\"\",\"nameNation\":\"Cuban Convertible Peso\",\"abbrNation\":\"CUC\",\"moneyUnit\":\".\",\"rate\":1},\"CUP\":{\"imgNation\":\"\",\"nameNation\":\"Cuban Peso\",\"abbrNation\":\"CUP\",\"moneyUnit\":\".\",\"rate\":26.5},\"CVE\":{\"imgNation\":\"\",\"nameNation\":\"Cape Verdean Escudo\",\"abbrNation\":\"CVE\",\"moneyUnit\":\".\",\"rate\":92.949997},\"CZK\":{\"imgNation\":\"\",\"nameNation\":\"Czech Republic Koruna\",\"abbrNation\":\"CZK\",\"moneyUnit\":\".\",\"rate\":21.736974},\"DJF\":{\"imgNation\":\"\",\"nameNation\":\"Djiboutian Franc\",\"abbrNation\":\"DJF\",\"moneyUnit\":\".\",\"rate\":176.830002},\"DKK\":{\"imgNation\":\"\",\"nameNation\":\"Danish Krone\",\"abbrNation\":\"DKK\",\"moneyUnit\":\".\",\"rate\":6.27468},\"DOP\":{\"imgNation\":\"\",\"nameNation\":\"Dominican Peso\",\"abbrNation\":\"DOP\",\"moneyUnit\":\".\",\"rate\":48.389999},\"DZD\":{\"imgNation\":\"\",\"nameNation\":\"Algerian Dinar\",\"abbrNation\":\"DZD\",\"moneyUnit\":\".\",\"rate\":114.737999},\"EGP\":{\"imgNation\":\"\",\"nameNation\":\"Egyptian Pound\",\"abbrNation\":\"EGP\",\"moneyUnit\":\".\",\"rate\":17.770063},\"ERN\":{\"imgNation\":\"\",\"nameNation\":\"Eritrean Nakfa\",\"abbrNation\":\"ERN\",\"moneyUnit\":\".\",\"rate\":14.989888},\"ETB\":{\"imgNation\":\"\",\"nameNation\":\"Ethiopian Birr\",\"abbrNation\":\"ETB\",\"moneyUnit\":\".\",\"rate\":27.200001},\"EUR\":{\"imgNation\":\"\",\"nameNation\":\"Euro\",\"abbrNation\":\"EUR\",\"moneyUnit\":\".\",\"rate\":0.842598},\"FJD\":{\"imgNation\":\"\",\"nameNation\":\"Fijian Dollar\",\"abbrNation\":\"FJD\",\"moneyUnit\":\".\",\"rate\":2.076498},\"FKP\":{\"imgNation\":\"\",\"nameNation\":\"Falkland Islands Pound\",\"abbrNation\":\"FKP\",\"moneyUnit\":\".\",\"rate\":0.746945},\"GBP\":{\"imgNation\":\"\",\"nameNation\":\"British Pound Sterling\",\"abbrNation\":\"GBP\",\"moneyUnit\":\".\",\"rate\":0.74771},\"GEL\":{\"imgNation\":\"\",\"nameNation\":\"Georgian Lari\",\"abbrNation\":\"GEL\",\"moneyUnit\":\".\",\"rate\":2.565095},\"GGP\":{\"imgNation\":\"\",\"nameNation\":\"Guernsey Pound\",\"abbrNation\":\"GGP\",\"moneyUnit\":\".\",\"rate\":0.747734},\"GHS\":{\"imgNation\":\"\",\"nameNation\":\"Ghanaian Cedi\",\"abbrNation\":\"GHS\",\"moneyUnit\":\".\",\"rate\":4.508497},\"GIP\":{\"imgNation\":\"\",\"nameNation\":\"Gibraltar Pound\",\"abbrNation\":\"GIP\",\"moneyUnit\":\".\",\"rate\":0.747298},\"GMD\":{\"imgNation\":\"\",\"nameNation\":\"Gambian Dalasi\",\"abbrNation\":\"GMD\",\"moneyUnit\":\".\",\"rate\":47.150002},\"GNF\":{\"imgNation\":\"\",\"nameNation\":\"Guinean Franc\",\"abbrNation\":\"GNF\",\"moneyUnit\":\".\",\"rate\":9002.999881},\"GTQ\":{\"imgNation\":\"\",\"nameNation\":\"Guatemalan Quetzal\",\"abbrNation\":\"GTQ\",\"moneyUnit\":\".\",\"rate\":7.335975},\"GYD\":{\"imgNation\":\"\",\"nameNation\":\"Guyanaese Dollar\",\"abbrNation\":\"GYD\",\"moneyUnit\":\".\",\"rate\":202.250268},\"HKD\":{\"imgNation\":\"\",\"nameNation\":\"Hong Kong Dollar\",\"abbrNation\":\"HKD\",\"moneyUnit\":\".\",\"rate\":7.81153},\"HNL\":{\"imgNation\":\"\",\"nameNation\":\"Honduran Lempira\",\"abbrNation\":\"HNL\",\"moneyUnit\":\".\",\"rate\":23.474982},\"HRK\":{\"imgNation\":\"\",\"nameNation\":\"Croatian Kuna\",\"abbrNation\":\"HRK\",\"moneyUnit\":\".\",\"rate\":6.365902},\"HTG\":{\"imgNation\":\"\",\"nameNation\":\"Haitian Gourde\",\"abbrNation\":\"HTG\",\"moneyUnit\":\".\",\"rate\":62.630001},\"HUF\":{\"imgNation\":\"\",\"nameNation\":\"Hungarian Forint\",\"abbrNation\":\"HUF\",\"moneyUnit\":\".\",\"rate\":262.579987},\"IDR\":{\"imgNation\":\"\",\"nameNation\":\"Indonesian Rupiah\",\"abbrNation\":\"IDR\",\"moneyUnit\":\".\",\"rate\":13559},\"ILS\":{\"imgNation\":\"\",\"nameNation\":\"Israeli New Sheqel\",\"abbrNation\":\"ILS\",\"moneyUnit\":\".\",\"rate\":3.481297},\"IMP\":{\"imgNation\":\"\",\"nameNation\":\"Manx pound\",\"abbrNation\":\"IMP\",\"moneyUnit\":\".\",\"rate\":0.747734},\"INR\":{\"imgNation\":\"\",\"nameNation\":\"Indian Rupee\",\"abbrNation\":\"INR\",\"moneyUnit\":\".\",\"rate\":64.141296},\"IQD\":{\"imgNation\":\"\",\"nameNation\":\"Iraqi Dinar\",\"abbrNation\":\"IQD\",\"moneyUnit\":\".\",\"rate\":1184},\"IRR\":{\"imgNation\":\"\",\"nameNation\":\"Iranian Rial\",\"abbrNation\":\"IRR\",\"moneyUnit\":\".\",\"rate\":35997.99978},\"ISK\":{\"imgNation\":\"\",\"nameNation\":\"Icelandic Króna\",\"abbrNation\":\"ISK\",\"moneyUnit\":\".\",\"rate\":105.750143},\"JEP\":{\"imgNation\":\"\",\"nameNation\":\"Jersey Pound\",\"abbrNation\":\"JEP\",\"moneyUnit\":\".\",\"rate\":0.747734},\"JMD\":{\"imgNation\":\"\",\"nameNation\":\"Jamaican Dollar\",\"abbrNation\":\"JMD\",\"moneyUnit\":\".\",\"rate\":123.860001},\"JOD\":{\"imgNation\":\"\",\"nameNation\":\"Jordanian Dinar\",\"abbrNation\":\"JOD\",\"moneyUnit\":\".\",\"rate\":0.707498},\"JPY\":{\"imgNation\":\"\",\"nameNation\":\"Japanese Yen\",\"abbrNation\":\"JPY\",\"moneyUnit\":\".\",\"rate\":113.253998},\"KES\":{\"imgNation\":\"\",\"nameNation\":\"Kenyan Shilling\",\"abbrNation\":\"KES\",\"moneyUnit\":\".\",\"rate\":102.750021},\"KGS\":{\"imgNation\":\"\",\"nameNation\":\"Kyrgystani Som\",\"abbrNation\":\"KGS\",\"moneyUnit\":\".\",\"rate\":69.363998},\"KHR\":{\"imgNation\":\"\",\"nameNation\":\"Cambodian Riel\",\"abbrNation\":\"KHR\",\"moneyUnit\":\".\",\"rate\":4030.899902},\"KMF\":{\"imgNation\":\"\",\"nameNation\":\"Comorian Franc\",\"abbrNation\":\"KMF\",\"moneyUnit\":\".\",\"rate\":411.019989},\"KPW\":{\"imgNation\":\"\",\"nameNation\":\"North Korean Won\",\"abbrNation\":\"KPW\",\"moneyUnit\":\".\",\"rate\":900.000471},\"KRW\":{\"imgNation\":\"\",\"nameNation\":\"South Korean Won\",\"abbrNation\":\"KRW\",\"moneyUnit\":\".\",\"rate\":1074.439941},\"KWD\":{\"imgNation\":\"\",\"nameNation\":\"Kuwaiti Dinar\",\"abbrNation\":\"KWD\",\"moneyUnit\":\".\",\"rate\":0.301898},\"KYD\":{\"imgNation\":\"\",\"nameNation\":\"Cayman Islands Dollar\",\"abbrNation\":\"KYD\",\"moneyUnit\":\".\",\"rate\":0.820018},\"KZT\":{\"imgNation\":\"\",\"nameNation\":\"Kazakhstani Tenge\",\"abbrNation\":\"KZT\",\"moneyUnit\":\".\",\"rate\":331.970001},\"LAK\":{\"imgNation\":\"\",\"nameNation\":\"Laotian Kip\",\"abbrNation\":\"LAK\",\"moneyUnit\":\".\",\"rate\":8291.000192},\"LBP\":{\"imgNation\":\"\",\"nameNation\":\"Lebanese Pound\",\"abbrNation\":\"LBP\",\"moneyUnit\":\".\",\"rate\":1510.999653},\"LKR\":{\"imgNation\":\"\",\"nameNation\":\"Sri Lankan Rupee\",\"abbrNation\":\"LKR\",\"moneyUnit\":\".\",\"rate\":152.600006},\"LRD\":{\"imgNation\":\"\",\"nameNation\":\"Liberian Dollar\",\"abbrNation\":\"LRD\",\"moneyUnit\":\".\",\"rate\":125.160004},\"LSL\":{\"imgNation\":\"\",\"nameNation\":\"Lesotho Loti\",\"abbrNation\":\"LSL\",\"moneyUnit\":\".\",\"rate\":12.510104},\"LTL\":{\"imgNation\":\"\",\"nameNation\":\"Lithuanian Litas\",\"abbrNation\":\"LTL\",\"moneyUnit\":\".\",\"rate\":3.048704},\"LVL\":{\"imgNation\":\"\",\"nameNation\":\"Latvian Lats\",\"abbrNation\":\"LVL\",\"moneyUnit\":\".\",\"rate\":0.62055},\"LYD\":{\"imgNation\":\"\",\"nameNation\":\"Libyan Dinar\",\"abbrNation\":\"LYD\",\"moneyUnit\":\".\",\"rate\":1.360202},\"MAD\":{\"imgNation\":\"\",\"nameNation\":\"Moroccan Dirham\",\"abbrNation\":\"MAD\",\"moneyUnit\":\".\",\"rate\":9.405197},\"MDL\":{\"imgNation\":\"\",\"nameNation\":\"Moldovan Leu\",\"abbrNation\":\"MDL\",\"moneyUnit\":\".\",\"rate\":17.083995},\"MGA\":{\"imgNation\":\"\",\"nameNation\":\"Malagasy Ariary\",\"abbrNation\":\"MGA\",\"moneyUnit\":\".\",\"rate\":3214.999852},\"MKD\":{\"imgNation\":\"\",\"nameNation\":\"Macedonian Denar\",\"abbrNation\":\"MKD\",\"moneyUnit\":\".\",\"rate\":51.669998},\"MMK\":{\"imgNation\":\"\",\"nameNation\":\"Myanma Kyat\",\"abbrNation\":\"MMK\",\"moneyUnit\":\".\",\"rate\":1361.000124},\"MNT\":{\"imgNation\":\"\",\"nameNation\":\"Mongolian Tugrik\",\"abbrNation\":\"MNT\",\"moneyUnit\":\".\",\"rate\":2420.999382},\"MOP\":{\"imgNation\":\"\",\"nameNation\":\"Macanese Pataca\",\"abbrNation\":\"MOP\",\"moneyUnit\":\".\",\"rate\":8.0459},\"MRO\":{\"imgNation\":\"\",\"nameNation\":\"Mauritanian Ouguiya\",\"abbrNation\":\"MRO\",\"moneyUnit\":\".\",\"rate\":351.600006},\"MUR\":{\"imgNation\":\"\",\"nameNation\":\"Mauritian Rupee\",\"abbrNation\":\"MUR\",\"moneyUnit\":\".\",\"rate\":33.029999},\"MVR\":{\"imgNation\":\"\",\"nameNation\":\"Maldivian Rufiyaa\",\"abbrNation\":\"MVR\",\"moneyUnit\":\".\",\"rate\":15.570293},\"MWK\":{\"imgNation\":\"\",\"nameNation\":\"Malawian Kwacha\",\"abbrNation\":\"MWK\",\"moneyUnit\":\".\",\"rate\":713.450012},\"MXN\":{\"imgNation\":\"\",\"nameNation\":\"Mexican Peso\",\"abbrNation\":\"MXN\",\"moneyUnit\":\".\",\"rate\":19.861903},\"MYR\":{\"imgNation\":\"\",\"nameNation\":\"Malaysian Ringgit\",\"abbrNation\":\"MYR\",\"moneyUnit\":\".\",\"rate\":4.082995},\"MZN\":{\"imgNation\":\"\",\"nameNation\":\"Mozambican Metical\",\"abbrNation\":\"MZN\",\"moneyUnit\":\".\",\"rate\":58.540001},\"NAD\":{\"imgNation\":\"\",\"nameNation\":\"Namibian Dollar\",\"abbrNation\":\"NAD\",\"moneyUnit\":\".\",\"rate\":12.502019},\"NGN\":{\"imgNation\":\"\",\"nameNation\":\"Nigerian Naira\",\"abbrNation\":\"NGN\",\"moneyUnit\":\".\",\"rate\":354.999765},\"NIO\":{\"imgNation\":\"\",\"nameNation\":\"Nicaraguan Córdoba\",\"abbrNation\":\"NIO\",\"moneyUnit\":\".\",\"rate\":30.669755},\"NOK\":{\"imgNation\":\"\",\"nameNation\":\"Norwegian Krone\",\"abbrNation\":\"NOK\",\"moneyUnit\":\".\",\"rate\":8.306201},\"NPR\":{\"imgNation\":\"\",\"nameNation\":\"Nepalese Rupee\",\"abbrNation\":\"NPR\",\"moneyUnit\":\".\",\"rate\":102.568001},\"NZD\":{\"imgNation\":\"\",\"nameNation\":\"New Zealand Dollar\",\"abbrNation\":\"NZD\",\"moneyUnit\":\".\",\"rate\":1.418974},\"OMR\":{\"imgNation\":\"\",\"nameNation\":\"Omani Rial\",\"abbrNation\":\"OMR\",\"moneyUnit\":\".\",\"rate\":0.384498},\"PAB\":{\"imgNation\":\"\",\"nameNation\":\"Panamanian Balboa\",\"abbrNation\":\"PAB\",\"moneyUnit\":\".\",\"rate\":1},\"PEN\":{\"imgNation\":\"\",\"nameNation\":\"Peruvian Nuevo Sol\",\"abbrNation\":\"PEN\",\"moneyUnit\":\".\",\"rate\":3.235978},\"PGK\":{\"imgNation\":\"\",\"nameNation\":\"Papua New Guinean Kina\",\"abbrNation\":\"PGK\",\"moneyUnit\":\".\",\"rate\":3.2233},\"PHP\":{\"imgNation\":\"\",\"nameNation\":\"Philippine Peso\",\"abbrNation\":\"PHP\",\"moneyUnit\":\".\",\"rate\":49.959999},\"PKR\":{\"imgNation\":\"\",\"nameNation\":\"Pakistani Rupee\",\"abbrNation\":\"PKR\",\"moneyUnit\":\".\",\"rate\":110.199997},\"PLN\":{\"imgNation\":\"\",\"nameNation\":\"Polish Zloty\",\"abbrNation\":\"PLN\",\"moneyUnit\":\".\",\"rate\":3.5368},\"PYG\":{\"imgNation\":\"\",\"nameNation\":\"Paraguayan Guarani\",\"abbrNation\":\"PYG\",\"moneyUnit\":\".\",\"rate\":5614.000109},\"QAR\":{\"imgNation\":\"\",\"nameNation\":\"Qatari Rial\",\"abbrNation\":\"QAR\",\"moneyUnit\":\".\",\"rate\":3.639801},\"RON\":{\"imgNation\":\"\",\"nameNation\":\"Romanian Leu\",\"abbrNation\":\"RON\",\"moneyUnit\":\".\",\"rate\":3.906602},\"RSD\":{\"imgNation\":\"\",\"nameNation\":\"Serbian Dinar\",\"abbrNation\":\"RSD\",\"moneyUnit\":\".\",\"rate\":99.505096},\"RUB\":{\"imgNation\":\"\",\"nameNation\":\"Russian Ruble\",\"abbrNation\":\"RUB\",\"moneyUnit\":\".\",\"rate\":57.665979},\"RWF\":{\"imgNation\":\"\",\"nameNation\":\"Rwandan Franc\",\"abbrNation\":\"RWF\",\"moneyUnit\":\".\",\"rate\":835.75},\"SAR\":{\"imgNation\":\"\",\"nameNation\":\"Saudi Riyal\",\"abbrNation\":\"SAR\",\"moneyUnit\":\".\",\"rate\":3.750244},\"SBD\":{\"imgNation\":\"\",\"nameNation\":\"Solomon Islands Dollar\",\"abbrNation\":\"SBD\",\"moneyUnit\":\".\",\"rate\":7.734398},\"SCR\":{\"imgNation\":\"\",\"nameNation\":\"Seychellois Rupee\",\"abbrNation\":\"SCR\",\"moneyUnit\":\".\",\"rate\":13.35022},\"SDG\":{\"imgNation\":\"\",\"nameNation\":\"Sudanese Pound\",\"abbrNation\":\"SDG\",\"moneyUnit\":\".\",\"rate\":6.997197},\"SEK\":{\"imgNation\":\"\",\"nameNation\":\"Swedish Krona\",\"abbrNation\":\"SEK\",\"moneyUnit\":\".\",\"rate\":8.34868},\"SGD\":{\"imgNation\":\"\",\"nameNation\":\"Singapore Dollar\",\"abbrNation\":\"SGD\",\"moneyUnit\":\".\",\"rate\":1.34267},\"SHP\":{\"imgNation\":\"\",\"nameNation\":\"Saint Helena Pound\",\"abbrNation\":\"SHP\",\"moneyUnit\":\".\",\"rate\":0.747299},\"SLL\":{\"imgNation\":\"\",\"nameNation\":\"Sierra Leonean Leone\",\"abbrNation\":\"SLL\",\"moneyUnit\":\".\",\"rate\":7630.000292},\"SOS\":{\"imgNation\":\"\",\"nameNation\":\"Somali Shilling\",\"abbrNation\":\"SOS\",\"moneyUnit\":\".\",\"rate\":559.00018},\"SRD\":{\"imgNation\":\"\",\"nameNation\":\"Surinamese Dollar\",\"abbrNation\":\"SRD\",\"moneyUnit\":\".\",\"rate\":7.409553},\"STD\":{\"imgNation\":\"\",\"nameNation\":\"São Tomé and Príncipe Dobra\",\"abbrNation\":\"STD\",\"moneyUnit\":\".\",\"rate\":20654.099609},\"SVC\":{\"imgNation\":\"\",\"nameNation\":\"Salvadoran Colón\",\"abbrNation\":\"SVC\",\"moneyUnit\":\".\",\"rate\":8.750398},\"SYP\":{\"imgNation\":\"\",\"nameNation\":\"Syrian Pound\",\"abbrNation\":\"SYP\",\"moneyUnit\":\".\",\"rate\":514.97998},\"SZL\":{\"imgNation\":\"\",\"nameNation\":\"Swazi Lilangeni\",\"abbrNation\":\"SZL\",\"moneyUnit\":\".\",\"rate\":12.499106},\"THB\":{\"imgNation\":\"\",\"nameNation\":\"Thai Baht\",\"abbrNation\":\"THB\",\"moneyUnit\":\".\",\"rate\":32.810001},\"TJS\":{\"imgNation\":\"\",\"nameNation\":\"Tajikistani Somoni\",\"abbrNation\":\"TJS\",\"moneyUnit\":\".\",\"rate\":8.823798},\"TMT\":{\"imgNation\":\"\",\"nameNation\":\"Turkmenistani Manat\",\"abbrNation\":\"TMT\",\"moneyUnit\":\".\",\"rate\":3.41},\"TND\":{\"imgNation\":\"\",\"nameNation\":\"Tunisian Dinar\",\"abbrNation\":\"TND\",\"moneyUnit\":\".\",\"rate\":2.477404},\"TOP\":{\"imgNation\":\"\",\"nameNation\":\"Tongan Paʻanga\",\"abbrNation\":\"TOP\",\"moneyUnit\":\".\",\"rate\":2.292099},\"TRY\":{\"imgNation\":\"\",\"nameNation\":\"Turkish Lira\",\"abbrNation\":\"TRY\",\"moneyUnit\":\".\",\"rate\":3.807701},\"TTD\":{\"imgNation\":\"\",\"nameNation\":\"Trinidad and Tobago Dollar\",\"abbrNation\":\"TTD\",\"moneyUnit\":\".\",\"rate\":6.629503},\"TWD\":{\"imgNation\":\"\",\"nameNation\":\"New Taiwan Dollar\",\"abbrNation\":\"TWD\",\"moneyUnit\":\".\",\"rate\":29.892989},\"TZS\":{\"imgNation\":\"\",\"nameNation\":\"Tanzanian Shilling\",\"abbrNation\":\"TZS\",\"moneyUnit\":\".\",\"rate\":2229.999783},\"UAH\":{\"imgNation\":\"\",\"nameNation\":\"Ukrainian Hryvnia\",\"abbrNation\":\"UAH\",\"moneyUnit\":\".\",\"rate\":27.809999},\"UGX\":{\"imgNation\":\"\",\"nameNation\":\"Ugandan Shilling\",\"abbrNation\":\"UGX\",\"moneyUnit\":\".\",\"rate\":3604.999786},\"UYU\":{\"imgNation\":\"\",\"nameNation\":\"Uruguayan Peso\",\"abbrNation\":\"UYU\",\"moneyUnit\":\".\",\"rate\":28.749947},\"UZS\":{\"imgNation\":\"\",\"nameNation\":\"Uzbekistan Som\",\"abbrNation\":\"UZS\",\"moneyUnit\":\".\",\"rate\":8090.000429},\"VEF\":{\"imgNation\":\"\",\"nameNation\":\"Venezuelan Bolívar Fuerte\",\"abbrNation\":\"VEF\",\"moneyUnit\":\".\",\"rate\":9.975011},\"VND\":{\"imgNation\":\"\",\"nameNation\":\"Vietnamese Dong\",\"abbrNation\":\"VND\",\"moneyUnit\":\".\",\"rate\":22709},\"VUV\":{\"imgNation\":\"\",\"nameNation\":\"Vanuatu Vatu\",\"abbrNation\":\"VUV\",\"moneyUnit\":\".\",\"rate\":105.179956},\"WST\":{\"imgNation\":\"\",\"nameNation\":\"Samoan Tala\",\"abbrNation\":\"WST\",\"moneyUnit\":\".\",\"rate\":2.5623},\"XAF\":{\"imgNation\":\"\",\"nameNation\":\"CFA Franc BEAC\",\"abbrNation\":\"XAF\",\"moneyUnit\":\".\",\"rate\":552.450012},\"XAG\":{\"imgNation\":\"\",\"nameNation\":\"Silver (troy ounce)\",\"abbrNation\":\"XAG\",\"moneyUnit\":\".\",\"rate\":0.060579},\"XAU\":{\"imgNation\":\"\",\"nameNation\":\"Gold (troy ounce)\",\"abbrNation\":\"XAU\",\"moneyUnit\":\".\",\"rate\":0.00078},\"XCD\":{\"imgNation\":\"\",\"nameNation\":\"East Caribbean Dollar\",\"abbrNation\":\"XCD\",\"moneyUnit\":\".\",\"rate\":2.700199},\"XDR\":{\"imgNation\":\"\",\"nameNation\":\"Special Drawing Rights\",\"abbrNation\":\"XDR\",\"moneyUnit\":\".\",\"rate\":0.705664},\"XOF\":{\"imgNation\":\"\",\"nameNation\":\"CFA Franc BCEAO\",\"abbrNation\":\"XOF\",\"moneyUnit\":\".\",\"rate\":562.960022},\"XPF\":{\"imgNation\":\"\",\"nameNation\":\"CFP Franc\",\"abbrNation\":\"XPF\",\"moneyUnit\":\".\",\"rate\":100.5202},\"YER\":{\"imgNation\":\"\",\"nameNation\":\"Yemeni Rial\",\"abbrNation\":\"YER\",\"moneyUnit\":\".\",\"rate\":249.850006},\"ZAR\":{\"imgNation\":\"\",\"nameNation\":\"South African Rand\",\"abbrNation\":\"ZAR\",\"moneyUnit\":\".\",\"rate\":12.501895},\"ZMK\":{\"imgNation\":\"\",\"nameNation\":\"Zambian Kwacha (pre-2013)\",\"abbrNation\":\"ZMK\",\"moneyUnit\":\".\",\"rate\":9001.205638},\"ZMW\":{\"imgNation\":\"\",\"nameNation\":\"Zambian Kwacha\",\"abbrNation\":\"ZMW\",\"moneyUnit\":\".\",\"rate\":9.710271},\"ZWL\":{\"imgNation\":\"\",\"nameNation\":\"Zimbabwean Dollar\",\"abbrNation\":\"ZWL\",\"moneyUnit\":\".\",\"rate\":322.355011}}");
+        this.timestamp = null;
+    }
+
+    convert(from, amount, to) {
+        if (this.table === null || !((from in this.table) && (to in this.table))) {
+            throw "Bad input" + from + " -> " + to;
+        }
+
+        if (from === to) {
+            return amount;
+        }
+
+        // 一律先转成美元，再转成目标
+        let rateFrom2USD = 1 / this.table[from]["rate"];
+        let rateUSD2To = this.table[to]["rate"];
+
+        return amount * rateFrom2USD * rateUSD2To;
+    }
+
+    loadFromAPI() {
+        const accessKey = '28c3838ae4ee996dc7df28181ff3c7d3';
+        const URL_API = 'http://apilayer.net/api/live?access_key=' + accessKey;
+
+        let that = this;
+        __WEBPACK_IMPORTED_MODULE_0_axios___default.a.get(URL_API).then(function (response) {
+            let data = response["data"];
+
+            that.timestamp = data.timestamp;
+            data = data["quotes"];
+            that.table["USD"] = {
                 imgNation: "",
-                nameNation: 'U.S.A',
+                nameNation: that.currencies["USD"],
                 abbrNation: 'USD',
                 moneyUnit: "dollar",
-                rate: 1
-            },
-            'CNY': {
-                imgNation: "",
-                nameNation: 'China',
-                abbrNation: 'CNY',
-                moneyUnit: "元",
-                rate: 6
-            },
-            'CCC': {
-                imgNation: "",
-                nameNation: 'CCC',
-                abbrNation: 'CCC',
-                moneyUnit: "R",
-                rate: 6
+                rate: 1.0
+            };
+
+            for (let each in data) {
+                const abbr = each.substring(3);
+                that.table[abbr] = {
+                    imgNation: "",
+                    nameNation: that.currencies[abbr],
+                    abbrNation: abbr,
+                    moneyUnit: ".",
+                    rate: data[each]
+                };
             }
+        });
+    }
+
+    isLocalStorageOutdate() {
+        // todo
+        return false;
+    }
+
+    load() {
+        return;
+        // beforeMount 时调用
+        let storage = localStorage.getItem(this.STORAGE_KEY);
+
+        if (storage === null) {
+            // 本地储存没有，则从云端获取
+            this.loadFromAPI();
+            return;
+        }
+
+        // 本地储存非空，则读取进来
+        try {
+            storage = JSON.parse(storage);
+            this.table = storage.data;
+            this.timestamp = storage.timestamp;
+        } catch (e) {
+            // 本地储存格式不对，重新获取
+            console.log("Bad local storage for convert rate, using default");
+            this.loadFromAPI();
+            return;
+        }
+
+        // 本地储存太旧，更新
+        if (this.isLocalStorageOutdate()) {
+            this.loadFromAPI();
         }
     }
 
-    convert(from, to, amount) {
-        return 1000
+    save() {
+        localStorage.setItem(this.STORAGE_KEY, JSON.stringify({
+            data: this.table,
+            timestamp: this.timestamp
+        }));
     }
 }
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(16);
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var utils = __webpack_require__(0);
+var bind = __webpack_require__(4);
+var Axios = __webpack_require__(18);
+var defaults = __webpack_require__(2);
+
+/**
+ * Create an instance of Axios
+ *
+ * @param {Object} defaultConfig The default config for the instance
+ * @return {Axios} A new instance of Axios
+ */
+function createInstance(defaultConfig) {
+  var context = new Axios(defaultConfig);
+  var instance = bind(Axios.prototype.request, context);
+
+  // Copy axios.prototype to instance
+  utils.extend(instance, Axios.prototype, context);
+
+  // Copy context to instance
+  utils.extend(instance, context);
+
+  return instance;
+}
+
+// Create the default instance to be exported
+var axios = createInstance(defaults);
+
+// Expose Axios class to allow class inheritance
+axios.Axios = Axios;
+
+// Factory for creating new instances
+axios.create = function create(instanceConfig) {
+  return createInstance(utils.merge(defaults, instanceConfig));
+};
+
+// Expose Cancel & CancelToken
+axios.Cancel = __webpack_require__(8);
+axios.CancelToken = __webpack_require__(32);
+axios.isCancel = __webpack_require__(7);
+
+// Expose all/spread
+axios.all = function all(promises) {
+  return Promise.all(promises);
+};
+axios.spread = __webpack_require__(33);
+
+module.exports = axios;
+
+// Allow use of default import syntax in TypeScript
+module.exports.default = axios;
+
+
+/***/ }),
+/* 17 */
+/***/ (function(module, exports) {
+
+/*!
+ * Determine if an object is a Buffer
+ *
+ * @author   Feross Aboukhadijeh <https://feross.org>
+ * @license  MIT
+ */
+
+// The _isBuffer check is for Safari 5-7 support, because it's missing
+// Object.prototype.constructor. Remove this eventually
+module.exports = function (obj) {
+  return obj != null && (isBuffer(obj) || isSlowBuffer(obj) || !!obj._isBuffer)
+}
+
+function isBuffer (obj) {
+  return !!obj.constructor && typeof obj.constructor.isBuffer === 'function' && obj.constructor.isBuffer(obj)
+}
+
+// For Node v0.10 support. Remove this eventually.
+function isSlowBuffer (obj) {
+  return typeof obj.readFloatLE === 'function' && typeof obj.slice === 'function' && isBuffer(obj.slice(0, 0))
+}
+
+
+/***/ }),
+/* 18 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var defaults = __webpack_require__(2);
+var utils = __webpack_require__(0);
+var InterceptorManager = __webpack_require__(27);
+var dispatchRequest = __webpack_require__(28);
+
+/**
+ * Create a new instance of Axios
+ *
+ * @param {Object} instanceConfig The default config for the instance
+ */
+function Axios(instanceConfig) {
+  this.defaults = instanceConfig;
+  this.interceptors = {
+    request: new InterceptorManager(),
+    response: new InterceptorManager()
+  };
+}
+
+/**
+ * Dispatch a request
+ *
+ * @param {Object} config The config specific for this request (merged with this.defaults)
+ */
+Axios.prototype.request = function request(config) {
+  /*eslint no-param-reassign:0*/
+  // Allow for axios('example/url'[, config]) a la fetch API
+  if (typeof config === 'string') {
+    config = utils.merge({
+      url: arguments[0]
+    }, arguments[1]);
+  }
+
+  config = utils.merge(defaults, this.defaults, { method: 'get' }, config);
+  config.method = config.method.toLowerCase();
+
+  // Hook up interceptors middleware
+  var chain = [dispatchRequest, undefined];
+  var promise = Promise.resolve(config);
+
+  this.interceptors.request.forEach(function unshiftRequestInterceptors(interceptor) {
+    chain.unshift(interceptor.fulfilled, interceptor.rejected);
+  });
+
+  this.interceptors.response.forEach(function pushResponseInterceptors(interceptor) {
+    chain.push(interceptor.fulfilled, interceptor.rejected);
+  });
+
+  while (chain.length) {
+    promise = promise.then(chain.shift(), chain.shift());
+  }
+
+  return promise;
+};
+
+// Provide aliases for supported request methods
+utils.forEach(['delete', 'get', 'head', 'options'], function forEachMethodNoData(method) {
+  /*eslint func-names:0*/
+  Axios.prototype[method] = function(url, config) {
+    return this.request(utils.merge(config || {}, {
+      method: method,
+      url: url
+    }));
+  };
+});
+
+utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
+  /*eslint func-names:0*/
+  Axios.prototype[method] = function(url, data, config) {
+    return this.request(utils.merge(config || {}, {
+      method: method,
+      url: url,
+      data: data
+    }));
+  };
+});
+
+module.exports = Axios;
+
+
+/***/ }),
+/* 19 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var utils = __webpack_require__(0);
+
+module.exports = function normalizeHeaderName(headers, normalizedName) {
+  utils.forEach(headers, function processHeader(value, name) {
+    if (name !== normalizedName && name.toUpperCase() === normalizedName.toUpperCase()) {
+      headers[normalizedName] = value;
+      delete headers[name];
+    }
+  });
+};
+
+
+/***/ }),
+/* 20 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var createError = __webpack_require__(6);
+
+/**
+ * Resolve or reject a Promise based on response status.
+ *
+ * @param {Function} resolve A function that resolves the promise.
+ * @param {Function} reject A function that rejects the promise.
+ * @param {object} response The response.
+ */
+module.exports = function settle(resolve, reject, response) {
+  var validateStatus = response.config.validateStatus;
+  // Note: status is not exposed by XDomainRequest
+  if (!response.status || !validateStatus || validateStatus(response.status)) {
+    resolve(response);
+  } else {
+    reject(createError(
+      'Request failed with status code ' + response.status,
+      response.config,
+      null,
+      response.request,
+      response
+    ));
+  }
+};
+
+
+/***/ }),
+/* 21 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+/**
+ * Update an Error with the specified config, error code, and response.
+ *
+ * @param {Error} error The error to update.
+ * @param {Object} config The config.
+ * @param {string} [code] The error code (for example, 'ECONNABORTED').
+ * @param {Object} [request] The request.
+ * @param {Object} [response] The response.
+ * @returns {Error} The error.
+ */
+module.exports = function enhanceError(error, config, code, request, response) {
+  error.config = config;
+  if (code) {
+    error.code = code;
+  }
+  error.request = request;
+  error.response = response;
+  return error;
+};
+
+
+/***/ }),
+/* 22 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var utils = __webpack_require__(0);
+
+function encode(val) {
+  return encodeURIComponent(val).
+    replace(/%40/gi, '@').
+    replace(/%3A/gi, ':').
+    replace(/%24/g, '$').
+    replace(/%2C/gi, ',').
+    replace(/%20/g, '+').
+    replace(/%5B/gi, '[').
+    replace(/%5D/gi, ']');
+}
+
+/**
+ * Build a URL by appending params to the end
+ *
+ * @param {string} url The base of the url (e.g., http://www.google.com)
+ * @param {object} [params] The params to be appended
+ * @returns {string} The formatted url
+ */
+module.exports = function buildURL(url, params, paramsSerializer) {
+  /*eslint no-param-reassign:0*/
+  if (!params) {
+    return url;
+  }
+
+  var serializedParams;
+  if (paramsSerializer) {
+    serializedParams = paramsSerializer(params);
+  } else if (utils.isURLSearchParams(params)) {
+    serializedParams = params.toString();
+  } else {
+    var parts = [];
+
+    utils.forEach(params, function serialize(val, key) {
+      if (val === null || typeof val === 'undefined') {
+        return;
+      }
+
+      if (utils.isArray(val)) {
+        key = key + '[]';
+      }
+
+      if (!utils.isArray(val)) {
+        val = [val];
+      }
+
+      utils.forEach(val, function parseValue(v) {
+        if (utils.isDate(v)) {
+          v = v.toISOString();
+        } else if (utils.isObject(v)) {
+          v = JSON.stringify(v);
+        }
+        parts.push(encode(key) + '=' + encode(v));
+      });
+    });
+
+    serializedParams = parts.join('&');
+  }
+
+  if (serializedParams) {
+    url += (url.indexOf('?') === -1 ? '?' : '&') + serializedParams;
+  }
+
+  return url;
+};
+
+
+/***/ }),
+/* 23 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var utils = __webpack_require__(0);
+
+// Headers whose duplicates are ignored by node
+// c.f. https://nodejs.org/api/http.html#http_message_headers
+var ignoreDuplicateOf = [
+  'age', 'authorization', 'content-length', 'content-type', 'etag',
+  'expires', 'from', 'host', 'if-modified-since', 'if-unmodified-since',
+  'last-modified', 'location', 'max-forwards', 'proxy-authorization',
+  'referer', 'retry-after', 'user-agent'
+];
+
+/**
+ * Parse headers into an object
+ *
+ * ```
+ * Date: Wed, 27 Aug 2014 08:58:49 GMT
+ * Content-Type: application/json
+ * Connection: keep-alive
+ * Transfer-Encoding: chunked
+ * ```
+ *
+ * @param {String} headers Headers needing to be parsed
+ * @returns {Object} Headers parsed into an object
+ */
+module.exports = function parseHeaders(headers) {
+  var parsed = {};
+  var key;
+  var val;
+  var i;
+
+  if (!headers) { return parsed; }
+
+  utils.forEach(headers.split('\n'), function parser(line) {
+    i = line.indexOf(':');
+    key = utils.trim(line.substr(0, i)).toLowerCase();
+    val = utils.trim(line.substr(i + 1));
+
+    if (key) {
+      if (parsed[key] && ignoreDuplicateOf.indexOf(key) >= 0) {
+        return;
+      }
+      if (key === 'set-cookie') {
+        parsed[key] = (parsed[key] ? parsed[key] : []).concat([val]);
+      } else {
+        parsed[key] = parsed[key] ? parsed[key] + ', ' + val : val;
+      }
+    }
+  });
+
+  return parsed;
+};
+
+
+/***/ }),
+/* 24 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var utils = __webpack_require__(0);
+
+module.exports = (
+  utils.isStandardBrowserEnv() ?
+
+  // Standard browser envs have full support of the APIs needed to test
+  // whether the request URL is of the same origin as current location.
+  (function standardBrowserEnv() {
+    var msie = /(msie|trident)/i.test(navigator.userAgent);
+    var urlParsingNode = document.createElement('a');
+    var originURL;
+
+    /**
+    * Parse a URL to discover it's components
+    *
+    * @param {String} url The URL to be parsed
+    * @returns {Object}
+    */
+    function resolveURL(url) {
+      var href = url;
+
+      if (msie) {
+        // IE needs attribute set twice to normalize properties
+        urlParsingNode.setAttribute('href', href);
+        href = urlParsingNode.href;
+      }
+
+      urlParsingNode.setAttribute('href', href);
+
+      // urlParsingNode provides the UrlUtils interface - http://url.spec.whatwg.org/#urlutils
+      return {
+        href: urlParsingNode.href,
+        protocol: urlParsingNode.protocol ? urlParsingNode.protocol.replace(/:$/, '') : '',
+        host: urlParsingNode.host,
+        search: urlParsingNode.search ? urlParsingNode.search.replace(/^\?/, '') : '',
+        hash: urlParsingNode.hash ? urlParsingNode.hash.replace(/^#/, '') : '',
+        hostname: urlParsingNode.hostname,
+        port: urlParsingNode.port,
+        pathname: (urlParsingNode.pathname.charAt(0) === '/') ?
+                  urlParsingNode.pathname :
+                  '/' + urlParsingNode.pathname
+      };
+    }
+
+    originURL = resolveURL(window.location.href);
+
+    /**
+    * Determine if a URL shares the same origin as the current location
+    *
+    * @param {String} requestURL The URL to test
+    * @returns {boolean} True if URL shares the same origin, otherwise false
+    */
+    return function isURLSameOrigin(requestURL) {
+      var parsed = (utils.isString(requestURL)) ? resolveURL(requestURL) : requestURL;
+      return (parsed.protocol === originURL.protocol &&
+            parsed.host === originURL.host);
+    };
+  })() :
+
+  // Non standard browser envs (web workers, react-native) lack needed support.
+  (function nonStandardBrowserEnv() {
+    return function isURLSameOrigin() {
+      return true;
+    };
+  })()
+);
+
+
+/***/ }),
+/* 25 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+// btoa polyfill for IE<10 courtesy https://github.com/davidchambers/Base64.js
+
+var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+
+function E() {
+  this.message = 'String contains an invalid character';
+}
+E.prototype = new Error;
+E.prototype.code = 5;
+E.prototype.name = 'InvalidCharacterError';
+
+function btoa(input) {
+  var str = String(input);
+  var output = '';
+  for (
+    // initialize result and counter
+    var block, charCode, idx = 0, map = chars;
+    // if the next str index does not exist:
+    //   change the mapping table to "="
+    //   check if d has no fractional digits
+    str.charAt(idx | 0) || (map = '=', idx % 1);
+    // "8 - idx % 1 * 8" generates the sequence 2, 4, 6, 8
+    output += map.charAt(63 & block >> 8 - idx % 1 * 8)
+  ) {
+    charCode = str.charCodeAt(idx += 3 / 4);
+    if (charCode > 0xFF) {
+      throw new E();
+    }
+    block = block << 8 | charCode;
+  }
+  return output;
+}
+
+module.exports = btoa;
+
+
+/***/ }),
+/* 26 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var utils = __webpack_require__(0);
+
+module.exports = (
+  utils.isStandardBrowserEnv() ?
+
+  // Standard browser envs support document.cookie
+  (function standardBrowserEnv() {
+    return {
+      write: function write(name, value, expires, path, domain, secure) {
+        var cookie = [];
+        cookie.push(name + '=' + encodeURIComponent(value));
+
+        if (utils.isNumber(expires)) {
+          cookie.push('expires=' + new Date(expires).toGMTString());
+        }
+
+        if (utils.isString(path)) {
+          cookie.push('path=' + path);
+        }
+
+        if (utils.isString(domain)) {
+          cookie.push('domain=' + domain);
+        }
+
+        if (secure === true) {
+          cookie.push('secure');
+        }
+
+        document.cookie = cookie.join('; ');
+      },
+
+      read: function read(name) {
+        var match = document.cookie.match(new RegExp('(^|;\\s*)(' + name + ')=([^;]*)'));
+        return (match ? decodeURIComponent(match[3]) : null);
+      },
+
+      remove: function remove(name) {
+        this.write(name, '', Date.now() - 86400000);
+      }
+    };
+  })() :
+
+  // Non standard browser env (web workers, react-native) lack needed support.
+  (function nonStandardBrowserEnv() {
+    return {
+      write: function write() {},
+      read: function read() { return null; },
+      remove: function remove() {}
+    };
+  })()
+);
+
+
+/***/ }),
+/* 27 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var utils = __webpack_require__(0);
+
+function InterceptorManager() {
+  this.handlers = [];
+}
+
+/**
+ * Add a new interceptor to the stack
+ *
+ * @param {Function} fulfilled The function to handle `then` for a `Promise`
+ * @param {Function} rejected The function to handle `reject` for a `Promise`
+ *
+ * @return {Number} An ID used to remove interceptor later
+ */
+InterceptorManager.prototype.use = function use(fulfilled, rejected) {
+  this.handlers.push({
+    fulfilled: fulfilled,
+    rejected: rejected
+  });
+  return this.handlers.length - 1;
+};
+
+/**
+ * Remove an interceptor from the stack
+ *
+ * @param {Number} id The ID that was returned by `use`
+ */
+InterceptorManager.prototype.eject = function eject(id) {
+  if (this.handlers[id]) {
+    this.handlers[id] = null;
+  }
+};
+
+/**
+ * Iterate over all the registered interceptors
+ *
+ * This method is particularly useful for skipping over any
+ * interceptors that may have become `null` calling `eject`.
+ *
+ * @param {Function} fn The function to call for each interceptor
+ */
+InterceptorManager.prototype.forEach = function forEach(fn) {
+  utils.forEach(this.handlers, function forEachHandler(h) {
+    if (h !== null) {
+      fn(h);
+    }
+  });
+};
+
+module.exports = InterceptorManager;
+
+
+/***/ }),
+/* 28 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var utils = __webpack_require__(0);
+var transformData = __webpack_require__(29);
+var isCancel = __webpack_require__(7);
+var defaults = __webpack_require__(2);
+var isAbsoluteURL = __webpack_require__(30);
+var combineURLs = __webpack_require__(31);
+
+/**
+ * Throws a `Cancel` if cancellation has been requested.
+ */
+function throwIfCancellationRequested(config) {
+  if (config.cancelToken) {
+    config.cancelToken.throwIfRequested();
+  }
+}
+
+/**
+ * Dispatch a request to the server using the configured adapter.
+ *
+ * @param {object} config The config that is to be used for the request
+ * @returns {Promise} The Promise to be fulfilled
+ */
+module.exports = function dispatchRequest(config) {
+  throwIfCancellationRequested(config);
+
+  // Support baseURL config
+  if (config.baseURL && !isAbsoluteURL(config.url)) {
+    config.url = combineURLs(config.baseURL, config.url);
+  }
+
+  // Ensure headers exist
+  config.headers = config.headers || {};
+
+  // Transform request data
+  config.data = transformData(
+    config.data,
+    config.headers,
+    config.transformRequest
+  );
+
+  // Flatten headers
+  config.headers = utils.merge(
+    config.headers.common || {},
+    config.headers[config.method] || {},
+    config.headers || {}
+  );
+
+  utils.forEach(
+    ['delete', 'get', 'head', 'post', 'put', 'patch', 'common'],
+    function cleanHeaderConfig(method) {
+      delete config.headers[method];
+    }
+  );
+
+  var adapter = config.adapter || defaults.adapter;
+
+  return adapter(config).then(function onAdapterResolution(response) {
+    throwIfCancellationRequested(config);
+
+    // Transform response data
+    response.data = transformData(
+      response.data,
+      response.headers,
+      config.transformResponse
+    );
+
+    return response;
+  }, function onAdapterRejection(reason) {
+    if (!isCancel(reason)) {
+      throwIfCancellationRequested(config);
+
+      // Transform response data
+      if (reason && reason.response) {
+        reason.response.data = transformData(
+          reason.response.data,
+          reason.response.headers,
+          config.transformResponse
+        );
+      }
+    }
+
+    return Promise.reject(reason);
+  });
+};
+
+
+/***/ }),
+/* 29 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var utils = __webpack_require__(0);
+
+/**
+ * Transform the data for a request or a response
+ *
+ * @param {Object|String} data The data to be transformed
+ * @param {Array} headers The headers for the request or response
+ * @param {Array|Function} fns A single function or Array of functions
+ * @returns {*} The resulting transformed data
+ */
+module.exports = function transformData(data, headers, fns) {
+  /*eslint no-param-reassign:0*/
+  utils.forEach(fns, function transform(fn) {
+    data = fn(data, headers);
+  });
+
+  return data;
+};
+
+
+/***/ }),
+/* 30 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+/**
+ * Determines whether the specified URL is absolute
+ *
+ * @param {string} url The URL to test
+ * @returns {boolean} True if the specified URL is absolute, otherwise false
+ */
+module.exports = function isAbsoluteURL(url) {
+  // A URL is considered absolute if it begins with "<scheme>://" or "//" (protocol-relative URL).
+  // RFC 3986 defines scheme name as a sequence of characters beginning with a letter and followed
+  // by any combination of letters, digits, plus, period, or hyphen.
+  return /^([a-z][a-z\d\+\-\.]*:)?\/\//i.test(url);
+};
+
+
+/***/ }),
+/* 31 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+/**
+ * Creates a new URL by combining the specified URLs
+ *
+ * @param {string} baseURL The base URL
+ * @param {string} relativeURL The relative URL
+ * @returns {string} The combined URL
+ */
+module.exports = function combineURLs(baseURL, relativeURL) {
+  return relativeURL
+    ? baseURL.replace(/\/+$/, '') + '/' + relativeURL.replace(/^\/+/, '')
+    : baseURL;
+};
+
+
+/***/ }),
+/* 32 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var Cancel = __webpack_require__(8);
+
+/**
+ * A `CancelToken` is an object that can be used to request cancellation of an operation.
+ *
+ * @class
+ * @param {Function} executor The executor function.
+ */
+function CancelToken(executor) {
+  if (typeof executor !== 'function') {
+    throw new TypeError('executor must be a function.');
+  }
+
+  var resolvePromise;
+  this.promise = new Promise(function promiseExecutor(resolve) {
+    resolvePromise = resolve;
+  });
+
+  var token = this;
+  executor(function cancel(message) {
+    if (token.reason) {
+      // Cancellation has already been requested
+      return;
+    }
+
+    token.reason = new Cancel(message);
+    resolvePromise(token.reason);
+  });
+}
+
+/**
+ * Throws a `Cancel` if cancellation has been requested.
+ */
+CancelToken.prototype.throwIfRequested = function throwIfRequested() {
+  if (this.reason) {
+    throw this.reason;
+  }
+};
+
+/**
+ * Returns an object that contains a new `CancelToken` and a function that, when called,
+ * cancels the `CancelToken`.
+ */
+CancelToken.source = function source() {
+  var cancel;
+  var token = new CancelToken(function executor(c) {
+    cancel = c;
+  });
+  return {
+    token: token,
+    cancel: cancel
+  };
+};
+
+module.exports = CancelToken;
+
+
+/***/ }),
+/* 33 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+/**
+ * Syntactic sugar for invoking a function and expanding an array for arguments.
+ *
+ * Common use case would be to use `Function.prototype.apply`.
+ *
+ *  ```js
+ *  function f(x, y, z) {}
+ *  var args = [1, 2, 3];
+ *  f.apply(null, args);
+ *  ```
+ *
+ * With `spread` this example can be re-written.
+ *
+ *  ```js
+ *  spread(function(x, y, z) {})([1, 2, 3]);
+ *  ```
+ *
+ * @param {Function} callback
+ * @returns {Function}
+ */
+module.exports = function spread(callback) {
+  return function wrap(arr) {
+    return callback.apply(null, arr);
+  };
+};
+
+
+/***/ }),
+/* 34 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(35);
+if(typeof content === 'string') content = [[module.i, content, '']];
+// Prepare cssTransformation
+var transform;
+
+var options = {"hmr":true}
+options.transform = transform
+// add the styles to the DOM
+var update = __webpack_require__(37)(content, options);
+if(content.locals) module.exports = content.locals;
+// Hot Module Replacement
+if(false) {
+	// When the styles change, update the <style> tags
+	if(!content.locals) {
+		module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./index.scss", function() {
+			var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/sass-loader/lib/loader.js!./index.scss");
+			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+			update(newContent);
+		});
+	}
+	// When the module is disposed, remove the <style> tags
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 35 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(36)(undefined);
+// imports
+
+
+// module
+exports.push([module.i, "#tableView input {\n  display: none; }\n\n#tableView .editing input {\n  display: block; }\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 36 */
+/***/ (function(module, exports) {
+
+/*
+	MIT License http://www.opensource.org/licenses/mit-license.php
+	Author Tobias Koppers @sokra
+*/
+// css base code, injected by the css-loader
+module.exports = function(useSourceMap) {
+	var list = [];
+
+	// return the list of modules as css string
+	list.toString = function toString() {
+		return this.map(function (item) {
+			var content = cssWithMappingToString(item, useSourceMap);
+			if(item[2]) {
+				return "@media " + item[2] + "{" + content + "}";
+			} else {
+				return content;
+			}
+		}).join("");
+	};
+
+	// import a list of modules into the list
+	list.i = function(modules, mediaQuery) {
+		if(typeof modules === "string")
+			modules = [[null, modules, ""]];
+		var alreadyImportedModules = {};
+		for(var i = 0; i < this.length; i++) {
+			var id = this[i][0];
+			if(typeof id === "number")
+				alreadyImportedModules[id] = true;
+		}
+		for(i = 0; i < modules.length; i++) {
+			var item = modules[i];
+			// skip already imported module
+			// this implementation is not 100% perfect for weird media query combinations
+			//  when a module is imported multiple times with different media queries.
+			//  I hope this will never occur (Hey this way we have smaller bundles)
+			if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
+				if(mediaQuery && !item[2]) {
+					item[2] = mediaQuery;
+				} else if(mediaQuery) {
+					item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
+				}
+				list.push(item);
+			}
+		}
+	};
+	return list;
+};
+
+function cssWithMappingToString(item, useSourceMap) {
+	var content = item[1] || '';
+	var cssMapping = item[3];
+	if (!cssMapping) {
+		return content;
+	}
+
+	if (useSourceMap && typeof btoa === 'function') {
+		var sourceMapping = toComment(cssMapping);
+		var sourceURLs = cssMapping.sources.map(function (source) {
+			return '/*# sourceURL=' + cssMapping.sourceRoot + source + ' */'
+		});
+
+		return [content].concat(sourceURLs).concat([sourceMapping]).join('\n');
+	}
+
+	return [content].join('\n');
+}
+
+// Adapted from convert-source-map (MIT)
+function toComment(sourceMap) {
+	// eslint-disable-next-line no-undef
+	var base64 = btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap))));
+	var data = 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + base64;
+
+	return '/*# ' + data + ' */';
+}
+
+
+/***/ }),
+/* 37 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/*
+	MIT License http://www.opensource.org/licenses/mit-license.php
+	Author Tobias Koppers @sokra
+*/
+
+var stylesInDom = {};
+
+var	memoize = function (fn) {
+	var memo;
+
+	return function () {
+		if (typeof memo === "undefined") memo = fn.apply(this, arguments);
+		return memo;
+	};
+};
+
+var isOldIE = memoize(function () {
+	// Test for IE <= 9 as proposed by Browserhacks
+	// @see http://browserhacks.com/#hack-e71d8692f65334173fee715c222cb805
+	// Tests for existence of standard globals is to allow style-loader
+	// to operate correctly into non-standard environments
+	// @see https://github.com/webpack-contrib/style-loader/issues/177
+	return window && document && document.all && !window.atob;
+});
+
+var getElement = (function (fn) {
+	var memo = {};
+
+	return function(selector) {
+		if (typeof memo[selector] === "undefined") {
+			var styleTarget = fn.call(this, selector);
+			// Special case to return head of iframe instead of iframe itself
+			if (styleTarget instanceof window.HTMLIFrameElement) {
+				try {
+					// This will throw an exception if access to iframe is blocked
+					// due to cross-origin restrictions
+					styleTarget = styleTarget.contentDocument.head;
+				} catch(e) {
+					styleTarget = null;
+				}
+			}
+			memo[selector] = styleTarget;
+		}
+		return memo[selector]
+	};
+})(function (target) {
+	return document.querySelector(target)
+});
+
+var singleton = null;
+var	singletonCounter = 0;
+var	stylesInsertedAtTop = [];
+
+var	fixUrls = __webpack_require__(38);
+
+module.exports = function(list, options) {
+	if (typeof DEBUG !== "undefined" && DEBUG) {
+		if (typeof document !== "object") throw new Error("The style-loader cannot be used in a non-browser environment");
+	}
+
+	options = options || {};
+
+	options.attrs = typeof options.attrs === "object" ? options.attrs : {};
+
+	// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
+	// tags it will allow on a page
+	if (!options.singleton && typeof options.singleton !== "boolean") options.singleton = isOldIE();
+
+	// By default, add <style> tags to the <head> element
+	if (!options.insertInto) options.insertInto = "head";
+
+	// By default, add <style> tags to the bottom of the target
+	if (!options.insertAt) options.insertAt = "bottom";
+
+	var styles = listToStyles(list, options);
+
+	addStylesToDom(styles, options);
+
+	return function update (newList) {
+		var mayRemove = [];
+
+		for (var i = 0; i < styles.length; i++) {
+			var item = styles[i];
+			var domStyle = stylesInDom[item.id];
+
+			domStyle.refs--;
+			mayRemove.push(domStyle);
+		}
+
+		if(newList) {
+			var newStyles = listToStyles(newList, options);
+			addStylesToDom(newStyles, options);
+		}
+
+		for (var i = 0; i < mayRemove.length; i++) {
+			var domStyle = mayRemove[i];
+
+			if(domStyle.refs === 0) {
+				for (var j = 0; j < domStyle.parts.length; j++) domStyle.parts[j]();
+
+				delete stylesInDom[domStyle.id];
+			}
+		}
+	};
+};
+
+function addStylesToDom (styles, options) {
+	for (var i = 0; i < styles.length; i++) {
+		var item = styles[i];
+		var domStyle = stylesInDom[item.id];
+
+		if(domStyle) {
+			domStyle.refs++;
+
+			for(var j = 0; j < domStyle.parts.length; j++) {
+				domStyle.parts[j](item.parts[j]);
+			}
+
+			for(; j < item.parts.length; j++) {
+				domStyle.parts.push(addStyle(item.parts[j], options));
+			}
+		} else {
+			var parts = [];
+
+			for(var j = 0; j < item.parts.length; j++) {
+				parts.push(addStyle(item.parts[j], options));
+			}
+
+			stylesInDom[item.id] = {id: item.id, refs: 1, parts: parts};
+		}
+	}
+}
+
+function listToStyles (list, options) {
+	var styles = [];
+	var newStyles = {};
+
+	for (var i = 0; i < list.length; i++) {
+		var item = list[i];
+		var id = options.base ? item[0] + options.base : item[0];
+		var css = item[1];
+		var media = item[2];
+		var sourceMap = item[3];
+		var part = {css: css, media: media, sourceMap: sourceMap};
+
+		if(!newStyles[id]) styles.push(newStyles[id] = {id: id, parts: [part]});
+		else newStyles[id].parts.push(part);
+	}
+
+	return styles;
+}
+
+function insertStyleElement (options, style) {
+	var target = getElement(options.insertInto)
+
+	if (!target) {
+		throw new Error("Couldn't find a style target. This probably means that the value for the 'insertInto' parameter is invalid.");
+	}
+
+	var lastStyleElementInsertedAtTop = stylesInsertedAtTop[stylesInsertedAtTop.length - 1];
+
+	if (options.insertAt === "top") {
+		if (!lastStyleElementInsertedAtTop) {
+			target.insertBefore(style, target.firstChild);
+		} else if (lastStyleElementInsertedAtTop.nextSibling) {
+			target.insertBefore(style, lastStyleElementInsertedAtTop.nextSibling);
+		} else {
+			target.appendChild(style);
+		}
+		stylesInsertedAtTop.push(style);
+	} else if (options.insertAt === "bottom") {
+		target.appendChild(style);
+	} else if (typeof options.insertAt === "object" && options.insertAt.before) {
+		var nextSibling = getElement(options.insertInto + " " + options.insertAt.before);
+		target.insertBefore(style, nextSibling);
+	} else {
+		throw new Error("[Style Loader]\n\n Invalid value for parameter 'insertAt' ('options.insertAt') found.\n Must be 'top', 'bottom', or Object.\n (https://github.com/webpack-contrib/style-loader#insertat)\n");
+	}
+}
+
+function removeStyleElement (style) {
+	if (style.parentNode === null) return false;
+	style.parentNode.removeChild(style);
+
+	var idx = stylesInsertedAtTop.indexOf(style);
+	if(idx >= 0) {
+		stylesInsertedAtTop.splice(idx, 1);
+	}
+}
+
+function createStyleElement (options) {
+	var style = document.createElement("style");
+
+	options.attrs.type = "text/css";
+
+	addAttrs(style, options.attrs);
+	insertStyleElement(options, style);
+
+	return style;
+}
+
+function createLinkElement (options) {
+	var link = document.createElement("link");
+
+	options.attrs.type = "text/css";
+	options.attrs.rel = "stylesheet";
+
+	addAttrs(link, options.attrs);
+	insertStyleElement(options, link);
+
+	return link;
+}
+
+function addAttrs (el, attrs) {
+	Object.keys(attrs).forEach(function (key) {
+		el.setAttribute(key, attrs[key]);
+	});
+}
+
+function addStyle (obj, options) {
+	var style, update, remove, result;
+
+	// If a transform function was defined, run it on the css
+	if (options.transform && obj.css) {
+	    result = options.transform(obj.css);
+
+	    if (result) {
+	    	// If transform returns a value, use that instead of the original css.
+	    	// This allows running runtime transformations on the css.
+	    	obj.css = result;
+	    } else {
+	    	// If the transform function returns a falsy value, don't add this css.
+	    	// This allows conditional loading of css
+	    	return function() {
+	    		// noop
+	    	};
+	    }
+	}
+
+	if (options.singleton) {
+		var styleIndex = singletonCounter++;
+
+		style = singleton || (singleton = createStyleElement(options));
+
+		update = applyToSingletonTag.bind(null, style, styleIndex, false);
+		remove = applyToSingletonTag.bind(null, style, styleIndex, true);
+
+	} else if (
+		obj.sourceMap &&
+		typeof URL === "function" &&
+		typeof URL.createObjectURL === "function" &&
+		typeof URL.revokeObjectURL === "function" &&
+		typeof Blob === "function" &&
+		typeof btoa === "function"
+	) {
+		style = createLinkElement(options);
+		update = updateLink.bind(null, style, options);
+		remove = function () {
+			removeStyleElement(style);
+
+			if(style.href) URL.revokeObjectURL(style.href);
+		};
+	} else {
+		style = createStyleElement(options);
+		update = applyToTag.bind(null, style);
+		remove = function () {
+			removeStyleElement(style);
+		};
+	}
+
+	update(obj);
+
+	return function updateStyle (newObj) {
+		if (newObj) {
+			if (
+				newObj.css === obj.css &&
+				newObj.media === obj.media &&
+				newObj.sourceMap === obj.sourceMap
+			) {
+				return;
+			}
+
+			update(obj = newObj);
+		} else {
+			remove();
+		}
+	};
+}
+
+var replaceText = (function () {
+	var textStore = [];
+
+	return function (index, replacement) {
+		textStore[index] = replacement;
+
+		return textStore.filter(Boolean).join('\n');
+	};
+})();
+
+function applyToSingletonTag (style, index, remove, obj) {
+	var css = remove ? "" : obj.css;
+
+	if (style.styleSheet) {
+		style.styleSheet.cssText = replaceText(index, css);
+	} else {
+		var cssNode = document.createTextNode(css);
+		var childNodes = style.childNodes;
+
+		if (childNodes[index]) style.removeChild(childNodes[index]);
+
+		if (childNodes.length) {
+			style.insertBefore(cssNode, childNodes[index]);
+		} else {
+			style.appendChild(cssNode);
+		}
+	}
+}
+
+function applyToTag (style, obj) {
+	var css = obj.css;
+	var media = obj.media;
+
+	if(media) {
+		style.setAttribute("media", media)
+	}
+
+	if(style.styleSheet) {
+		style.styleSheet.cssText = css;
+	} else {
+		while(style.firstChild) {
+			style.removeChild(style.firstChild);
+		}
+
+		style.appendChild(document.createTextNode(css));
+	}
+}
+
+function updateLink (link, options, obj) {
+	var css = obj.css;
+	var sourceMap = obj.sourceMap;
+
+	/*
+		If convertToAbsoluteUrls isn't defined, but sourcemaps are enabled
+		and there is no publicPath defined then lets turn convertToAbsoluteUrls
+		on by default.  Otherwise default to the convertToAbsoluteUrls option
+		directly
+	*/
+	var autoFixUrls = options.convertToAbsoluteUrls === undefined && sourceMap;
+
+	if (options.convertToAbsoluteUrls || autoFixUrls) {
+		css = fixUrls(css);
+	}
+
+	if (sourceMap) {
+		// http://stackoverflow.com/a/26603875
+		css += "\n/*# sourceMappingURL=data:application/json;base64," + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + " */";
+	}
+
+	var blob = new Blob([css], { type: "text/css" });
+
+	var oldSrc = link.href;
+
+	link.href = URL.createObjectURL(blob);
+
+	if(oldSrc) URL.revokeObjectURL(oldSrc);
+}
+
+
+/***/ }),
+/* 38 */
+/***/ (function(module, exports) {
+
+
+/**
+ * When source maps are enabled, `style-loader` uses a link element with a data-uri to
+ * embed the css on the page. This breaks all relative urls because now they are relative to a
+ * bundle instead of the current page.
+ *
+ * One solution is to only use full urls, but that may be impossible.
+ *
+ * Instead, this function "fixes" the relative urls to be absolute according to the current page location.
+ *
+ * A rudimentary test suite is located at `test/fixUrls.js` and can be run via the `npm test` command.
+ *
+ */
+
+module.exports = function (css) {
+  // get current location
+  var location = typeof window !== "undefined" && window.location;
+
+  if (!location) {
+    throw new Error("fixUrls requires window.location");
+  }
+
+	// blank or null?
+	if (!css || typeof css !== "string") {
+	  return css;
+  }
+
+  var baseUrl = location.protocol + "//" + location.host;
+  var currentDir = baseUrl + location.pathname.replace(/\/[^\/]*$/, "/");
+
+	// convert each url(...)
+	/*
+	This regular expression is just a way to recursively match brackets within
+	a string.
+
+	 /url\s*\(  = Match on the word "url" with any whitespace after it and then a parens
+	   (  = Start a capturing group
+	     (?:  = Start a non-capturing group
+	         [^)(]  = Match anything that isn't a parentheses
+	         |  = OR
+	         \(  = Match a start parentheses
+	             (?:  = Start another non-capturing groups
+	                 [^)(]+  = Match anything that isn't a parentheses
+	                 |  = OR
+	                 \(  = Match a start parentheses
+	                     [^)(]*  = Match anything that isn't a parentheses
+	                 \)  = Match a end parentheses
+	             )  = End Group
+              *\) = Match anything and then a close parens
+          )  = Close non-capturing group
+          *  = Match anything
+       )  = Close capturing group
+	 \)  = Match a close parens
+
+	 /gi  = Get all matches, not the first.  Be case insensitive.
+	 */
+	var fixedCss = css.replace(/url\s*\(((?:[^)(]|\((?:[^)(]+|\([^)(]*\))*\))*)\)/gi, function(fullMatch, origUrl) {
+		// strip quotes (if they exist)
+		var unquotedOrigUrl = origUrl
+			.trim()
+			.replace(/^"(.*)"$/, function(o, $1){ return $1; })
+			.replace(/^'(.*)'$/, function(o, $1){ return $1; });
+
+		// already a full url? no change
+		if (/^(#|data:|http:\/\/|https:\/\/|file:\/\/\/)/i.test(unquotedOrigUrl)) {
+		  return fullMatch;
+		}
+
+		// convert the url to a full url
+		var newUrl;
+
+		if (unquotedOrigUrl.indexOf("//") === 0) {
+		  	//TODO: should we add protocol?
+			newUrl = unquotedOrigUrl;
+		} else if (unquotedOrigUrl.indexOf("/") === 0) {
+			// path should be relative to the base url
+			newUrl = baseUrl + unquotedOrigUrl; // already starts with '/'
+		} else {
+			// path should be relative to current directory
+			newUrl = currentDir + unquotedOrigUrl.replace(/^\.\//, ""); // Strip leading './'
+		}
+
+		// send back the fixed url(...)
+		return "url(" + JSON.stringify(newUrl) + ")";
+	});
+
+	// send back the fixed css
+	return fixedCss;
+};
+
 
 /***/ })
 /******/ ]);

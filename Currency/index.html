@@ -8,25 +8,28 @@
 
 <div id="app">
     <div id="debug">
-        {{ preferences }}
+        {{ dataAmount }}
         <br>
-        {{ converter }}
+        {{ preferences.topRow }}
     </div>
 
     <div id="wrapper">
         <table id="tableView">
-            <tr class="table-row" :class="{top: data.cache.abbrNation == preferences.topRow.abbr}" @click="changeTopRow(data.cache.abbrNation)" v-for="data in dataRows" :key="data.cache.abbrNation">
-                <td class="table-cell1">
+            <tr class="table-row" :class="{top: data.cache.abbrNation == preferences.topRow.abbr, editing: isEditing && data.cache.abbrNation === editing}"
+                v-for="data in dataRows" :key="data.cache.abbrNation">
+                <td class="table-cell1" @click="changeTopRow(data.cache.abbrNation)">
                     <div class="table-cell1-wrapper">
                         <img class="table-img" v-bind:src="data.cache.imgNation" alt="">
                         <span class="table-abbr-nation">{{ data.cache.abbrNation }}</span>
                         <span class="table-name-nation">{{ data.cache.nameNation }}</span>
                     </div>
                 </td>
-                <td class="table-cell2">
+                <td class="table-cell2" @click="editRow(data.cache.abbrNation)">
                     <div class="table-cell2-wrapper">
                         <span class="table-amount">{{ data.amount }}</span>
-                        <input class="table-input" type="number" v-model="data.amount">
+                        <input class="table-input" type="number"
+                               v-model="editingAmount"
+                               @keyup.enter="doneEdit(data.cache.abbrNation)">
                         <span class="table-money-unit">{{ data.cache.moneyUnit }}</span>
                     </div>
                 </td>
