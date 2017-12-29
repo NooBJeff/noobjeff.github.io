@@ -14,9 +14,13 @@ const app = new Vue({
         // 当前正在编辑的国家的abbr
         editing: null,
         editingAmount: null,
-        isEditing: false
+        isEditing: false,
+        modeEdit: false
     },
     computed: {
+        topRowAbbr: function () {
+            return this.preferences.rows[0];
+        },
         dataAmount: function () {
             // 返回dict
             // abbr -> money
@@ -38,21 +42,10 @@ const app = new Vue({
             const table = this.converter.table;
             const rows = this.preferences.rows;
 
-            const topRowAbbr = this.preferences.topRow.abbr;
-
             let ret = [];
-            // 先把Top的放进来
-            ret.push({
-                cache: table[topRowAbbr],
-                amount: this.round(this.dataAmount[topRowAbbr])
-            });
-
             for (let each in rows) {
                 // Dont forget that for-in for arrays returns index
                 each = rows[each];
-                if (each === topRowAbbr) {
-                    continue;
-                }
 
                 let tmp = {
                     cache: table[each],
@@ -69,21 +62,45 @@ const app = new Vue({
         round: function (num) {
             return Math.round(num * 10) / 10;
         },
+        toggleEditMode: function () {
+            this.modeEdit = !this.modeEdit;
+        },
+        btnRemove: function (abbr) {
+            const rows = this.preferences.rows;
+
+            if (rows.length <= 1) {
+                alert("Can't remove the last element!");
+                return;
+            }
+
+            rows.splice(rows.indexOf(abbr), 1);
+        },
         changeTopRow: function (abbr) {
+            const rows = this.preferences.rows;
+
             // 取消editing状态
             this.isEditing = false;
 
             // 改变top的row，但是保留当前金额
-            const prevAmount = this.dataAmount[this.preferences.topRow["abbr"]];
-            this.preferences.topRow["abbr"] = abbr;
+            const prevAmount = this.dataAmount[this.topRowAbbr];
+            // number, index
+            const indexClicked = rows.indexOf(abbr);
 
-            // 触发dataAmount重算
+            // swap
+            // bug: computed value topRowAbbr没有被更新
+            const tmp = rows[indexClicked];
+            Vue.set(rows, indexClicked, rows[0]);
+            Vue.set(rows, 0, tmp);
+
+
+            // 以下代码仅仅为了触发dataAmount重算
             this.editing = abbr;
             this.editingAmount = this.round(prevAmount);
         },
-        editRow: function (abbr) {
+        editRow: function (abbr, event) {
+            // 再次点击退出编辑
             if (this.isEditing) {
-                this.isEditing = false;
+                this.doneEdit(abbr);
                 return;
             }
 
@@ -91,16 +108,19 @@ const app = new Vue({
             this.editing = abbr;
 
             this.isEditing = true;
-            // console.log(this.$refs);
-            // 得到了数组...
-            // this.$refs.select();
+
+            // 全选输入数据以便快速修改，该死的DOM操作
+            // 延迟执行以确保input能够响应
+            setTimeout(function () {
+                document.getElementById("input-" + abbr).select();
+            });
         },
         doneEdit: function (abbr) {
             this.isEditing = false;
         },
         beforeDestroy: function () {
             // update topRow.amount
-            this.preferences.topRow["amount"] = this.dataAmount[this.preferences.topRow["abbr"]];
+            this.preferences.amount = this.dataAmount[this.topRowAbbr];
 
             // Save
             this.preferences.save();
@@ -108,6 +128,9 @@ const app = new Vue({
         },
         onNewButtonClicked: function () {
             // todo
+        },
+        onBlur: function (abbr) {
+            this.doneEdit(abbr);
         }
     },
     beforeMount: function () {
@@ -115,8 +138,8 @@ const app = new Vue({
         this.preferences.load();
         this.converter.load();
 
-        this.editing = this.preferences.topRow["abbr"];
-        this.editingAmount = this.preferences.topRow["amount"];
+        this.editing = this.topRowAbbr;
+        this.editingAmount = this.preferences.amount;
     },
     directives: {
         'input-focus': function (el, binding) {

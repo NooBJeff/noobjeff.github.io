@@ -14,7 +14,7 @@ class CurrencyConverter {
 
         instance = this;
 
-        this.STORAGE_KEY = "jeff-currency-rate";
+        this.STORAGE_KEY = "jeff-currency-converter-rate";
 
         // 所有国家
         this.abbr2NameEnglish = {

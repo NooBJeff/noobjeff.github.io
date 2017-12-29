@@ -4,17 +4,15 @@ body {
 
 #tableView {
   line-height: 2;
-  font-size: 1.5em;
+  font-size: 1.3em;
 
   input {
     font-size: 1.6em;
   }
 
-  .table-row {
-  }
-
-  .table-abbr-nation {
+  .abbrNation {
     font-weight: bold;
+    font-size: 1.5em;
   }
 
   .table-input {

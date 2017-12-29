@@ -987,9 +987,13 @@ const app = new __WEBPACK_IMPORTED_MODULE_0_vue_dist_vue_js___default.a({
         // 当前正在编辑的国家的abbr
         editing: null,
         editingAmount: null,
-        isEditing: false
+        isEditing: false,
+        modeEdit: false
     },
     computed: {
+        topRowAbbr: function () {
+            return this.preferences.rows[0];
+        },
         dataAmount: function () {
             // 返回dict
             // abbr -> money
@@ -1011,21 +1015,10 @@ const app = new __WEBPACK_IMPORTED_MODULE_0_vue_dist_vue_js___default.a({
             const table = this.converter.table;
             const rows = this.preferences.rows;
 
-            const topRowAbbr = this.preferences.topRow.abbr;
-
             let ret = [];
-            // 先把Top的放进来
-            ret.push({
-                cache: table[topRowAbbr],
-                amount: this.round(this.dataAmount[topRowAbbr])
-            });
-
             for (let each in rows) {
                 // Dont forget that for-in for arrays returns index
                 each = rows[each];
-                if (each === topRowAbbr) {
-                    continue;
-                }
 
                 let tmp = {
                     cache: table[each],
@@ -1042,21 +1035,45 @@ const app = new __WEBPACK_IMPORTED_MODULE_0_vue_dist_vue_js___default.a({
         round: function (num) {
             return Math.round(num * 10) / 10;
         },
+        toggleEditMode: function () {
+            this.modeEdit = !this.modeEdit;
+        },
+        btnRemove: function (abbr) {
+            const rows = this.preferences.rows;
+
+            if (rows.length <= 1) {
+                alert("Can't remove the last element!");
+                return;
+            }
+
+            rows.splice(rows.indexOf(abbr), 1);
+        },
         changeTopRow: function (abbr) {
+            const rows = this.preferences.rows;
+
             // 取消editing状态
             this.isEditing = false;
 
             // 改变top的row，但是保留当前金额
-            const prevAmount = this.dataAmount[this.preferences.topRow["abbr"]];
-            this.preferences.topRow["abbr"] = abbr;
+            const prevAmount = this.dataAmount[this.topRowAbbr];
+            // number, index
+            const indexClicked = rows.indexOf(abbr);
 
-            // 触发dataAmount重算
+            // swap
+            // bug: computed value topRowAbbr没有被更新
+            const tmp = rows[indexClicked];
+            __WEBPACK_IMPORTED_MODULE_0_vue_dist_vue_js___default.a.set(rows, indexClicked, rows[0]);
+            __WEBPACK_IMPORTED_MODULE_0_vue_dist_vue_js___default.a.set(rows, 0, tmp);
+
+
+            // 以下代码仅仅为了触发dataAmount重算
             this.editing = abbr;
             this.editingAmount = this.round(prevAmount);
         },
-        editRow: function (abbr) {
+        editRow: function (abbr, event) {
+            // 再次点击退出编辑
             if (this.isEditing) {
-                this.isEditing = false;
+                this.doneEdit(abbr);
                 return;
             }
 
@@ -1064,15 +1081,19 @@ const app = new __WEBPACK_IMPORTED_MODULE_0_vue_dist_vue_js___default.a({
             this.editing = abbr;
 
             this.isEditing = true;
-            console.log(this.$refs);
-            this.$refs.select();
+
+            // 全选输入数据以便快速修改，该死的DOM操作
+            // 延迟执行以确保input能够响应
+            setTimeout(function () {
+                document.getElementById("input-" + abbr).select();
+            });
         },
         doneEdit: function (abbr) {
             this.isEditing = false;
         },
         beforeDestroy: function () {
             // update topRow.amount
-            this.preferences.topRow["amount"] = this.dataAmount[this.preferences.topRow["abbr"]];
+            this.preferences.amount = this.dataAmount[this.topRowAbbr];
 
             // Save
             this.preferences.save();
@@ -1080,6 +1101,9 @@ const app = new __WEBPACK_IMPORTED_MODULE_0_vue_dist_vue_js___default.a({
         },
         onNewButtonClicked: function () {
             // todo
+        },
+        onBlur: function (abbr) {
+            this.doneEdit(abbr);
         }
     },
     beforeMount: function () {
@@ -1087,8 +1111,8 @@ const app = new __WEBPACK_IMPORTED_MODULE_0_vue_dist_vue_js___default.a({
         this.preferences.load();
         this.converter.load();
 
-        this.editing = this.preferences.topRow["abbr"];
-        this.editingAmount = this.preferences.topRow["amount"];
+        this.editing = this.topRowAbbr;
+        this.editingAmount = this.preferences.amount;
     },
     directives: {
         'input-focus': function (el, binding) {
@@ -12182,25 +12206,19 @@ class Preferences {
 
         instance = this;
 
-        this.STORAGE_KEY = 'jeff-currency-converter';
+        this.STORAGE_KEY = 'jeff-currency-converter-preferences';
 
         // 显示的国家
         // 每一项为国家三个英文字母的缩写
         this.rows = ['USD', 'CNY', 'EUR', 'JPY', 'HKD', 'KRW', 'AUD', 'GBP'];
         /**
-         * abbr: 仅当以下情况时修改
-         *       0.新建时
-         *       1.用户点击其他行，导致changeTopRow触发
-         *       2.用户退出，保存当前topRow的abbr
+         * 保存用户输入的数字
          * amount：仅当以下情况时修改
          *       1.新建时
          *       2.用户退出，保存当前topRow的amount
-         * @type {{abbr: string, amount: number}}
+         * @type {number}
          */
-        this.topRow = {
-            abbr: 'USD',
-            amount: 1000
-        };
+        this.amount = 1000;
     }
 
     load() {
@@ -12216,9 +12234,9 @@ class Preferences {
         try {
             storage = JSON.parse(storage);
             const rows = storage["rows"];
-            const topRow = storage["topRow"];
+            const amount = storage["amount"];
             this.rows = rows;
-            this.topRow = topRow;
+            this.amount = amount;
         } catch (e){
             // 本地储存格式不对，使用默认值
             console.log("Bad local storage, using default");
@@ -12228,7 +12246,7 @@ class Preferences {
     save() {
         localStorage.setItem(this.STORAGE_KEY, JSON.stringify({
             rows: this.rows,
-            topRow: this.topRow
+            amount: this.amount
         }));
     }
 }
@@ -12259,7 +12277,7 @@ class CurrencyConverter {
 
         instance = this;
 
-        this.STORAGE_KEY = "jeff-currency-rate";
+        this.STORAGE_KEY = "jeff-currency-converter-rate";
 
         // 所有国家
         this.abbr2NameEnglish = {
@@ -13463,7 +13481,7 @@ exports = module.exports = __webpack_require__(36)(undefined);
 
 
 // module
-exports.push([module.i, "body {\n  background: #eeeeee; }\n\n#tableView {\n  line-height: 2;\n  font-size: 1.5em; }\n  #tableView input {\n    font-size: 1.6em; }\n  #tableView .table-abbr-nation {\n    font-weight: bold; }\n  #tableView .table-input {\n    display: none; }\n  #tableView .table-amount {\n    font-size: 1.6em; }\n  #tableView .table-money-unit {\n    font-weight: lighter; }\n  #tableView .top {\n    background: #ffcdd2; }\n  #tableView .editing .table-input {\n    display: block; }\n  #tableView .editing .table-amount {\n    display: none; }\n", ""]);
+exports.push([module.i, "body {\n  background: #eeeeee; }\n\n#tableView {\n  line-height: 2;\n  font-size: 1.3em; }\n  #tableView input {\n    font-size: 1.6em; }\n  #tableView .abbrNation {\n    font-weight: bold;\n    font-size: 1.5em; }\n  #tableView .table-input {\n    display: none; }\n  #tableView .table-amount {\n    font-size: 1.6em; }\n  #tableView .table-money-unit {\n    font-weight: lighter; }\n  #tableView .top {\n    background: #ffcdd2; }\n  #tableView .editing .table-input {\n    display: block; }\n  #tableView .editing .table-amount {\n    display: none; }\n", ""]);
 
 // exports
 

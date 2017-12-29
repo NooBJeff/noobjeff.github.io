@@ -11,25 +11,19 @@ class Preferences {
 
         instance = this;
 
-        this.STORAGE_KEY = 'jeff-currency-converter';
+        this.STORAGE_KEY = 'jeff-currency-converter-preferences';
 
         // 显示的国家
         // 每一项为国家三个英文字母的缩写
         this.rows = ['USD', 'CNY', 'EUR', 'JPY', 'HKD', 'KRW', 'AUD', 'GBP'];
         /**
-         * abbr: 仅当以下情况时修改
-         *       0.新建时
-         *       1.用户点击其他行，导致changeTopRow触发
-         *       2.用户退出，保存当前topRow的abbr
+         * 保存用户输入的数字
          * amount：仅当以下情况时修改
          *       1.新建时
          *       2.用户退出，保存当前topRow的amount
-         * @type {{abbr: string, amount: number}}
+         * @type {number}
          */
-        this.topRow = {
-            abbr: 'USD',
-            amount: 1000
-        };
+        this.amount = 1000;
     }
 
     load() {
@@ -45,9 +39,9 @@ class Preferences {
         try {
             storage = JSON.parse(storage);
             const rows = storage["rows"];
-            const topRow = storage["topRow"];
+            const amount = storage["amount"];
             this.rows = rows;
-            this.topRow = topRow;
+            this.amount = amount;
         } catch (e){
             // 本地储存格式不对，使用默认值
             console.log("Bad local storage, using default");
@@ -57,7 +51,7 @@ class Preferences {
     save() {
         localStorage.setItem(this.STORAGE_KEY, JSON.stringify({
             rows: this.rows,
-            topRow: this.topRow
+            amount: this.amount
         }));
     }
 }
