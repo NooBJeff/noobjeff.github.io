@@ -1,21 +1,28 @@
 import Vue from 'vue/dist/vue.js';
+import vSelect from 'vue-select'
 
 import {Preferences} from './Preferences.js';
 import {CurrencyConverter} from './CurrencyConverter';
 
 import './../scss/index.scss';
 
+Vue.component('v-select', vSelect);
+
 const app = new Vue({
     el: "#app",
     data: {
         preferences: new Preferences(),
         converter: new CurrencyConverter(),
+
+        modeEdit: false,
+        // Is <input> activated?
+        isEditing: false,
+
         // 以下3项需要onload初始化
         // 当前正在编辑的国家的abbr
         editing: null,
         editingAmount: null,
-        isEditing: false,
-        modeEdit: false
+        selections: [],
     },
     computed: {
         topRowAbbr: function () {
@@ -56,14 +63,48 @@ const app = new Vue({
             }
 
             return ret;
-        }
+        },
+        dataSelection: function () {
+            const that = this;
+
+            let ret = [];
+
+            Object.keys(this.converter.abbr2NameEnglish).map(function (each) {
+                // key: "USD"
+                // name: "USA Dollar"
+                const name = that.converter.abbr2NameEnglish[each];
+
+                ret.push({
+                    value: each,
+                    label: name
+                });
+            });
+
+            return ret.filter(function (each) {
+                return -1 === that.preferences.rows.indexOf(each["value"]);
+            }).sort(function (a, b) {
+                return a["label"] < b["label"] ? -1 : 1;
+            });
+        },
     },
     methods: {
         round: function (num) {
             return Math.round(num * 10) / 10;
         },
         toggleEditMode: function () {
+            const that = this;
+
             this.modeEdit = !this.modeEdit;
+
+            // 如果用户退出编辑模式
+            // 更新列表，清空输入数据
+            if (!this.modeEdit && this.selections.length !== 0) {
+                this.selections.forEach(function (each) {
+                    that.preferences.rows.push(each["value"]);
+                });
+
+                this.selections = [];
+            }
         },
         btnRemove: function (abbr) {
             const rows = this.preferences.rows;
@@ -126,9 +167,6 @@ const app = new Vue({
             this.preferences.save();
             this.converter.save();
         },
-        onNewButtonClicked: function () {
-            // todo
-        },
         onBlur: function (abbr) {
             this.doneEdit(abbr);
         }
@@ -140,6 +178,8 @@ const app = new Vue({
 
         this.editing = this.topRowAbbr;
         this.editingAmount = this.preferences.amount;
+    },
+    mounted: function () {
     },
     directives: {
         'input-focus': function (el, binding) {

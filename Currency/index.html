@@ -12,6 +12,8 @@
     <!--Materialize-->
     <!-- Compiled and minified CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+    <!--Icons from google-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
 
@@ -20,9 +22,6 @@
         <nav>
             <div class="nav-wrapper">
                 <span class="brand-logo truncate">Currency Converter</span>
-                <ul id="nav-mobile" class="right">
-                    <li><a href="#" @click="toggleEditMode()">{{ modeEdit? "Done":"Edit" }}</a></li>
-                </ul>
             </div>
         </nav>
     </div>
@@ -65,7 +64,17 @@
                 <div class="table-cell-right col s1"
                      v-show="modeEdit"
                      @click="btnRemove(data.cache.abbrNation)">
-                    X
+                    <a href="#">X</a>
+                </div>
+            </div>
+
+            <div class="table-row row" v-show="modeEdit">
+                <div class="col s8">
+                    <v-select multiple :value.sync="selections" :options="dataSelection">
+                    </v-select>
+                </div>
+                <div class="col s2">
+                    <button class="waves-effect waves-light btn" @click="toggleEditMode()">Done</button>
                 </div>
             </div>
 
@@ -74,11 +83,10 @@
     </div>
 
     <div class="fixed-action-btn">
-        <a class="btn-floating btn-large red" @click="onNewButtonClicked()">
-            <i class="large material-icons">+</i>
+        <a class="btn-floating btn-large red" @click="toggleEditMode()">
+            <i class="large material-icons">edit</i>
         </a>
     </div>
-
 </div>
 
 <!--bootstrap-->
@@ -96,7 +104,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
 
 <script>
-    var FLAG_SAVE = false;
+    var FLAG_SAVE = true;
 </script>
 
 <script src="js/app.bundle.js"></script>

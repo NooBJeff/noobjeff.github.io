@@ -3187,6 +3187,10 @@ vm-browserify@0.0.4:
   dependencies:
     indexof "0.0.1"
 
+vue-select@^2.3.1:
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/vue-select/-/vue-select-2.3.1.tgz#98050b1a7a260bb015b12dfdd1a7038c231f7af7"
+
 vue@^2.5.13:
   version "2.5.13"
   resolved "https://registry.yarnpkg.com/vue/-/vue-2.5.13.tgz#95bd31e20efcf7a7f39239c9aa6787ce8cf578e1"
