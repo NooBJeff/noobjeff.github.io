@@ -12536,7 +12536,7 @@ class CurrencyConverter {
         __WEBPACK_IMPORTED_MODULE_0_axios___default.a.get(URL_API).then(function (response) {
             let data = response["data"];
 
-            that.timestamp = data.timestamp;
+            that.timestamp = Date.now();
             data = data["quotes"];
             that.table["USD"] = {
                 imgNation: "",
@@ -12562,8 +12562,12 @@ class CurrencyConverter {
         if (this.timestamp === null) {
             return true;
         }
-        // todo
-        return false;
+
+        const tsPrev = this.timestamp;
+        const tsNow = Date.now();
+
+        // 1000mill * 60sec * 60min * 24hr = 86400000
+        return (tsNow - tsPrev) > 86400000;
     }
 
     load() {
@@ -12589,6 +12593,7 @@ class CurrencyConverter {
 
         // 本地储存太旧，更新
         if (this.isLocalStorageOutdate()) {
+            console.log(">> Updating rate");
             this.loadFromAPI();
         }
     }
