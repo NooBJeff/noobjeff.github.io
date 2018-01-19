@@ -216,33 +216,39 @@ class CurrencyConverter {
     }
 
     loadFromAPI() {
+        console.log("Updating rate...");
+
         const accessKey = '28c3838ae4ee996dc7df28181ff3c7d3';
         const URL_API = 'http://apilayer.net/api/live?access_key=' + accessKey;
 
         let that = this;
-        axios.get(URL_API).then(function (response) {
-            let data = response["data"];
+        axios.get(URL_API)
+            .then(function (response) {
+                let data = response["data"];
 
-            that.timestamp = Date.now();
-            data = data["quotes"];
-            that.table["USD"] = {
-                imgNation: "",
-                moneyUnit: that.abbr2NameEnglish["USD"],
-                abbrNation: 'USD',
-                rate: 1.0
-            };
+                that.timestamp = Date.now();
+                data = data["quotes"];
+                that.table["USD"] = {
+                    imgNation: "",
+                    moneyUnit: that.abbr2NameEnglish["USD"],
+                    abbrNation: 'USD',
+                    rate: 1.0
+                };
 
-            for (let each in data) {
-                if (!data.hasOwnProperty(each)) {
-                    continue;
+                for (let each in data) {
+                    if (!data.hasOwnProperty(each)) {
+                        continue;
+                    }
+
+                    const abbr = each.substring(3);
+                    that.table[abbr]["moneyUnit"] = that.abbr2NameEnglish[abbr];
+                    that.table[abbr]["abbrNation"] = abbr;
+                    that.table[abbr]["rate"] = data[each];
                 }
-
-                const abbr = each.substring(3);
-                that.table[abbr]["moneyUnit"] = that.abbr2NameEnglish[abbr];
-                that.table[abbr]["abbrNation"] = abbr;
-                that.table[abbr]["rate"] = data[each];
-            }
-        });
+            })
+            .catch(function (error) {
+                console.log(">>> Updating rate failed \n" + error);
+            });
     }
 
     isLocalStorageOutdate() {
@@ -280,7 +286,6 @@ class CurrencyConverter {
 
         // 本地储存太旧，更新
         if (this.isLocalStorageOutdate()) {
-            console.log(">> Updating rate");
             this.loadFromAPI();
         }
     }
