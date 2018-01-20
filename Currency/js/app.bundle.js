@@ -981,6 +981,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 
+// Assign true to FLAG if it's undefined
+FLAG_SAVE = FLAG_SAVE || true;
+
 __WEBPACK_IMPORTED_MODULE_0_vue_dist_vue_js___default.a.component('v-select', __WEBPACK_IMPORTED_MODULE_1_vue_select___default.a);
 
 const app = new __WEBPACK_IMPORTED_MODULE_0_vue_dist_vue_js___default.a({

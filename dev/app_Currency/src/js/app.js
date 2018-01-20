@@ -6,6 +6,9 @@ import {CurrencyConverter} from './CurrencyConverter';
 
 import './../scss/index.scss';
 
+// Assign true to FLAG if it's undefined
+FLAG_SAVE = FLAG_SAVE || true;
+
 Vue.component('v-select', vSelect);
 
 const app = new Vue({
